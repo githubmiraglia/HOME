@@ -1,0 +1,14 @@
+.photos-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #fffdfd;
+  overflow: hidden;
+}
+
+/* Optional: Hide scrollbars */
+body.fullscreen {
+  margin: 0;
+  overflow: hidden;
+  background-color: #fffdfd;
+}

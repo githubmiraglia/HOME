@@ -1,0 +1,33 @@
+# Node.js
+**/node_modules/
+**/package-lock.json
+
+# Python virtual environments
+server/venv/
+server/venv310/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# VSCode & system files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Log or debug files
+*.log
+*.jpg
+*.png
+
+# Cache directory
+server/cache/
+
+# Env/Secrets
+.env
+.env.local
+
+# Optional: compiled or temp files
+*.swp
+*.tmp

@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Fullscreen + background for the photos route */
+.fullscreen {
+  background-color: #fffdfd;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+}

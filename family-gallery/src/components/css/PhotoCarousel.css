@@ -1,0 +1,63 @@
+.photo-wall {
+  position: relative;
+  width: 1152px;
+  height: 768px;
+  margin: 0 auto;
+  overflow: hidden;
+  background-color: #fffdfd;
+  background-size: cover;
+  background-position: center;
+}
+
+.carousel-photo {
+  position: absolute;
+  object-fit: cover;
+  cursor: pointer;
+  transition: all 1s ease-in-out;
+  border-radius: 4px;
+  background-color: #fffdfd;
+  opacity: 0;
+  transform: translateX(0);
+}
+
+.carousel-photo.visible {
+  opacity: 1;
+}
+
+/* Flip effect if user toggles */
+.carousel-photo.flipped {
+  filter: brightness(70%);
+  transform: rotateY(180deg);
+}
+
+/* Outgoing batch */
+.carousel-photo.exit-left.visible {
+  animation: slideOut 1s forwards;
+}
+
+/* Incoming batch */
+.carousel-photo.enter-left.visible {
+  animation: slideIn 1s forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
