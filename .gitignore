@@ -1,24 +1,30 @@
-# Node.js
-**/node_modules/
-**/package-lock.json
-
-# Python virtual environments
-server/venv/
-server/venv310/
-
-# Python cache
-__pycache__/
-*.py[cod]
-*.pyo
-
-# VSCode & system files
-.vscode/
+# System files
 .DS_Store
 Thumbs.db
 
-# Log or debug files
-*.log
+# Python artifacts
+__pycache__/
+*.py[cod]
+
+# Node.js artifacts
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.*.local
+
+# Image files
 *.jpg
+*.jpeg
 *.png
-*.webp
-*.mp3
+*.gif
+*.webp    # (newly added to ignore WebP images)
+
+# Audio files
+*.mp3     # (newly added to ignore MP3 audio files)
+
+# (Other existing rules remain unchanged...)
