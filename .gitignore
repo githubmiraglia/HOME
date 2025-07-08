@@ -16,6 +16,7 @@ yarn-error.log*
 # Environment files
 .env
 .env.*.local
+server/venv
 
 # Image files
 *.jpg
