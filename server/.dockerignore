@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.DS_Store
+._*
+.env
+venv/
+node_modules/
+dist/
+build/
+.vscode/
+.idea/
+boot3_test
+photo_index copy.json

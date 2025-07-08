@@ -1,15 +1,20 @@
+/* Remove this to avoid overriding the dynamic backgroundImage from inline styles */
 .photo-wall {
   position: relative;
   width: 100vw;
   height: 100vh;
   flex-shrink: 0;
-  background-image: url("/src/assets/background_white.png");
+  /* Removed hardcoded background-image */
   background-repeat: repeat;
-  background-size: auto; /* let it tile naturally */
-  background-position: top left;
+  background-size: cover; /* Use cover for full-bleed layout */
+  background-position: center;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* Frame overlay (sits on top of background, behind photos) */
 .frame-overlay {
   position: absolute;
   width: 100%;
@@ -17,24 +22,33 @@
   object-fit: cover;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 2; /* one layer behind photos */
   pointer-events: none;
 }
 
+/* The photos themselves */
 .carousel-photo {
   position: absolute;
   object-fit: cover;
   transition: all 1s ease-in-out;
-  z-index: 2;
+  z-index: 3; /* above frame */
   border-radius: 4px;
 }
 
+/* While loading */
 .loading-overlay {
-  color: #fff;
-  font-size: 24px;
-  text-align: center;
-  padding-top: 40vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background-color: rgba(0, 0, 0, 0.6);
-  z-index: 2;
-  position: relative;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: none;
 }

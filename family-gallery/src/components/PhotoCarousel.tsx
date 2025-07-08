@@ -4,27 +4,51 @@ import { carouselFrameCoordinates } from "../carouselFrameCoordinates";
 
 interface PhotoCarouselProps {
   images: string[];
+  frameImage: string;
+  backgroundImage: string;
   showLoading?: boolean;
+  onImageClick?: (url: string) => void; // ✅ optional click handler
 }
 
 const NUM_FRAMES = 15;
 
 const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
   images,
+  frameImage,
+  backgroundImage,
   showLoading,
+  onImageClick,
 }) => {
   const frameArray = Object.entries(carouselFrameCoordinates).map(([, value]) => value);
 
   return (
-    <div className="photo-wall">
-      {/* Frame Overlay */}
+    <div
+      className="photo-wall"
+      style={{
+        position: "relative",
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {/* Frame overlay (behind photos) */}
       <img
-        src="/src/assets/frame1_brownish.png"
+        src={frameImage}
         alt="frame"
         className="frame-overlay"
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          zIndex: 2,
+          pointerEvents: "none",
+        }}
       />
-      
-      {/* Photos */}
+
+      {/* Photos or loading */}
       {showLoading ? (
         <div className="loading-overlay">Carregando fotos...</div>
       ) : (
@@ -38,14 +62,19 @@ const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
               className="carousel-photo"
               src={src}
               alt={`Foto ${idx}`}
+              onClick={() => {
+                console.log("Image clicked:", src);
+                onImageClick?.(src);
+              }}
               style={{
                 position: "absolute",
-                objectFit: "cover", // ensures it fills the frame, cropping if needed
-                width: frame.width,  // explicitly set frame dimensions
+                objectFit: "cover",
+                width: frame.width,
                 height: frame.height,
                 left: frame.left,
                 top: frame.top,
                 zIndex: 3,
+                cursor: onImageClick ? "pointer" : "default", // visual feedback
               }}
             />
           );

@@ -1,0 +1,59 @@
+.selector-ui {
+  position: fixed;
+  top: 10px;
+  right: 110px; /* leaves space for GoBackButton */
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  font-family: sans-serif;
+  font-size: 14px;
+  min-width: 220px;
+  backdrop-filter: blur(3px);
+}
+
+.selector-ui label {
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.selector-ui select,
+.selector-ui input[type="number"] {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: none;
+  background-color: #333;
+  color: white;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.selector-ui input[type="checkbox"] {
+  margin-right: 6px;
+}
+
+.year-range {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.year-range input[type="number"] {
+  background-color: #444;
+  border: none;
+  color: white;
+  font-size: 13px;
+}
+
+.selector-ui option {
+  background-color: #222;
+  color: white;
+}

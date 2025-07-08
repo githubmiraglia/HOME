@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomeNavigation from "./components/HomeNavigation";
 import Photos from "./routes/Photos";
 import Videos from "./routes/Videos";
-import FullscreenToggle from "./components/FullScreenToggle";
+
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Back from "./routes/Back";
@@ -15,9 +15,10 @@ const router = createBrowserRouter([
   { path: "/back", element: <Back /> },
 ]);
 
+console.log("App.tsx rendering");
+
 const App: React.FC = () => (
   <>
-    <FullscreenToggle />
     <RouterProvider router={router} />
   </>
 );

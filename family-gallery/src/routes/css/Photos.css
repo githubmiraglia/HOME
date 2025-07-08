@@ -1,33 +1,62 @@
-body {
-  background-image: url("/src/assets/background_white.png");
-  background-repeat: repeat;
-  background-size: auto;
-}
-
-
-.photos-container {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+html, body, #root {
   margin: 0;
   padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
-/* Hide scrollbars for a clean look */
+
+/* Carousel container */
+.photos-container {
+  position: static; /* or remove this if it was relative */
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Hide scrollbars (for Webkit browsers) */
 .photos-container::-webkit-scrollbar {
   display: none;
 }
 
-.photos-container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background-color: transparent;
-  background-image: none;
-  margin: 0;
-  padding: 0;
+/* Floating selectors in top-left corner */
+.selector-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(6px);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
   display: flex;
+  gap: 10px;
+  align-items: center;
+  color: white;
+}
+
+/* Styling for the dropdowns */
+.selector-overlay select {
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.control-bar {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 999;
+  display: flex;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.control-bar:hover {
+  opacity: 1;
 }
