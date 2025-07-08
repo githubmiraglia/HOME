@@ -20,14 +20,5 @@ Thumbs.db
 *.log
 *.jpg
 *.png
-
-# Cache directory
-server/cache/
-
-# Env/Secrets
-.env
-.env.local
-
-# Optional: compiled or temp files
-*.swp
-*.tmp
+*.webp
+*.mp3
