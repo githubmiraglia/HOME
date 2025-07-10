@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  frontend:
+    build: ./family-gallery
+    volumes:
+      - ./family-gallery:/app
+      - /app/node_modules  # avoids overwriting node_modules in container
+    working_dir: /app
+    command: npm run dev
+    ports:
+      - "3000:3000"  # React dev server (live reload)
+
+  backend:
+    build: ./server
+    volumes:
+      - ./server:/app
+      - ~/.aws:/root/.aws
+    working_dir: /app
+    command: flask run --host=0.0.0.0 --port=8001 --debug
+    ports:
+      - "8001:8001"
+    environment:
+      - FLASK_ENV=development
