@@ -18,14 +18,14 @@ yarn-error.log*
 .env.*.local
 server/venv
 
-# Image files
+# Image files (ignored globally, but not inside /assets)
 *.jpg
 *.jpeg
 *.png
 *.gif
-*.webp    # (newly added to ignore WebP images)
-
-# Audio files
-*.mp3     # (newly added to ignore MP3 audio files)
-
-# (Other existing rules remain unchanged...)
+*.webp
+!assets/**/*.jpg
+!assets/**/*.jpeg
+!assets/**/*.png
+!assets/**/*.gif
+!assets/**/*.webp
