@@ -29,3 +29,8 @@ server/venv
 !assets/**/*.png
 !assets/**/*.gif
 !assets/**/*.webp
+!public/**/*.jpg
+!public/**/*.jpeg
+!public/**/*.png
+!public/**/*.gif
+!pubic/**/*.webp
