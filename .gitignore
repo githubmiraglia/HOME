@@ -33,4 +33,4 @@ server/venv
 !public/**/*.jpeg
 !public/**/*.png
 !public/**/*.gif
-!pubic/**/*.webp
+!public/**/*.webp
