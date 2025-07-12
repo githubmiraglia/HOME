@@ -15,6 +15,9 @@ interface OverlayCarouselProps {
   onDelete: (filename: string) => void; // 🆕 notify parent of deletion
 }
 
+// 🔁 Read from environment variable (default fallback for safety)
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8001";
+
 const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   photoIndex,
   startIndex,
@@ -29,7 +32,7 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   const [loadingMap, setLoadingMap] = useState<{ [filename: string]: string }>({});
 
   const getImageUrl = (filename: string) =>
-    `http://wrrm.lat:8001/serve-image/${encodeURIComponent(filename)}`;
+    `${BACKEND_URL}/serve-image/${encodeURIComponent(filename)}`;
 
   const visiblePhotos = photoIndex.slice(currentIndex, currentIndex + 3);
   const largeFrame = frameToLargeFrameMap[selectedFrame] || selectedFrame;
@@ -41,7 +44,7 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   const handleDelete = async (filename: string) => {
     setLoadingMap((prev) => ({ ...prev, [filename]: "Deleting Photo..." }));
 
-    await fetch("http://wrrm.lat:8001/photo-index/delete", {
+    await fetch(`${BACKEND_URL}/photo-index/delete`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ filename }),
@@ -60,7 +63,7 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   const handleRotate = async (filename: string) => {
     setLoadingMap((prev) => ({ ...prev, [filename]: "Updating Photo..." }));
 
-    await fetch("http://wrrm.lat:8001/photo-index/rotate", {
+    await fetch(`${BACKEND_URL}/photo-index/rotate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ filename }),

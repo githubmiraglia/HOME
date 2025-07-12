@@ -11,6 +11,8 @@ const CHUNK_SIZE = 15;
 const SCROLL_INTERVAL_MS = 30;
 const SLIDE_SPEED_PX = 0.5;
 const ROTATION = true;
+// 🔁 Read from environment variable (default fallback for safety)
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8001";
 
 const Photos: React.FC = () => {
   const [chunks, setChunks] = useState<string[][]>([]);
@@ -33,7 +35,7 @@ const Photos: React.FC = () => {
 
   const fetchChunk = async (): Promise<any[]> => {
     const res = await fetch(
-      `http://wrrm.lat:8001/photo-index/random-chunk?from=${fromYear}&to=${toYear}&size=${CHUNK_SIZE}&clear=true&hasFaces=${hasFaces}`
+      `${BACKEND_URL}/photo-index/random-chunk?from=${fromYear}&to=${toYear}&size=${CHUNK_SIZE}&clear=true&hasFaces=${hasFaces}`
     );
     return res.json();
   };
@@ -43,7 +45,7 @@ const Photos: React.FC = () => {
       photos.map((photo) => {
         return new Promise<string>((resolve) => {
           const img = new Image();
-          const url = `http://wrrm.lat:8001/serve-image/${photo.filename}`;
+          const url = `${BACKEND_URL}/serve-image/${photo.filename}`;
           img.src = url;
           img.onload = img.onerror = () => resolve(url);
         });
@@ -61,7 +63,7 @@ const Photos: React.FC = () => {
   useEffect(() => {
     const initialize = async () => {
       try {
-        const deletedRes = await fetch("http://wrrm.lat:8001/cache/deleted_photos.json");
+        const deletedRes = await fetch(`${BACKEND_URL}/cache/deleted_photos.json`);
         const deletedJson: string[] = await deletedRes.json();
         setDeletedPhotos(new Set(deletedJson));
 
@@ -79,7 +81,7 @@ const Photos: React.FC = () => {
 
   useEffect(() => {
     const fetchFullIndex = async () => {
-      const res = await fetch("http://wrrm.lat:8001/photo-index/full");
+      const res = await fetch(`${BACKEND_URL}/photo-index/full`);
       const json = await res.json();
       setPhotoIndex(json);
     };
