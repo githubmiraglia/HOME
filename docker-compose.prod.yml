@@ -1,16 +1,35 @@
-version: "3.9"
+name: Build and Push to ECR
 
-services:
-  frontend:
-    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:latest
-    ports:
-      - "3000:80"
+on:
+  push:
+    branches: [main]
 
-  backend:
-    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:latest
-    ports:
-      - "8001:8001"
-    volumes:
-      - ~/.aws:/root/.aws  # Required for S3 access
-    environment:
-      - FLASK_ENV=production
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: sa-east-1
+
+    - name: Log in to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build and push Docker images to ECR
+      run: |
+        FRONTEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:latest
+        BACKEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:latest
+
+        docker build -t $FRONTEND_URI ./family-gallery
+        docker build -t $BACKEND_URI ./server
+
+        docker push $FRONTEND_URI
+        docker push $BACKEND_URI
