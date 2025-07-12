@@ -17,20 +17,19 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+        aws-region: sa-east-1
 
     - name: Log in to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
-    - name: Build and push frontend image
+    - name: Build and push Docker images to ECR
       run: |
-        FRONTEND_IMAGE="${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}-frontend:latest"
-        docker build -t $FRONTEND_IMAGE ./family-gallery
-        docker push $FRONTEND_IMAGE
+        FRONTEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:latest
+        BACKEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:latest
 
-    - name: Build and push backend image
-      run: |
-        BACKEND_IMAGE="${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}-backend:latest"
-        docker build -t $BACKEND_IMAGE ./server
-        docker push $BACKEND_IMAGE
+        docker build -t $FRONTEND_URI ./family-gallery
+        docker build -t $BACKEND_URI ./server
+
+        docker push $FRONTEND_URI
+        docker push $BACKEND_URI
