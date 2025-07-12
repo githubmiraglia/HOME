@@ -14,7 +14,7 @@ interface OverlayCarouselProps {
   selectedBackground: string;
   onDelete: (filename: string) => void; // 🆕 notify parent of deletion
 }
-
+// Comment
 // 🔁 Read from environment variable (default fallback for safety)
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8001";
 
