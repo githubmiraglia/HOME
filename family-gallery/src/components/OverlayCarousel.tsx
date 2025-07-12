@@ -29,7 +29,7 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   const [loadingMap, setLoadingMap] = useState<{ [filename: string]: string }>({});
 
   const getImageUrl = (filename: string) =>
-    `http://localhost:8001/serve-image/${encodeURIComponent(filename)}`;
+    `http://wrrm.lat:8001/serve-image/${encodeURIComponent(filename)}`;
 
   const visiblePhotos = photoIndex.slice(currentIndex, currentIndex + 3);
   const largeFrame = frameToLargeFrameMap[selectedFrame] || selectedFrame;
@@ -41,7 +41,7 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   const handleDelete = async (filename: string) => {
     setLoadingMap((prev) => ({ ...prev, [filename]: "Deleting Photo..." }));
 
-    await fetch("http://localhost:8001/photo-index/delete", {
+    await fetch("http://wrrm.lat:8001/photo-index/delete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ filename }),
@@ -60,7 +60,7 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   const handleRotate = async (filename: string) => {
     setLoadingMap((prev) => ({ ...prev, [filename]: "Updating Photo..." }));
 
-    await fetch("http://localhost:8001/photo-index/rotate", {
+    await fetch("http://wrrm.lat:8001/photo-index/rotate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ filename }),
