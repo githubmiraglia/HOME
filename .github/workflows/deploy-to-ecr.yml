@@ -28,8 +28,8 @@ jobs:
         FRONTEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:latest
         BACKEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:latest
 
-        docker build -t $FRONTEND_URI ./family-gallery
-        docker build -t $BACKEND_URI ./server
+        docker build -t $FRONTEND_URI -f ./family-gallery/Dockerfile.prod ./family-gallery
+        docker build -t $BACKEND_URI -f ./server/Dockerfile.prod ./server
 
         docker push $FRONTEND_URI
         docker push $BACKEND_URI
