@@ -1,24 +1,27 @@
-version: "3.9"
-
 services:
   frontend:
-    build: ./family-gallery
+    build:
+      context: ./family-gallery
+      dockerfile: Dockerfile.dev
     volumes:
       - ./family-gallery:/app
-      - /app/node_modules  # avoids overwriting node_modules in container
+      - /app/node_modules
     working_dir: /app
     command: npm run dev
     ports:
-      - "3000:3000"  # React dev server (live reload)
+      - "3000:3000"
 
   backend:
-    build: ./server
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
     volumes:
       - ./server:/app
       - ~/.aws:/root/.aws
     working_dir: /app
-    command: flask run --host=0.0.0.0 --port=8001 --debug
+    command: python -m flask run --host=0.0.0.0 --port=8001
     ports:
       - "8001:8001"
     environment:
       - FLASK_ENV=development
+      - FLASK_APP=photos_videos_server.py

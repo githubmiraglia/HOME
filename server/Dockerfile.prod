@@ -1,0 +1,30 @@
+FROM python:3.9-slim
+
+# Set environment variables to reduce image size and improve behavior
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies needed for OpenCV
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+ && rm -rf /var/lib/apt/lists/*
+
+# Copy dependency files first to leverage Docker layer caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Copy the rest of the application
+COPY . .
+
+# Expose the Flask port
+EXPOSE 8001
+
+# Run app with Gunicorn in production
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8001", "photos_videos_server:app"]

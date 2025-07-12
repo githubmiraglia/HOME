@@ -24,11 +24,13 @@ server/venv
 *.png
 *.gif
 *.webp
+
 !assets/**/*.jpg
 !assets/**/*.jpeg
 !assets/**/*.png
 !assets/**/*.gif
 !assets/**/*.webp
+
 !public/**/*.jpg
 !public/**/*.jpeg
 !public/**/*.png
