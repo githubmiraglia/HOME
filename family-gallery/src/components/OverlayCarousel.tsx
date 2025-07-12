@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import "./css/OverlayCarousel.css";
 import { frameToLargeFrameMap } from "./Selector_Photos";
 import { RotateCcw, Trash2 } from "lucide-react";
+import { GLOBAL_BACKEND_URL } from "../App"
 
 interface OverlayCarouselProps {
   photoIndex: { filename: string }[];
@@ -14,9 +15,6 @@ interface OverlayCarouselProps {
   selectedBackground: string;
   onDelete: (filename: string) => void; // 🆕 notify parent of deletion
 }
-// Comment
-// 🔁 Read from environment variable (default fallback for safety)
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8001";
 
 const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   photoIndex,
@@ -32,7 +30,7 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   const [loadingMap, setLoadingMap] = useState<{ [filename: string]: string }>({});
 
   const getImageUrl = (filename: string) =>
-    `${BACKEND_URL}/serve-image/${encodeURIComponent(filename)}`;
+    `${GLOBAL_BACKEND_URL}/serve-image/${encodeURIComponent(filename)}`;
 
   const visiblePhotos = photoIndex.slice(currentIndex, currentIndex + 3);
   const largeFrame = frameToLargeFrameMap[selectedFrame] || selectedFrame;
@@ -44,7 +42,7 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   const handleDelete = async (filename: string) => {
     setLoadingMap((prev) => ({ ...prev, [filename]: "Deleting Photo..." }));
 
-    await fetch(`${BACKEND_URL}/photo-index/delete`, {
+    await fetch(`${GLOBAL_BACKEND_URL}/photo-index/delete`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ filename }),
@@ -63,7 +61,7 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   const handleRotate = async (filename: string) => {
     setLoadingMap((prev) => ({ ...prev, [filename]: "Updating Photo..." }));
 
-    await fetch(`${BACKEND_URL}/photo-index/rotate`, {
+    await fetch(`${GLOBAL_BACKEND_URL}/photo-index/rotate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ filename }),

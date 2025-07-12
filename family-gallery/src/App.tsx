@@ -8,6 +8,11 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Back from "./routes/Back";
 
+// for Prod
+export const GLOBAL_BACKEND_URL = "http://wrrm.lat:8001";
+// for Dev
+//export const GLOBAL_BACKEND_URL = "http://localhost:8001";
+
 const router = createBrowserRouter([
   { path: "/", element: <HomeNavigation /> },
   { path: "/photos", element: <Photos /> },
