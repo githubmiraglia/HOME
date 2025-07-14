@@ -12,6 +12,9 @@ const CHUNK_SIZE = 15;
 const SCROLL_INTERVAL_MS = 30;
 const SLIDE_SPEED_PX = 0.5;
 const ROTATION = true;
+const isMobileDevice = () => {
+  return /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+};
 
 const Photos: React.FC = () => {
   const [chunks, setChunks] = useState<string[][]>([]);
@@ -31,6 +34,24 @@ const Photos: React.FC = () => {
 
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [startIndex, setStartIndex] = useState<number | null>(null);
+
+  const [isPortrait, setIsPortrait] = useState(false);
+
+  useEffect(() => {
+    const checkOrientation = () => {
+      const isPortraitNow = window.innerHeight > window.innerWidth;
+      setIsPortrait(isMobileDevice() && isPortraitNow);
+    };
+
+    checkOrientation(); // run initially
+    window.addEventListener("resize", checkOrientation);
+    window.addEventListener("orientationchange", checkOrientation);
+
+    return () => {
+      window.removeEventListener("resize", checkOrientation);
+      window.removeEventListener("orientationchange", checkOrientation);
+    };
+  }, []);
 
   const fetchChunk = async (): Promise<any[]> => {
     const res = await fetch(
@@ -172,6 +193,14 @@ const Photos: React.FC = () => {
   };
 
   const overlayFrame = frameToLargeFrameMap[selectedFrame] || selectedFrame;
+
+  if (isPortrait) {
+    return (
+      <div className="portrait-warning">
+        Vire dispositivo paisagem (landscape).
+      </div>
+    );
+  }
 
   return (
     <div className="photos-container" ref={containerRef}>

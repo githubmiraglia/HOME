@@ -1,0 +1,56 @@
+.solo-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.solo-image-wrapper {
+  position: relative;
+  width: 1052px;  /* 2x frame width */
+  height: 1024px; /* 2x frame height */
+}
+
+.solo-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1052px;
+  height: 1024px;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.solo-photo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 768px;   /* 2x photo width */
+  height: 596px;  /* 2x photo height */
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  border-radius: 8px;
+  z-index: 2;
+}
+
+.go-back-button {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  background: white;
+  color: black;
+  font-weight: bold;
+  border: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  z-index: 10;
+}

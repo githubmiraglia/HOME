@@ -3,7 +3,12 @@ import React, { useState, useEffect } from "react";
 import "./css/OverlayCarousel.css";
 import { frameToLargeFrameMap } from "./Selector_Photos";
 import { RotateCcw, Trash2 } from "lucide-react";
-import { GLOBAL_BACKEND_URL } from "../App"
+import {
+  GLOBAL_BACKEND_URL,
+  BASE_IMAGE_WIDTH,
+  BASE_IMAGE_HEIGHT,
+} from "../App";
+import SoloPhotoOverlay from "./SoloPhotoOverlay";
 
 interface OverlayCarouselProps {
   photoIndex: { filename: string }[];
@@ -13,7 +18,7 @@ interface OverlayCarouselProps {
   onNext: () => void;
   selectedFrame: string;
   selectedBackground: string;
-  onDelete: (filename: string) => void; // 🆕 notify parent of deletion
+  onDelete: (filename: string) => void;
 }
 
 const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
@@ -28,12 +33,23 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(startIndex);
   const [loadingMap, setLoadingMap] = useState<{ [filename: string]: string }>({});
+  const [soloPhoto, setSoloPhoto] = useState<string | null>(null);
 
   const getImageUrl = (filename: string) =>
     `${GLOBAL_BACKEND_URL}/serve-image/${encodeURIComponent(filename)}`;
 
   const visiblePhotos = photoIndex.slice(currentIndex, currentIndex + 3);
   const largeFrame = frameToLargeFrameMap[selectedFrame] || selectedFrame;
+
+  const isMobileDevice = () => {
+    return /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+  };
+
+  const isMobile = isMobileDevice();
+  const scaleX = window.innerWidth / BASE_IMAGE_WIDTH * (isMobile ? 0.9 : 1);
+  const scaleY = scaleX;
+  const verticalOffset = `calc(50% - ${(BASE_IMAGE_HEIGHT * scaleY) / 2}px)`;
+  const horizontalOffset = `calc(50% - ${(BASE_IMAGE_WIDTH * scaleX) / 2}px)`;
 
   useEffect(() => {
     setCurrentIndex(startIndex);
@@ -54,8 +70,8 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
       return copy;
     });
 
-    onDelete(filename); // ✅ inform parent
-    onNext(); // move to next photo
+    onDelete(filename);
+    onNext();
   };
 
   const handleRotate = async (filename: string) => {
@@ -84,9 +100,30 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
     <div className="overlay-modal">
       <div className="overlay-backdrop" onClick={onClose} />
 
+      {/* Show Go Back button only if SoloPhotoOverlay is not active */}
+      {!soloPhoto && (
+        <div className="go-back-button-container">
+          <button className="go-back-button" onClick={onClose}>
+            Go Back
+          </button>
+        </div>
+      )}
+
       <div
         className="overlay-content"
-        style={{ backgroundImage: `url(${selectedBackground})` }}
+        style={{
+          backgroundImage: `url(${selectedBackground})`,
+          position: "absolute",
+          top: verticalOffset,
+          left: horizontalOffset,
+          width: BASE_IMAGE_WIDTH,
+          height: BASE_IMAGE_HEIGHT,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          transform: `scale(${scaleX}, ${scaleY})`,
+          transformOrigin: "top left",
+        }}
       >
         <button className="nav-button left" onClick={onPrev}>◀</button>
 
@@ -104,7 +141,8 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
                 src={getImageUrl(photo.filename)}
                 alt={`Overlay ${idx}`}
                 className="overlay-photo"
-                style={{ zIndex: 2 }}
+                style={{ zIndex: 2, cursor: "pointer" }}
+                onClick={() => setSoloPhoto(photo.filename)}
               />
 
               <div className="photo-action-icons">
@@ -130,7 +168,16 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
         <button className="nav-button right" onClick={onNext}>▶</button>
       </div>
 
-      <button className="go-back-button" onClick={onClose}>Go Back</button>
+      {/* Solo photo enlarged */}
+      {soloPhoto && (
+        <SoloPhotoOverlay
+          filename={soloPhoto}
+          frameImage={largeFrame}
+          backgroundImage={selectedBackground}
+          imageUrl={getImageUrl(soloPhoto)}
+          onClose={() => setSoloPhoto(null)}
+        />
+      )}
     </div>
   );
 };

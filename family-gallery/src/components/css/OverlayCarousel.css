@@ -61,19 +61,6 @@
   z-index: 2;
 }
 
-.go-back-button {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  z-index: 1001;
-  padding: 8px 16px;
-  background: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
 .nav-button {
   position: absolute;
   top: 50%;
@@ -96,8 +83,7 @@
   right: 20px;
 }
 
-/* === New additions below === */
-
+/* === Action icons === */
 .photo-action-icons {
   position: absolute;
   top: 8px;
@@ -123,7 +109,8 @@
   cursor: pointer;
 }
 
-.overlay-status {
+/* === Loading or status message === */
+.photo-overlay-message {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -138,17 +125,23 @@
   text-align: center;
 }
 
-.photo-overlay-message {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.75);
-  color: white;
-  padding: 12px 20px;
-  font-size: 18px;
-  border-radius: 6px;
-  z-index: 4;
-  pointer-events: none;
-  text-align: center;
+/* === Go Back Button (now positioned outside scaled content) === */
+.go-back-button-container {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  z-index: 2000; /* higher than scaled content */
+}
+
+.go-back-button {
+  padding: 8px 16px;
+  background: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  white-space: nowrap;     /* 👈 Forces single-line text */
+  line-height: 1.5;         /* 👈 Ensures vertical spacing */
+  display: inline-block;
 }

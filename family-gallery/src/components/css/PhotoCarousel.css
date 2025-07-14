@@ -14,6 +14,7 @@
   align-items: center;
 }
 
+
 /* Frame overlay (sits on top of background, behind photos) */
 .frame-overlay {
   position: absolute;
@@ -37,18 +38,19 @@
 
 /* While loading */
 .loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  position: absolute; /* ⬅️ critical: respect transform scaling of parent */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background-color: rgba(0, 0, 0, 0.6);
+  padding: 20px 30px;
+  border-radius: 12px;
   color: white;
   font-size: 24px;
   font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
+  text-align: center;
+  z-index: 10; /* sits above frame & photos but under full-page overlays */
   pointer-events: none;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  font-family: sans-serif;
 }

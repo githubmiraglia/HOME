@@ -8,19 +8,22 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies needed for OpenCV
+# Install system dependencies needed for OpenCV, HEIC, and DeepFace
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1-mesa-glx \
     libglib2.0-0 \
+    libheif-dev \
+    libde265-0 \
+    libjpeg-dev \
  && rm -rf /var/lib/apt/lists/*
 
-# Copy dependency files first to leverage Docker layer caching
+# Copy dependency file first to use Docker layer caching
 COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy the rest of the application
+# Copy the rest of the application code
 COPY . .
 
 # Expose the Flask port

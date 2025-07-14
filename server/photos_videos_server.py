@@ -2,13 +2,14 @@ from flask import Flask, jsonify, abort, request, send_file
 from flask import send_from_directory
 import os, io, json, random
 from collections import defaultdict
-from datetime import datetime
-from PIL import Image
+from werkzeug.utils import secure_filename
+from PIL import Image, ExifTags
 import boto3
 from botocore.exceptions import ClientError
 from flask_cors import CORS
 from dotenv import load_dotenv
 from io import BytesIO
+from datetime import datetime
 
 load_dotenv()
 app = Flask(__name__)
@@ -240,3 +241,209 @@ def rotate_photo():
 @app.route("/cache/<path:filename>")
 def serve_cache_file(filename):
     return send_from_directory("cache", filename)
+
+
+@app.route("/upload/list-folders", methods=["GET"])
+def list_upload_folders():
+    year = request.args.get("year")
+    if not year or not year.isdigit():
+        return jsonify({"error": "Missing or invalid 'year' parameter"}), 400
+
+    year_prefix = f"{S3_ORIGINALS_PREFIX}/{year}/"
+
+    # Step 1: Ensure year folder exists by writing a placeholder if needed
+    try:
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=year_prefix, MaxKeys=1)
+        if "Contents" not in response:
+            # Folder doesn't exist yet; create placeholder
+            placeholder_key = f"{year_prefix}.keep"
+            s3.put_object(Bucket=S3_BUCKET, Key=placeholder_key, Body=b"")
+            print(f"[INFO] Created placeholder for {year_prefix}")
+    except ClientError as e:
+        print("[ERROR] S3 folder check failed:", e)
+        return jsonify({"error": "Failed to access S3"}), 500
+
+    # Step 2: List subfolders
+    try:
+        response = s3.list_objects_v2(
+            Bucket=S3_BUCKET,
+            Prefix=year_prefix,
+            Delimiter="/"
+        )
+
+        subfolders = []
+        for prefix in response.get("CommonPrefixes", []):
+            folder_name = prefix["Prefix"].replace(year_prefix, "").strip("/")
+            if folder_name and folder_name != ".keep":
+                subfolders.append(folder_name)
+
+        return jsonify({"folders": sorted(subfolders)})
+    except ClientError as e:
+        print("[ERROR] S3 list subfolders failed:", e)
+        return jsonify({"error": "Failed to list folders"}), 500
+
+@app.route("/photo-index/add", methods=["POST"])
+def add_uploaded_photos_to_index():
+    data = request.get_json()
+    year = data.get("year")
+    folder = data.get("folder")
+    filenames = data.get("filenames")  # e.g., ["IMG_1234.jpg", "IMG_5678.jpg"]
+
+    if not year or not folder or not filenames:
+        return jsonify({"error": "Missing parameters"}), 400
+
+    new_entries = []
+
+    for filename in filenames:
+        s3_key = f"{S3_ORIGINALS_PREFIX}/{year}/{folder}/{filename}"
+
+        try:
+            obj = s3.get_object(Bucket=S3_BUCKET, Key=s3_key)
+            img = Image.open(BytesIO(obj["Body"].read()))
+            exif_data = img._getexif() or {}
+        except Exception as e:
+            print(f"[ERROR] Failed to read EXIF for {filename}: {e}")
+            exif_data = {}
+
+        # Extract metadata
+        date_str = None
+        camera = None
+        try:
+            exif = {
+                ExifTags.TAGS.get(k): v
+                for k, v in exif_data.items()
+                if k in ExifTags.TAGS
+            }
+            date_str = exif.get("DateTimeOriginal", None)
+            camera = f"{exif.get('Make', '')} {exif.get('Model', '')}".strip() or None
+        except Exception as e:
+            print(f"[ERROR] EXIF parsing error: {e}")
+
+        if date_str:
+            try:
+                dt = datetime.strptime(date_str, "%Y:%m:%d %H:%M:%S")
+                date_iso = dt.strftime("%Y-%m-%d")
+            except:
+                date_iso = None
+        else:
+            date_iso = None
+
+        new_entry = {
+            "filename": f"{year}/{folder}/{filename}",
+            "date": date_iso,
+            "camera": camera,
+            "angle": 0,
+            "hasFaces": True,
+            "gps": None,
+            "location": None,
+        }
+        photo_index.append(new_entry)
+        new_entries.append(new_entry)
+
+    # Save updated photo_index.json
+    with open("cache/photo_index.json", "w", encoding="utf-8") as f:
+        json.dump(photo_index, f, indent=2)
+
+    return jsonify({"status": "success", "added": new_entries})
+
+
+@app.route("/upload/photos", methods=["POST"])
+def upload_photos():
+    if "year" not in request.form or "folder" not in request.form:
+        return jsonify({"error": "Missing 'year' or 'folder'"}), 400
+
+    year = request.form["year"]
+    folder = request.form["folder"]
+
+    if "photos" not in request.files:
+        return jsonify({"error": "No photos provided"}), 400
+
+    files = request.files.getlist("photos")
+    new_entries = []
+
+    for file in files:
+        filename = secure_filename(file.filename)
+        s3_key = f"{S3_ORIGINALS_PREFIX}/{year}/{folder}/{filename}"
+
+        # Read file content once and reuse it
+        try:
+            file_bytes = file.read()
+        except Exception as e:
+            print(f"[ERROR] Could not read file {filename}:", e)
+            continue
+
+        try:
+            # Upload to S3 using a new BytesIO stream
+            s3.upload_fileobj(BytesIO(file_bytes), S3_BUCKET, s3_key)
+        except Exception as e:
+            print(f"[ERROR] Failed to upload {filename} to S3:", e)
+            continue
+
+        # Reuse BytesIO stream for EXIF extraction
+        try:
+            img = Image.open(BytesIO(file_bytes))
+            exif_data = img._getexif() or {}
+        except Exception as e:
+            print(f"[WARNING] Could not parse EXIF for {filename}:", e)
+            exif_data = {}
+
+        # Extract EXIF info
+        date_str = None
+        camera = None
+        try:
+            exif = {
+                ExifTags.TAGS.get(k): v
+                for k, v in exif_data.items()
+                if k in ExifTags.TAGS
+            }
+            date_str = exif.get("DateTimeOriginal", None)
+            camera = f"{exif.get('Make', '')} {exif.get('Model', '')}".strip() or None
+        except Exception as e:
+            print(f"[ERROR] EXIF parsing error for {filename}: {e}")
+
+        if date_str:
+            try:
+                dt = datetime.strptime(date_str, "%Y:%m:%d %H:%M:%S")
+                date_iso = dt.strftime("%Y-%m-%d")
+            except:
+                date_iso = None
+        else:
+            date_iso = None
+
+        new_entry = {
+            "filename": f"{year}/{folder}/{filename}",
+            "date": date_iso,
+            "camera": camera,
+            "angle": 0,
+            "hasFaces": True,
+            "gps": None,
+            "location": None,
+        }
+
+        photo_index.append(new_entry)
+        new_entries.append(new_entry)
+
+    # Save to disk
+    os.makedirs("cache", exist_ok=True)
+    with open("cache/photo_index.json", "w", encoding="utf-8") as f:
+        json.dump(photo_index, f, indent=2)
+
+    return jsonify({"status": "success", "uploaded": len(new_entries), "entries": new_entries})
+
+@app.route("/upload/create-folder", methods=["POST"])
+def create_s3_folder():
+    data = request.get_json()
+    year = data.get("year")
+    folder = data.get("folder")
+
+    if not year or not folder:
+        return jsonify({"error": "Missing 'year' or 'folder'"}), 400
+
+    folder_key = f"{S3_ORIGINALS_PREFIX}/{year}/{folder}/.keep"
+
+    try:
+        s3.put_object(Bucket=S3_BUCKET, Key=folder_key, Body=b"")
+        return jsonify({"status": "folder created", "key": folder_key})
+    except Exception as e:
+        print("[ERROR] Failed to create folder:", e)
+        return jsonify({"error": "Failed to create folder"}), 500
