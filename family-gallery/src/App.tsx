@@ -21,7 +21,7 @@ export const BASE_IMAGE_HEIGHT = 1024;
 
 // === 📦 Wrapper for PhotosUpload ===
 const UploadPhotosWrapper: React.FC = () => {
-  const [selectedYear, setSelectedYear] = useState("2025");
+  const [selectedYear] = useState("2025");
   const [selectedSubfolder, setSelectedSubfolder] = useState("");
 
   const handleUploadComplete = () => {

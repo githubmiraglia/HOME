@@ -74,21 +74,21 @@ const PhotosUpload: React.FC<Props> = ({
     console.log("Uploading files to:", selectedYear, selectedSubfolder, formData.getAll("photos"));
 
     try {
-      const config: any = {
+      const config = {
         headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: (event: any) => {
+        onUploadProgress: (event: ProgressEvent) => {
           const percent = Math.round((event.loaded * 100) / (event.total || 1));
           setUploadProgress(percent);
         },
       };
 
-      const res = await axios.post(
+      const res = await axios.post<{ entries: { filename: string }[] }>(
         `${GLOBAL_BACKEND_URL}/upload/photos`,
         formData,
         config
       );
 
-      const data = res.data as any;
+      const data = res.data;
       const uploadedFilenames = Array.isArray(data.entries)
         ? data.entries.map((e: { filename: string }) => e.filename)
         : [];
@@ -102,6 +102,7 @@ const PhotosUpload: React.FC<Props> = ({
       setUploadProgress(100); // ensure full bar
       setUploadDone(true);
 
+      // give time for user to see "100%" before reload
       setTimeout(() => {
         window.location.reload();
       }, 1500);
