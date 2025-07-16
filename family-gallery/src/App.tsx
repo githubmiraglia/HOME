@@ -15,7 +15,7 @@ import "slick-carousel/slick/slick-theme.css";
 export const IS_RESPONSIVE_DEV = true;
 export const GLOBAL_BACKEND_URL = IS_RESPONSIVE_DEV
   ? "http://localhost:8001"
-  : "http://wrrm.lat:8001";
+  : "";
 export const BASE_IMAGE_WIDTH = 1536;
 export const BASE_IMAGE_HEIGHT = 1024;
 
