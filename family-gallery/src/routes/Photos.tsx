@@ -7,7 +7,7 @@ import OverlayCarousel from "../components/OverlayCarousel";
 import { GLOBAL_BACKEND_URL } from "../App"
 
 // === Config constants ===
-const TOTAL_TO_DISPLAY = 45;
+const TOTAL_TO_DISPLAY = 15;
 const CHUNK_SIZE = 15;
 const SCROLL_INTERVAL_MS = 30;
 const SLIDE_SPEED_PX = 0.5;
