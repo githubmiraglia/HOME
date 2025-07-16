@@ -3,8 +3,9 @@ version: "3.8"
 services:
   frontend:
     image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:latest
-    ports:
-      - "3000:80"
+    # Optional: disable this if frontend_proxy handles external access
+    # ports:
+    #   - "3000:80"
     restart: always
 
   backend:
@@ -12,3 +13,22 @@ services:
     ports:
       - "8001:8001"
     restart: always
+
+  frontend_proxy:
+    build:
+      context: /home/ubuntu/HOME
+      dockerfile: apache/Dockerfile.frontend
+    container_name: frontend_proxy
+    ports:
+      - "3001:443"
+    volumes:
+      - /home/ubuntu/dmp/etc/ssl/certs:/etc/ssl/certs:ro
+      - /home/ubuntu/dmp/etc/ssl/private:/etc/ssl/private:ro
+      - /home/ubuntu/HOME/apache/apache-frontend.conf:/usr/local/apache2/conf/extra/apache-frontend.conf:ro
+    depends_on:
+      - frontend
+
+
+networks:
+  default:
+    driver: bridge

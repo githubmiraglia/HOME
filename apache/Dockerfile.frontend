@@ -1,0 +1,4 @@
+FROM httpd:2.4
+
+# Include your custom config into Apache’s main config
+RUN echo "Include conf/extra/apache-frontend.conf" >> /usr/local/apache2/conf/httpd.conf
