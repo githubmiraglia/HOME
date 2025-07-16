@@ -30,4 +30,4 @@ COPY . .
 EXPOSE 8001
 
 # Run app with Gunicorn in production
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8001", "photos_videos_server:app"]
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8001", "--timeout", "120", "photos_videos_server:app"]
