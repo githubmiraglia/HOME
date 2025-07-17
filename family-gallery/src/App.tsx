@@ -13,9 +13,8 @@ import "slick-carousel/slick/slick-theme.css";
 
 // === 📐 Reference dimensions for scaling ===
 export const IS_RESPONSIVE_DEV = false;
-export const GLOBAL_BACKEND_URL = IS_RESPONSIVE_DEV
-  ? "http://localhost:8001"
-  : "https://wrrm.lat:3001";
+export const GLOBAL_BACKEND_URL = "https://wrrm.lat:3001";
+// ?"http://localhost:8001"
 export const BASE_IMAGE_WIDTH = 1536;
 export const BASE_IMAGE_HEIGHT = 1024;
 
