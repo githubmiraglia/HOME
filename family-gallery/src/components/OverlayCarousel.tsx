@@ -1,4 +1,3 @@
-// OverlayCarousel.tsx
 import React, { useState, useEffect } from "react";
 import "./css/OverlayCarousel.css";
 import { frameToLargeFrameMap } from "./Selector_Photos";
@@ -41,12 +40,11 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   const visiblePhotos = photoIndex.slice(currentIndex, currentIndex + 3);
   const largeFrame = frameToLargeFrameMap[selectedFrame] || selectedFrame;
 
-  const isMobileDevice = () => {
-    return /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
-  };
+  const isMobileDevice = () =>
+    /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
 
   const isMobile = isMobileDevice();
-  const scaleX = window.innerWidth / BASE_IMAGE_WIDTH * (isMobile ? 0.9 : 1);
+  const scaleX = (window.innerWidth / BASE_IMAGE_WIDTH) * (isMobile ? 0.9 : 1);
   const scaleY = scaleX;
   const verticalOffset = `calc(50% - ${(BASE_IMAGE_HEIGHT * scaleY) / 2}px)`;
   const horizontalOffset = `calc(50% - ${(BASE_IMAGE_WIDTH * scaleX) / 2}px)`;
@@ -56,13 +54,18 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   }, [startIndex]);
 
   const handleDelete = async (filename: string) => {
+    console.log(`[Overlay] Deleting: ${filename}`);
     setLoadingMap((prev) => ({ ...prev, [filename]: "Deleting Photo..." }));
 
-    await fetch(`${GLOBAL_BACKEND_URL}/photo-index/delete`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filename }),
-    });
+    try {
+      await fetch(`${GLOBAL_BACKEND_URL}/photo-index/delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename }),
+      });
+    } catch (err) {
+      console.error("Error deleting photo:", err);
+    }
 
     setLoadingMap((prev) => {
       const copy = { ...prev };
@@ -75,13 +78,18 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   };
 
   const handleRotate = async (filename: string) => {
+    console.log(`[Overlay] Rotating: ${filename}`);
     setLoadingMap((prev) => ({ ...prev, [filename]: "Updating Photo..." }));
 
-    await fetch(`${GLOBAL_BACKEND_URL}/photo-index/rotate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filename }),
-    });
+    try {
+      await fetch(`${GLOBAL_BACKEND_URL}/photo-index/rotate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename }),
+      });
+    } catch (err) {
+      console.error("Error rotating photo:", err);
+    }
 
     setLoadingMap((prev) => {
       const copy = { ...prev };
@@ -89,7 +97,7 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
       return copy;
     });
 
-    const img = document.getElementById(`photo-${filename}`) as HTMLImageElement;
+    const img = document.getElementById(`photo-${filename}`) as HTMLImageElement | null;
     if (img) {
       const cleanUrl = getImageUrl(filename).split("?")[0];
       img.src = `${cleanUrl}?t=${Date.now()}`;
@@ -100,7 +108,6 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
     <div className="overlay-modal">
       <div className="overlay-backdrop" onClick={onClose} />
 
-      {/* Show Go Back button only if SoloPhotoOverlay is not active */}
       {!soloPhoto && (
         <div className="go-back-button-container">
           <button className="go-back-button" onClick={onClose}>
@@ -125,7 +132,9 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
           transformOrigin: "top left",
         }}
       >
-        <button className="nav-button left" onClick={onPrev}>◀</button>
+        <button className="nav-button left" onClick={onPrev}>
+          ◀
+        </button>
 
         <div className="overlay-carousel-inner">
           {visiblePhotos.map((photo, idx) => (
@@ -144,7 +153,6 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
                 style={{ zIndex: 2, cursor: "pointer" }}
                 onClick={() => setSoloPhoto(photo.filename)}
               />
-
               <div className="photo-action-icons">
                 <Trash2
                   className="action-icon trash-icon"
@@ -155,7 +163,6 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
                   onClick={() => handleRotate(photo.filename)}
                 />
               </div>
-
               {loadingMap[photo.filename] && (
                 <div className="photo-overlay-message">
                   {loadingMap[photo.filename]}
@@ -165,10 +172,11 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
           ))}
         </div>
 
-        <button className="nav-button right" onClick={onNext}>▶</button>
+        <button className="nav-button right" onClick={onNext}>
+          ▶
+        </button>
       </div>
 
-      {/* Solo photo enlarged */}
       {soloPhoto && (
         <SoloPhotoOverlay
           filename={soloPhoto}

@@ -4,7 +4,7 @@ import PhotoCarousel from "../components/PhotoCarousel";
 import SelectorPhotos, { frameToLargeFrameMap } from "../components/Selector_Photos";
 import GoBackButton from "../components/GoBackButton";
 import OverlayCarousel from "../components/OverlayCarousel";
-import { GLOBAL_BACKEND_URL } from "../App"
+import { GLOBAL_BACKEND_URL } from "../App";
 
 // === Config constants ===
 const TOTAL_TO_DISPLAY = 15;
@@ -12,9 +12,8 @@ const CHUNK_SIZE = 15;
 const SCROLL_INTERVAL_MS = 30;
 const SLIDE_SPEED_PX = 0.5;
 const ROTATION = true;
-const isMobileDevice = () => {
-  return /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
-};
+const isMobileDevice = () =>
+  /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
 
 const Photos: React.FC = () => {
   const [chunks, setChunks] = useState<string[][]>([]);
@@ -34,7 +33,6 @@ const Photos: React.FC = () => {
 
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [startIndex, setStartIndex] = useState<number | null>(null);
-
   const [isPortrait, setIsPortrait] = useState(false);
 
   useEffect(() => {
@@ -42,11 +40,9 @@ const Photos: React.FC = () => {
       const isPortraitNow = window.innerHeight > window.innerWidth;
       setIsPortrait(isMobileDevice() && isPortraitNow);
     };
-
-    checkOrientation(); // run initially
+    checkOrientation();
     window.addEventListener("resize", checkOrientation);
     window.addEventListener("orientationchange", checkOrientation);
-
     return () => {
       window.removeEventListener("resize", checkOrientation);
       window.removeEventListener("orientationchange", checkOrientation);
@@ -64,8 +60,8 @@ const Photos: React.FC = () => {
     return await Promise.all(
       photos.map((photo) => {
         return new Promise<string>((resolve) => {
+          const url = `${GLOBAL_BACKEND_URL}/serve-image/${encodeURIComponent(photo.filename)}`;
           const img = new Image();
-          const url = `${GLOBAL_BACKEND_URL}/serve-image/${photo.filename}`;
           img.src = url;
           img.onload = img.onerror = () => resolve(url);
         });
@@ -129,20 +125,16 @@ const Photos: React.FC = () => {
 
   useEffect(() => {
     if (!ROTATION || pauseRotation) return;
-
     const interval = setInterval(() => {
       const container = containerRef.current;
       if (!container) return;
-
       container.scrollLeft += SLIDE_SPEED_PX;
-
       if (container.scrollLeft >= windowWidth) {
         container.scrollLeft = 0;
         setChunks((prev) => prev.slice(1));
         refillChunks();
       }
     }, SCROLL_INTERVAL_MS);
-
     return () => clearInterval(interval);
   }, [chunks, windowWidth, pauseRotation]);
 
@@ -150,33 +142,27 @@ const Photos: React.FC = () => {
     const refreshChunks = async () => {
       setPauseRotation(true);
       setLoading(true);
-
       const count = ROTATION ? TOTAL_TO_DISPLAY / CHUNK_SIZE : 1;
       const freshChunks: string[][] = [];
-
       for (let i = 0; i < count; i++) {
         const newPhotos = await fetchChunk();
         const visiblePhotos = newPhotos.filter((p) => !deletedPhotos.has(p.filename));
         const newImages = await preloadImages(visiblePhotos);
         freshChunks.push(newImages);
       }
-
       setChunks(freshChunks);
       setLoading(false);
       setPauseRotation(false);
     };
-
     refreshChunks();
   }, [fromYear, toYear, hasFaces]);
 
   const handleImageClick = (url: string) => {
     const fullPath = url.split("/serve-image/")[1] || "";
     const filename = decodeURIComponent(fullPath.trim());
-
     const index = photoIndex.findIndex(
       (p) => decodeURIComponent((p.filename || "").trim().toLowerCase()) === filename.toLowerCase()
     );
-
     if (index !== -1) {
       setStartIndex(index);
       setOverlayVisible(true);
@@ -195,11 +181,7 @@ const Photos: React.FC = () => {
   const overlayFrame = frameToLargeFrameMap[selectedFrame] || selectedFrame;
 
   if (isPortrait) {
-    return (
-      <div className="portrait-warning">
-        Vire dispositivo paisagem (landscape).
-      </div>
-    );
+    return <div className="portrait-warning">Vire dispositivo paisagem (landscape).</div>;
   }
 
   return (
