@@ -6,7 +6,7 @@ import {
   BASE_IMAGE_HEIGHT,
   IS_RESPONSIVE_DEV,
 } from "../App";
-import { preload } from "react-dom";
+
 
 interface PhotoCarouselProps {
   images: string[];
