@@ -36,8 +36,11 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   const [loadingMap, setLoadingMap] = useState<{ [filename: string]: string }>({});
   const [soloPhoto, setSoloPhoto] = useState<string | null>(null);
 
+  const safeEncodePath = (path: string) =>
+    path.split("/").map(encodeURIComponent).join("/");
+
   const getImageUrl = (filename: string) =>
-    `${GLOBAL_BACKEND_URL}/serve-image/${encodeURIComponent(filename)}`;
+    `${GLOBAL_BACKEND_URL}/serve-image/${safeEncodePath(filename)}`;
 
   const visiblePhotos = photoIndex.slice(currentIndex, currentIndex + 3);
   const largeFrame = frameToLargeFrameMap[selectedFrame] || selectedFrame;
