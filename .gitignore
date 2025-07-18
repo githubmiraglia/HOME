@@ -61,5 +61,5 @@ server/__pycache__/
 docker-compose.override.yml
 
 # GitHub Actions
-.github/workflows/*
-!*.yml
+!.github/
+!.github/workflows/
