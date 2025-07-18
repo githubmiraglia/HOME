@@ -6,6 +6,7 @@ import {
   BASE_IMAGE_HEIGHT,
   IS_RESPONSIVE_DEV,
 } from "../App";
+import { preload } from "react-dom";
 
 interface PhotoCarouselProps {
   images: string[];
@@ -110,8 +111,6 @@ const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
                   top: frame.top,
                   zIndex: 3,
                   cursor: onImageClick ? "pointer" : "default",
-                  border: "2px solid lime",
-                  backgroundColor: "rgba(255,0,0,0.1)",
                 }
               : {
                   position: "absolute",

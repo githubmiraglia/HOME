@@ -33,7 +33,10 @@ const Photos: React.FC = () => {
 
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [startIndex, setStartIndex] = useState<number | null>(null);
-  const [isPortrait, setIsPortrait] = useState(false);
+  const [isPortrait, setIsPortrait] = useState(false)
+  
+  const [preloadedUrls, setPreloadedUrls] = useState<{ [filename: string]: string }>({});
+
 
   useEffect(() => {
     const checkOrientation = () => {
@@ -60,16 +63,23 @@ const Photos: React.FC = () => {
     path.split("/").map(encodeURIComponent).join("/");
 
   const preloadImages = async (photos: any[]): Promise<string[]> => {
-    return await Promise.all(
+    const newPreloaded: { [filename: string]: string } = {};
+
+    const urls = await Promise.all(
       photos.map((photo) => {
+        const url = `${GLOBAL_BACKEND_URL}/serve-image/${safeEncodePath(photo.filename)}`;
+        newPreloaded[photo.filename] = url;
+
         return new Promise<string>((resolve) => {
-          const url = `${GLOBAL_BACKEND_URL}/serve-image/${safeEncodePath(photo.filename)}`;
           const img = new Image();
           img.src = url;
           img.onload = img.onerror = () => resolve(url);
         });
       })
     );
+
+    setPreloadedUrls((prev) => ({ ...prev, ...newPreloaded }));
+    return urls;
   };
 
   const refillChunks = async () => {
@@ -237,6 +247,7 @@ const Photos: React.FC = () => {
           selectedFrame={overlayFrame}
           selectedBackground={selectedBackground}
           onDelete={handleDeleteInOverlay}
+          preloadedUrls={preloadedUrls}
         />
       )}
     </div>

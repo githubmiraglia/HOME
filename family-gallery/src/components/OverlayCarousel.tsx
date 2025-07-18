@@ -18,6 +18,7 @@ interface OverlayCarouselProps {
   selectedFrame: string;
   selectedBackground: string;
   onDelete: (filename: string) => void;
+  preloadedUrls?: { [filename: string]: string };
 }
 
 const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
@@ -29,6 +30,7 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   selectedFrame,
   selectedBackground,
   onDelete,
+  preloadedUrls = {},
 }) => {
   const [currentIndex, setCurrentIndex] = useState(startIndex);
   const [loadingMap, setLoadingMap] = useState<{ [filename: string]: string }>({});
@@ -147,10 +149,15 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
               />
               <img
                 id={`photo-${photo.filename}`}
-                src={getImageUrl(photo.filename)}
+                src={preloadedUrls[photo.filename] || getImageUrl(photo.filename)}
                 alt={`Overlay ${idx}`}
                 className="overlay-photo"
-                style={{ zIndex: 2, cursor: "pointer" }}
+                style={{
+                  zIndex: 2,
+                  cursor: "pointer",
+                  objectFit: "cover",
+                  objectPosition: "center",
+                }}
                 onClick={() => setSoloPhoto(photo.filename)}
               />
               <div className="photo-action-icons">
