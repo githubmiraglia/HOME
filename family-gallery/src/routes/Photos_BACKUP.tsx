@@ -56,14 +56,11 @@ const Photos: React.FC = () => {
     return res.json();
   };
 
-  const safeEncodePath = (path: string) =>
-    path.split("/").map(encodeURIComponent).join("/");
-
   const preloadImages = async (photos: any[]): Promise<string[]> => {
     return await Promise.all(
       photos.map((photo) => {
         return new Promise<string>((resolve) => {
-          const url = `${GLOBAL_BACKEND_URL}/serve-image/${safeEncodePath(photo.filename)}`;
+          const url = `${GLOBAL_BACKEND_URL}/serve-image/${encodeURIComponent(photo.filename)}`;
           const img = new Image();
           img.src = url;
           img.onload = img.onerror = () => resolve(url);
