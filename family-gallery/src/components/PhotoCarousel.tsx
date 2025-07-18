@@ -103,12 +103,15 @@ const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
               ? {
                   position: "absolute",
                   objectFit: "cover",
+                  objectPosition: "center center",
                   width: frame.width,
                   height: frame.height,
                   left: frame.left,
                   top: frame.top,
                   zIndex: 3,
                   cursor: onImageClick ? "pointer" : "default",
+                  border: "2px solid lime",
+                  backgroundColor: "rgba(255,0,0,0.1)",
                 }
               : {
                   position: "absolute",
