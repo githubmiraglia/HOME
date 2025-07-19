@@ -370,13 +370,13 @@ def frontend_log():
 
         # Log to stdout using appropriate level
         if level == "debug":
-            app.logger.debug(f"[FRONTEND DEBUG] {message}")
+            print(f"[FRONTEND DEBUG] {message}")
         elif level == "warn":
-            app.logger.warning(f"[FRONTEND WARN] {message}")
+            print(f"[FRONTEND WARN] {message}")
         elif level == "error":
-            app.logger.error(f"[FRONTEND ERROR] {message}")
+            print(f"[FRONTEND ERROR] {message}")
         else:
-            app.logger.info(f"[FRONTEND INFO] {message}")
+            print(f"[FRONTEND INFO] {message}")
 
         return jsonify({"status": "ok"}), 200
     except Exception as e:
