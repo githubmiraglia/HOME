@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./css/PhotosUpload.css";
 import { GLOBAL_BACKEND_URL } from "../App";
@@ -25,6 +25,8 @@ const PhotosUpload: React.FC<Props> = ({
   const [s3Folders, setS3Folders] = useState<string[]>([]);
   const [newFolderName, setNewFolderName] = useState("");
 
+  const fileInputRef = useRef<HTMLInputElement>(null); // ✅ File input reference
+
   useEffect(() => {
     if (selectedYear) {
       fetchS3Folders();
@@ -41,7 +43,6 @@ const PhotosUpload: React.FC<Props> = ({
       logToBackend(`Error fetching folders: ${err.message || err}`);
     }
   };
-
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -191,9 +192,18 @@ const PhotosUpload: React.FC<Props> = ({
       <div className="photo-upload-right">
         <h3 style={{ color: "#666" }}>Selected Images</h3>
 
-        <label className="custom-file-upload">
+        <label
+          className="custom-file-upload"
+          onClick={() => {
+            if (fileInputRef.current) {
+              fileInputRef.current.value = "";
+              logToBackend("📂 input forcibly reset before file selection");
+            }
+          }}
+        >
           📂 Choose Images
           <input
+            ref={fileInputRef}
             type="file"
             multiple
             accept="image/*"
@@ -201,13 +211,8 @@ const PhotosUpload: React.FC<Props> = ({
               logToBackend("🔥 handleFileSelect triggered");
               handleFileSelect(e);
             }}
-            onClick={(e) => {
-              (e.target as HTMLInputElement).value = "";
-              logToBackend("📂 file input clicked/reset");
-            }}
+            style={{ display: "none" }}
           />
-
-
         </label>
 
         <div className="photo-upload-thumbnails">
