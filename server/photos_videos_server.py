@@ -263,9 +263,11 @@ def list_upload_folders():
         return jsonify({"error": "Missing or invalid 'year' parameter"}), 400
 
     year_prefix = f"{S3_ORIGINALS_PREFIX}/{year}/"
+    print(f"[S3] Checking for folders in {year_prefix}")
 
     try:
         response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=year_prefix, MaxKeys=1)
+        print(f"[S3] Found {response.get('KeyCount', 0)} items in {year_prefix}")
         if "Contents" not in response:
             placeholder_key = f"{year_prefix}.keep"
             s3.put_object(Bucket=S3_BUCKET, Key=placeholder_key, Body=b"")
@@ -281,6 +283,7 @@ def list_upload_folders():
             for prefix in response.get("CommonPrefixes", [])
             if prefix["Prefix"].replace(year_prefix, "").strip("/") != ".keep"
         ]
+        print(f"[S3] Found subfolders: {subfolders}")
         return jsonify({"folders": sorted(subfolders)})
     except ClientError as e:
         print("[ERROR] S3 list subfolders failed:", e)
