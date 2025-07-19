@@ -1,4 +1,6 @@
 import heic2any from "heic2any";
+import axios from "axios";
+import { GLOBAL_BACKEND_URL } from "../App";
 
 /**
  * Converts an array of File objects, transforming any HEIC images to JPEG.
@@ -31,4 +33,11 @@ export async function convertHeicToJpeg(files: File[]): Promise<File[]> {
   }
 
   return converted;
+}
+
+export function logToBackend(message: string, level: "info" | "warn" | "error" | "debug" = "info") {
+  axios.post(`${GLOBAL_BACKEND_URL}/frontend-log`, { message, level })
+    .catch((err) => {
+      console.warn("Failed to log to backend:", err);
+    });
 }

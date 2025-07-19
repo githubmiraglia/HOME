@@ -3,7 +3,7 @@ import axios from "axios";
 import "./css/PhotosUpload.css";
 import { GLOBAL_BACKEND_URL } from "../App";
 import GoBackButton from "../components/GoBackButton";
-import { convertHeicToJpeg } from "../utils/utils";
+import { convertHeicToJpeg, logToBackend } from "../utils/utils";
 
 interface Props {
   selectedYear: string;
@@ -35,21 +35,21 @@ const PhotosUpload: React.FC<Props> = ({
     try {
       const res = await axios.get(`${GLOBAL_BACKEND_URL}/upload/list-folders?year=${selectedYear}`);
       const data = res.data as { folders: string[] };
-      console.log("Fetched folders:", data.folders);
+      logToBackend(`Fetched folders: ${JSON.stringify(data.folders)}`);
       setS3Folders(data.folders || []);
-    } catch (err) {
-      console.error("Error fetching folders", err);
+    } catch (err: any) {
+      logToBackend(`Error fetching folders: ${err.message || err}`);
     }
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      console.log("Selected files:", files);
+      logToBackend(`Selected ${files.length} files`);
       const originalFiles = Array.from(files);
-      console.log("Converting HEIC files if any...");
+      logToBackend("Converting HEIC files if any...");
       const convertedFiles = await convertHeicToJpeg(originalFiles);
-      console.log("Converted files:", convertedFiles);
+      logToBackend(`Converted files: ${convertedFiles.map((f) => f.name).join(", ")}`);
       setLocalFiles(convertedFiles);
       const defaultSelected = new Set(convertedFiles.map((f) => f.name));
       setSelectedFiles(defaultSelected);
@@ -75,7 +75,7 @@ const PhotosUpload: React.FC<Props> = ({
     formData.append("folder", selectedSubfolder);
     formData.append("year", selectedYear);
 
-    console.log("Uploading files to:", selectedYear, selectedSubfolder, formData.getAll("photos"));
+    logToBackend(`Uploading ${selectedFiles.size} files to year=${selectedYear}, folder=${selectedSubfolder}`);
 
     try {
       const config: any = {
@@ -97,13 +97,15 @@ const PhotosUpload: React.FC<Props> = ({
         ? data.entries.map((e: { filename: string }) => e.filename)
         : [];
 
+      logToBackend(`Successfully uploaded: ${uploadedFilenames.join(", ")}`);
+
       await axios.post(`${GLOBAL_BACKEND_URL}/photo-index/add`, {
         year: selectedYear,
         folder: selectedSubfolder,
         filenames: uploadedFilenames,
       });
 
-      setUploadProgress(100); // ensure full bar
+      setUploadProgress(100);
       setUploadDone(true);
 
       setTimeout(() => {
@@ -111,8 +113,8 @@ const PhotosUpload: React.FC<Props> = ({
       }, 1500);
 
       onUploadComplete();
-    } catch (err) {
-      console.error("Upload failed:", err);
+    } catch (err: any) {
+      logToBackend(`Upload failed: ${err.message || err}`);
     }
   };
 
@@ -126,11 +128,13 @@ const PhotosUpload: React.FC<Props> = ({
         folder: folderName,
       });
 
+      logToBackend(`Created new folder: ${folderName} under ${selectedYear}`);
+
       onSubfolderChange(folderName);
       setNewFolderName("");
       await fetchS3Folders();
-    } catch (err) {
-      console.error("Failed to create folder:", err);
+    } catch (err: any) {
+      logToBackend(`Failed to create folder: ${err.message || err}`);
     }
   };
 
