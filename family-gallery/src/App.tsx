@@ -7,6 +7,7 @@ import Uploads from "./routes/Uploads";
 import PhotosUpload from "./routes/PhotosUpload";
 import VideosUpload from "./routes/VideosUpload";
 import Back from "./routes/Back";
+import { logToBackend } from "./utils/utils";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -24,10 +25,13 @@ const UploadPhotosWrapper: React.FC = () => {
 
   const handleUploadComplete = () => {
     console.log("✅ Upload complete!");
+    logToBackend("COMING TO UPLOAD COMPLETE: " + selectedYear);
   };
 
   const handleSubfolderChange = (folder: string) => {
     setSelectedSubfolder(folder);
+    console.log("Selected subfolder:", folder);
+    logToBackend("COMING TO CHANGE SUBFOLDER: " + folder);
   };
 
   return (

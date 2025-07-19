@@ -44,6 +44,8 @@ const PhotosUpload: React.FC<Props> = ({
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
+    logToBackend(`Selected files: ${files ? files.length : 0}`);
+    logToBackend('AQUAQUI AUQ CARAIO')
     if (files) {
       logToBackend(`Selected ${files.length} files`);
       const originalFiles = Array.from(files);
