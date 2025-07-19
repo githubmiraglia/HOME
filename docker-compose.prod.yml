@@ -2,14 +2,14 @@ version: "3.8"
 
 services:
   frontend:
-    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:v26
+    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:v27
     # Optional: disable this if frontend_proxy handles external access
     # ports:
     #   - "3000:80"
     restart: always
 
   backend:
-    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:v26
+    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:v27
     ports:
       - "8001:8001"
     restart: always
