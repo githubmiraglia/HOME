@@ -305,9 +305,65 @@ def create_s3_folder():
         print("[ERROR] Failed to create folder:", e)
         return jsonify({"error": "Failed to create folder"}), 500
 
+@app.route("/upload/photos", methods=["POST"])
+@log_timing("upload/photos")
+def upload_photos():
+    year = request.form.get("year")
+    folder = request.form.get("folder")
+
+    if not year or not folder:
+        return jsonify({"error": "Missing year or folder"}), 400
+
+    files = request.files.getlist("photos")
+    if not files:
+        return jsonify({"error": "No files uploaded"}), 400
+
+    uploaded_entries = []
+    for file in files:
+        filename = secure_filename(file.filename)
+        key = f"{S3_ORIGINALS_PREFIX}/{year}/{folder}/{filename}"
+
+        try:
+            s3.upload_fileobj(file, S3_BUCKET, key)
+            uploaded_entries.append({"filename": f"{year}/{folder}/{filename}"})
+        except Exception as e:
+            print("[ERROR] Upload failed:", e)
+            return jsonify({"error": f"Failed to upload {filename}"}), 500
+
+    return jsonify({"status": "success", "entries": uploaded_entries})
+
+@app.route("/photo-index/add", methods=["POST"])
+@log_timing("photo-index/add")
+def add_to_photo_index():
+    data = request.get_json()
+    year = data.get("year")
+    folder = data.get("folder")
+    filenames = data.get("filenames")
+
+    if not year or not folder or not filenames:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    new_entries = []
+    for fname in filenames:
+        entry = {
+            "filename": f"{year}/{folder}/{fname}",
+            "date": f"{year}-01-01",
+            "angle": 0,
+            "hasFaces": False  # Update later with face detection
+        }
+        photo_index.append(entry)
+        new_entries.append(entry)
+
+    with open("cache/photo_index.json", "w") as f:
+        json.dump(photo_index, f, indent=2)
+
+    return jsonify({"status": "added", "count": len(new_entries)})
+
+
 @app.route("/ping")
 def ping():
     start = time.perf_counter()
     time.sleep(0.01)
     end = time.perf_counter()
     return jsonify({"pong": True, "elapsed_ms": round((end - start) * 1000, 2)})
+
