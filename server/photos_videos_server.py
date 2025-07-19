@@ -363,24 +363,14 @@ def add_to_photo_index():
 
 @app.route("/frontend-log", methods=["POST"])
 def frontend_log():
+    print("[FRONTEND LOG] Received log message")
     try:
         data = request.json
         message = data.get("message", "")
         level = data.get("level", "info").lower()
-
-        # Log to stdout using appropriate level
-        if level == "debug":
-            print(f"[FRONTEND DEBUG] {message}")
-        elif level == "warn":
-            print(f"[FRONTEND WARN] {message}")
-        elif level == "error":
-            print(f"[FRONTEND ERROR] {message}")
-        else:
-            print(f"[FRONTEND INFO] {message}")
-
-        return jsonify({"status": "ok"}), 200
+        print(f"[FRONTEND LOG] {level.upper()}: {message}")
     except Exception as e:
-        app.logger.exception("[FRONTEND LOG ERROR]")
+        print("[ERROR] Failed to log frontend message:", e)
         return jsonify({"error": str(e)}), 500
 
 
