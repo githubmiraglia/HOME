@@ -369,10 +369,10 @@ def frontend_log():
         message = data.get("message", "")
         level = data.get("level", "info").lower()
         print(f"[FRONTEND LOG] {level.upper()}: {message}")
+        return jsonify({"status": "ok"}), 200  # ✅ Added this!
     except Exception as e:
         print("[ERROR] Failed to log frontend message:", e)
         return jsonify({"error": str(e)}), 500
-
 
 @app.route("/ping")
 def ping():
