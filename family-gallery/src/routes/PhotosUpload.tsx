@@ -194,7 +194,11 @@ const PhotosUpload: React.FC<Props> = ({
 
         <label className="custom-file-upload">
           📂 Choose Images
-          <input type="file" multiple accept="image/*" onChange={handleFileSelect} />
+          <input type="file" multiple accept="image/*" onChange={handleFileSelect} onClick={(e) => {
+              // reset the value to allow re-selecting same files
+              (e.target as HTMLInputElement).value = "";
+            }}
+          />
         </label>
 
         <div className="photo-upload-thumbnails">
