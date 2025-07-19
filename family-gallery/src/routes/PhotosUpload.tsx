@@ -42,9 +42,6 @@ const PhotosUpload: React.FC<Props> = ({
     }
   };
 
-  const logToCheck = () => {
-    logToBackend("AQUICK LOG CHECK");
-  }
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -196,7 +193,7 @@ const PhotosUpload: React.FC<Props> = ({
 
         <label className="custom-file-upload">
           📂 Choose Images
-          <input type="file" multiple accept="image/*" onChange={logToCheck} />
+          <input type="file" multiple accept="image/*" onChange={handleFileSelect} />
         </label>
 
         <div className="photo-upload-thumbnails">
