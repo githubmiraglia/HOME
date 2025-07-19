@@ -35,6 +35,7 @@ const PhotosUpload: React.FC<Props> = ({
     try {
       const res = await axios.get(`${GLOBAL_BACKEND_URL}/upload/list-folders?year=${selectedYear}`);
       const data = res.data as { folders: string[] };
+      console.log("Fetched folders:", data.folders);
       setS3Folders(data.folders || []);
     } catch (err) {
       console.error("Error fetching folders", err);
@@ -44,8 +45,11 @@ const PhotosUpload: React.FC<Props> = ({
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
+      console.log("Selected files:", files);
       const originalFiles = Array.from(files);
+      console.log("Converting HEIC files if any...");
       const convertedFiles = await convertHeicToJpeg(originalFiles);
+      console.log("Converted files:", convertedFiles);
       setLocalFiles(convertedFiles);
       const defaultSelected = new Set(convertedFiles.map((f) => f.name));
       setSelectedFiles(defaultSelected);
