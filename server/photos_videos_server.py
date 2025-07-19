@@ -48,7 +48,7 @@ def log_timing(route_name):
             start = time.perf_counter()
             result = func(*args, **kwargs)
             duration = round((time.perf_counter() - start) * 1000, 2)
-            print(f"[PERF] {route_name} took {duration} ms")
+            #print(f"[PERF] {route_name} took {duration} ms")
             return result
         return wrapper
     return decorator
@@ -75,7 +75,7 @@ def filter_photos_by_year_range(start_year, end_year):
 @app.route("/serve-image/<path:filename>")
 @log_timing("serve-image")
 def serve_image(filename):
-    print(f"[ENTRY] /serve-image/filenam {time.strftime('%Y-%m-%d %H:%M:%S')}", flush=True)
+    #print(f"[ENTRY] /serve-image/filenam {time.strftime('%Y-%m-%d %H:%M:%S')}", flush=True)
     image_entry = next((x for x in photo_index if x['filename'] == filename), None)
     if not image_entry:
         return abort(404)
@@ -86,42 +86,42 @@ def serve_image(filename):
     cache_key = f"{S3_CACHE_PREFIX_ROTATED if is_rotated else S3_CACHE_PREFIX_UNROTATED}/{filename}.webp"
 
     try:
-        print(f"[CACHE] Checking cache for {cache_key}")
+        #print(f"[CACHE] Checking cache for {cache_key}")
         cached = s3.get_object(Bucket=S3_BUCKET, Key=cache_key)
         return send_file(BytesIO(cached["Body"].read()), mimetype="image/webp")
-        print(f"[CACHE] Cache hit for {cache_key}")
+        #print(f"[CACHE] Cache hit for {cache_key}")
     except ClientError as e:
         if e.response["Error"]["Code"] != "NoSuchKey":
-            print("[ERROR] S3 cache fetch failed:", e)
+            #print("[ERROR] S3 cache fetch failed:", e)
             return abort(500)
 
     try:
-        print(f"[S3] Fetching original image from {original_key}")
+        #print(f"[S3] Fetching original image from {original_key}")
         original = s3.get_object(Bucket=S3_BUCKET, Key=original_key)
         img = Image.open(BytesIO(original["Body"].read())).convert("RGB")
-        print(f"[S3] Original image fetched successfully")
+        #print(f"[S3] Original image fetched successfully")
     except Exception as e:
-        print("[ERROR] Original fetch failed:", e)
+        #print("[ERROR] Original fetch failed:", e)
         return abort(404)
 
     try:
         if angle:
-            print(f"[IMAGE] Rotating image by {angle} degrees")
+            #print(f"[IMAGE] Rotating image by {angle} degrees")
             img = img.rotate(-angle, expand=True)
         w_percent = 600 / float(img.size[0])
         h_size = int(float(img.size[1]) * w_percent)
         img = img.resize((600, h_size), Image.LANCZOS)
 
         out_buffer = BytesIO()
-        print(f"[IMAGE] Saving image to buffer as WEBP")
+        #print(f"[IMAGE] Saving image to buffer as WEBP")
         img.save(out_buffer, "WEBP")
         out_buffer.seek(0)
         s3.put_object(Bucket=S3_BUCKET, Key=cache_key, Body=out_buffer.getvalue(), ContentType="image/webp")
         out_buffer.seek(0)
-        print(f"[CACHE] Image saved to cache {cache_key}")
+        #print(f"[CACHE] Image saved to cache {cache_key}")
         return send_file(out_buffer, mimetype="image/webp")
     except Exception as e:
-        print("[ERROR] Image processing failed:", e)
+        #print("[ERROR] Image processing failed:", e)
         return abort(500)
 
 @app.route("/photo-index/full")
@@ -252,7 +252,7 @@ def rotate_photo():
 @app.route("/cache/<path:filename>")
 @log_timing("cache")
 def serve_cache_file(filename):
-    print(f"[ENTRY] /cache/{filename} {time.strftime('%Y-%m-%d %H:%M:%S')}", flush=True)
+    #print(f"[ENTRY] /cache/{filename} {time.strftime('%Y-%m-%d %H:%M:%S')}", flush=True)
     return send_from_directory("cache", filename)
 
 @app.route("/upload/list-folders", methods=["GET"])

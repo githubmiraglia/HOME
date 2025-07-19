@@ -138,17 +138,25 @@ const Photos: React.FC = () => {
 
   useEffect(() => {
     if (!ROTATION || pauseRotation) return;
-    const interval = setInterval(() => {
-      const container = containerRef.current;
-      if (!container) return;
-      container.scrollLeft += SLIDE_SPEED_PX;
-      if (container.scrollLeft >= windowWidth) {
-        container.scrollLeft = 0;
-        setChunks((prev) => prev.slice(1));
-        refillChunks();
-      }
-    }, SCROLL_INTERVAL_MS);
-    return () => clearInterval(interval);
+    let animationFrameId: number;
+    let lastTimestamp = performance.now();
+    const step = (timestamp: number) => {
+        const container = containerRef.current;
+        if (!container) return;
+        const elapsed = timestamp - lastTimestamp;
+        if (elapsed >= SCROLL_INTERVAL_MS) {
+            container.scrollLeft += SLIDE_SPEED_PX;
+            lastTimestamp = timestamp;
+            if (container.scrollLeft >= windowWidth) {
+                container.scrollLeft = 0;
+                setChunks((prev) => prev.slice(1));
+                refillChunks();
+            }
+        }
+        animationFrameId = requestAnimationFrame(step);
+    };
+    animationFrameId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animationFrameId);
   }, [chunks, windowWidth, pauseRotation]);
 
   useEffect(() => {
