@@ -1,0 +1,91 @@
+/* Ensure full height and allow horizontal scrolling */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: auto; /* allow horizontal scrolling */
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch; /* smooth iOS scroll */
+}
+
+/* Carousel container */
+.photos-container {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;               /* enable horizontal scroll */
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  width: 100vw;
+  height: 100vh;
+  position: static;
+}
+
+/* Hide scrollbars (for Webkit and Firefox) */
+.photos-container::-webkit-scrollbar {
+  display: none;
+}
+.photos-container {
+  scrollbar-width: none;
+}
+
+/* Floating selectors in top-left corner */
+.selector-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(6px);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: white;
+}
+
+/* Styling for the dropdowns */
+.selector-overlay select {
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Controls in top-right corner (rotate/delete) */
+.control-bar {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 999;
+  display: flex;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.control-bar:hover {
+  opacity: 1;
+}
+
+/* Fullscreen overlay for portrait mode warning */
+.portrait-warning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  text-align: center;
+  padding: 20px;
+}
