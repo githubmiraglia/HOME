@@ -138,34 +138,17 @@ const Photos: React.FC = () => {
 
   useEffect(() => {
     if (!ROTATION || pauseRotation) return;
-    const container = containerRef.current;
-    if (!container) return;
-    if (isMobileDevice()) {
-        // Mobile devices: use setInterval for smoother scrolling
-        const interval = setInterval(() => {
-            container.scrollLeft += SLIDE_SPEED_PX;
-            if (container.scrollLeft >= windowWidth) {
-                container.scrollLeft = 0;
-                setChunks((prev) => prev.slice(1));
-                refillChunks();
-            }
-        }, SCROLL_INTERVAL_MS);
-        return () => clearInterval(interval);
-    } else {
-        // Desktop: use native scroll snapping or let animation libs handle it
-        const step = () => {
-            if (pauseRotation || !ROTATION) return;
-            container.scrollLeft += SLIDE_SPEED_PX;
-            if (container.scrollLeft >= windowWidth) {
-                container.scrollLeft = 0;
-                setChunks((prev) => prev.slice(1));
-                refillChunks();
-            }
-            requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
-        return () => {}; // no cleanup needed for requestAnimationFrame loop
-    }
+    const interval = setInterval(() => {
+      const container = containerRef.current;
+      if (!container) return;
+      container.scrollLeft += SLIDE_SPEED_PX;
+      if (container.scrollLeft >= windowWidth) {
+        container.scrollLeft = 0;
+        setChunks((prev) => prev.slice(1));
+        refillChunks();
+      }
+    }, SCROLL_INTERVAL_MS);
+    return () => clearInterval(interval);
   }, [chunks, windowWidth, pauseRotation]);
 
   useEffect(() => {

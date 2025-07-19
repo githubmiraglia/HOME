@@ -4,16 +4,16 @@ html, body, #root {
   padding: 0;
   height: 100%;
   width: 100%;
-  overflow-x: auto;
+  overflow-x: auto; /* allow horizontal scrolling */
   overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: touch; /* smooth iOS scroll */
 }
 
 /* Carousel container */
 .photos-container {
   display: flex;
   flex-direction: row;
-  overflow-x: auto;
+  overflow-x: auto;               /* enable horizontal scroll */
   overflow-y: hidden;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
@@ -22,7 +22,7 @@ html, body, #root {
   position: static;
 }
 
-/* Hide scrollbars */
+/* Hide scrollbars (for Webkit and Firefox) */
 .photos-container::-webkit-scrollbar {
   display: none;
 }
@@ -30,25 +30,41 @@ html, body, #root {
   scrollbar-width: none;
 }
 
-/* Floating control wrapper (top bar) */
-.controls-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  z-index: 20;
+/* Floating selectors in top-left corner */
+.selector-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(6px);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: white;
 }
 
-/* Floating selectors and GoBackButton */
+/* Styling for the dropdowns */
+.selector-overlay select {
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Controls in top-right corner (rotate/delete) */
 .control-bar {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  position: fixed;
+  top: 10px;
+  right: 10px;
   z-index: 999;
-  opacity: 0.8;
+  display: flex;
+  gap: 12px;
+  opacity: 0;
   transition: opacity 0.4s ease-in-out;
 }
 
@@ -56,16 +72,7 @@ html, body, #root {
   opacity: 1;
 }
 
-/* Selector dropdowns inside control-bar */
-.control-bar select {
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
-  padding: 4px 6px;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-/* Portrait mode blocker */
+/* Fullscreen overlay for portrait mode warning */
 .portrait-warning {
   position: fixed;
   top: 0;
