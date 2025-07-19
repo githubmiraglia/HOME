@@ -246,7 +246,6 @@ def rotate_photo():
 
     with open("cache/photo_index.json", "w", encoding="utf-8") as f:
         json.dump(photo_index, f, indent=2)
-
     return jsonify({"status": "rotated", "angle": new_angle, "filename": filename})
 
 @app.route("/cache/<path:filename>")
