@@ -71,6 +71,9 @@
   display: flex;
   flex-direction: column;
   color: white;
+  height: 100vh; /* 🔒 fix height to viewport */
+  box-sizing: border-box;
+  overflow: hidden; /* 🔒 prevent the whole panel from scrolling */
 }
 
 .photo-upload-right h3 {
@@ -84,6 +87,10 @@
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1rem;
+  overflow-y: auto;
+  flex-grow: 1;     /* ✅ allow it to take up remaining vertical space */
+  min-height: 0;    /* ✅ ensures overflow works in flexbox */
+  padding-right: 0.5rem;
 }
 
 .thumbnail-box {

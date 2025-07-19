@@ -269,6 +269,7 @@ def list_upload_folders():
         if "Contents" not in response:
             placeholder_key = f"{year_prefix}.keep"
             s3.put_object(Bucket=S3_BUCKET, Key=placeholder_key, Body=b"")
+            print(f"[S3] Created placeholder folder {placeholder_key}")
     except ClientError as e:
         print("[ERROR] S3 folder check failed:", e)
         return jsonify({"error": "Failed to access S3"}), 500
@@ -296,6 +297,7 @@ def create_s3_folder():
         return jsonify({"error": "Missing 'year' or 'folder'"}), 400
 
     folder_key = f"{S3_ORIGINALS_PREFIX}/{year}/{folder}/.keep"
+    print(f"[S3] Creating folder {folder_key}")
     try:
         s3.put_object(Bucket=S3_BUCKET, Key=folder_key, Body=b"")
         return jsonify({"status": "folder created", "key": folder_key})

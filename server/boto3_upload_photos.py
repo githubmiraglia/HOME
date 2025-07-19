@@ -3,6 +3,7 @@ import boto3
 from pathlib import Path
 from tqdm import tqdm
 from boto3.s3.transfer import TransferConfig
+import tempfile
 
 # ==== Configuration ====
 LOCAL_PHOTO_ROOT = "/Volumes/PHOTOSVIDEO/PHOTOS"  # ⬅️ Adjust this to your Windows path
@@ -55,3 +56,33 @@ def upload_photos():
 
 if __name__ == "__main__":
     upload_photos()
+
+@app.route("/upload/photos", methods=["POST"])
+@log_timing("upload/photos")
+def upload_photos():
+    if "photos" not in request.files:
+        return jsonify({"error": "No photos in request"}), 400
+
+    year = request.form.get("year")
+    folder = request.form.get("folder")
+
+    if not year or not folder:
+        return jsonify({"error": "Missing year or folder"}), 400
+
+    files = request.files.getlist("photos")
+    uploaded_entries = []
+
+    for file in files:
+        filename = secure_filename(file.filename)
+        s3_key = f"{S3_ORIGINALS_PREFIX}/{year}/{folder}/{filename}"
+
+        try:
+            with tempfile.NamedTemporaryFile(delete=True) as tmp:
+                file.save(tmp.name)
+                s3.upload_file(tmp.name, S3_BUCKET, s3_key)
+                uploaded_entries.append({"filename": f"{year}/{folder}/{filename}"})
+                print(f"[S3] Uploaded: {s3_key}")
+        except Exception as e:
+            print(f"[ERROR] Failed to upload {filename}:", e)
+
+    return jsonify({"status": "uploaded", "entries": uploaded_entries})
