@@ -12,19 +12,7 @@ s3transfer==0.13.0
 # Image processing
 pillow==11.2.1
 pillow_heif==0.22.0
-opencv-python==4.11.0.86
-opencv-python-headless==4.11.0.86
-
-# Face detection and DeepFace
-deepface==0.0.93
-retina-face==0.0.17
-mtcnn==0.1.1
-
-# Metadata and geolocation
-PyExifTool==0.5.6
-geopy==2.4.1
 
 # Other required deps
-numpy==1.23.5
 requests==2.32.4
 tqdm==4.67.1
