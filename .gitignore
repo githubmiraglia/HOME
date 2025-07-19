@@ -39,17 +39,9 @@ server/__pycache__/
 *.webp
 
 # Exceptions – allow committed images in assets or public
-!assets/**/*.jpg
-!assets/**/*.jpeg
-!assets/**/*.png
-!assets/**/*.gif
-!assets/**/*.webp
-
-!public/**/*.jpg
-!public/**/*.jpeg
-!public/**/*.png
-!public/**/*.gif
-!public/**/*.webp
+# Only ignore images outside allowed folders
+!assets/**
+!public/**
 
 # AWS credentials (never commit!)
 *.pem
