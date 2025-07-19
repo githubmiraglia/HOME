@@ -42,10 +42,12 @@ const PhotosUpload: React.FC<Props> = ({
     }
   };
 
+  const logToCheck = () => {
+    logToBackend("AQUICK LOG CHECK");
+  }
+
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    logToBackend(`Selected files: ${files ? files.length : 0}`);
-    logToBackend('AQUAQUI AUQ CARAIO')
     if (files) {
       logToBackend(`Selected ${files.length} files`);
       const originalFiles = Array.from(files);
@@ -194,11 +196,7 @@ const PhotosUpload: React.FC<Props> = ({
 
         <label className="custom-file-upload">
           📂 Choose Images
-          <input type="file" multiple accept="image/*" onChange={handleFileSelect} onClick={(e) => {
-              // reset the value to allow re-selecting same files
-              (e.target as HTMLInputElement).value = "";
-            }}
-          />
+          <input type="file" multiple accept="image/*" onChange={logToCheck} />
         </label>
 
         <div className="photo-upload-thumbnails">
