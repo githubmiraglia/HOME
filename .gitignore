@@ -26,6 +26,8 @@ server/__pycache__/
 # Environment and config
 .env
 .env.*.local
+.env.*
+.env.backend
 
 # OS-specific / misc
 *.swp
