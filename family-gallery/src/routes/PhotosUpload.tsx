@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./css/PhotosUpload.css";
 import { GLOBAL_BACKEND_URL } from "../App";
 import GoBackButton from "../components/GoBackButton";
@@ -24,8 +25,10 @@ const PhotosUpload: React.FC<Props> = ({
   const [uploadDone, setUploadDone] = useState(false);
   const [s3Folders, setS3Folders] = useState<string[]>([]);
   const [newFolderName, setNewFolderName] = useState("");
+  const [uploadedFilenames, setUploadedFilenames] = useState<string[]>([]);
 
-  const fileInputRef = useRef<HTMLInputElement>(null); // ✅ File input reference
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (selectedYear) {
@@ -97,20 +100,18 @@ const PhotosUpload: React.FC<Props> = ({
       );
       logToBackend("✅ Upload POST request completed");
       const data = res.data as any;
-      const uploadedFilenames = Array.isArray(data.entries)
+      const uploaded = Array.isArray(data.entries)
         ? data.entries.map((e: { filename: string }) => e.filename)
         : [];
-      logToBackend(`✅ Successfully uploaded: ${uploadedFilenames.join(", ")}`);
+      setUploadedFilenames(uploaded);
+      logToBackend(`✅ Successfully uploaded: ${uploaded.join(", ")}`);
       await axios.post(`${GLOBAL_BACKEND_URL}/photo-index/add`, {
         year: selectedYear,
         folder: selectedSubfolder,
-        filenames: uploadedFilenames,
+        filenames: uploaded,
       });
       setUploadProgress(100);
       setUploadDone(true);
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
       onUploadComplete();
     } catch (err: any) {
       logToBackend(`❌ Upload failed: ${err.message || err}`);
@@ -181,7 +182,7 @@ const PhotosUpload: React.FC<Props> = ({
         {uploadDone && (
           <div className="photo-upload-overlay">
             ✅ Upload complete!
-            <button onClick={() => window.location.reload()}>Done</button>
+            <button onClick={() => navigate("/")}>Done</button>
           </div>
         )}
       </div>
