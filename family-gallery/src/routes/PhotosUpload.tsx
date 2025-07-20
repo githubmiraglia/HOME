@@ -65,58 +65,55 @@ const PhotosUpload: React.FC<Props> = ({
   };
 
   const handleUpload = async () => {
-    if (!selectedSubfolder || selectedFiles.size === 0) return;
-
+    if (!selectedSubfolder || selectedFiles.size === 0) {
+      logToBackend("⚠️ Upload aborted: No folder selected or no files selected.");
+      return;
+    }
     const formData = new FormData();
+    let appendedCount = 0;
     for (const file of localFiles) {
       if (selectedFiles.has(file.name)) {
         formData.append("photos", file);
+        logToBackend(`📎 Appending file: ${file.name} (${file.size} bytes)`);
+        appendedCount++;
       }
     }
-
     formData.append("folder", selectedSubfolder);
     formData.append("year", selectedYear);
-
-    logToBackend(`Uploading ${selectedFiles.size} files to year=${selectedYear}, folder=${selectedSubfolder}`);
-
+    logToBackend(`📤 Starting upload of ${appendedCount} files to year=${selectedYear}, folder=${selectedSubfolder}`);
     try {
       const config: any = {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (event: any) => {
           const percent = Math.round((event.loaded * 100) / (event.total || 1));
           setUploadProgress(percent);
+          logToBackend(`⏳ Upload progress: ${percent}%`);
         },
       };
-
       const res = await axios.post(
         `${GLOBAL_BACKEND_URL}/upload/photos`,
         formData,
         config
       );
-
+      logToBackend("✅ Upload POST request completed");
       const data = res.data as any;
       const uploadedFilenames = Array.isArray(data.entries)
         ? data.entries.map((e: { filename: string }) => e.filename)
         : [];
-
-      logToBackend(`Successfully uploaded: ${uploadedFilenames.join(", ")}`);
-
+      logToBackend(`✅ Successfully uploaded: ${uploadedFilenames.join(", ")}`);
       await axios.post(`${GLOBAL_BACKEND_URL}/photo-index/add`, {
         year: selectedYear,
         folder: selectedSubfolder,
         filenames: uploadedFilenames,
       });
-
       setUploadProgress(100);
       setUploadDone(true);
-
       setTimeout(() => {
         window.location.reload();
       }, 1500);
-
       onUploadComplete();
     } catch (err: any) {
-      logToBackend(`Upload failed: ${err.message || err}`);
+      logToBackend(`❌ Upload failed: ${err.message || err}`);
     }
   };
 
@@ -145,7 +142,7 @@ const PhotosUpload: React.FC<Props> = ({
       <GoBackButton />
 
       <div className="photo-upload-left">
-        <h3>Folders in {selectedYear}</h3>
+        <h3>Choose Folder in {selectedYear}</h3>
         <ul className="photo-upload-folder-list">
           {s3Folders.map((folder) => (
             <li
