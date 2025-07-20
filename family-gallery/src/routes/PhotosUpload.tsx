@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import "./css/PhotosUpload.css";
 import { GLOBAL_BACKEND_URL } from "../App";
 import GoBackButton from "../components/GoBackButton";
@@ -23,12 +22,11 @@ const PhotosUpload: React.FC<Props> = ({
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadDone, setUploadDone] = useState(false);
+  const [uploadedFilenames, setUploadedFilenames] = useState<string[]>([]);
   const [s3Folders, setS3Folders] = useState<string[]>([]);
   const [newFolderName, setNewFolderName] = useState("");
-  const [uploadedFilenames, setUploadedFilenames] = useState<string[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (selectedYear) {
@@ -100,21 +98,30 @@ const PhotosUpload: React.FC<Props> = ({
       );
       logToBackend("✅ Upload POST request completed");
       const data = res.data as any;
-      const uploaded = Array.isArray(data.entries)
+      const filenames = Array.isArray(data.entries)
         ? data.entries.map((e: { filename: string }) => e.filename)
         : [];
-      setUploadedFilenames(uploaded);
-      logToBackend(`✅ Successfully uploaded: ${uploaded.join(", ")}`);
+      logToBackend(`✅ Successfully uploaded: ${filenames.join(", ")}`);
+      setUploadedFilenames(filenames);
+      setUploadProgress(100);
+      setUploadDone(true);
+    } catch (err: any) {
+      logToBackend(`❌ Upload failed: ${err.message || err}`);
+    }
+  };
+
+  const handleDoneClick = async () => {
+    try {
       await axios.post(`${GLOBAL_BACKEND_URL}/photo-index/add`, {
         year: selectedYear,
         folder: selectedSubfolder,
-        filenames: uploaded,
+        filenames: uploadedFilenames,
       });
-      setUploadProgress(100);
-      setUploadDone(true);
+      logToBackend("✅ Photo index updated");
       onUploadComplete();
+      window.location.href = "/";
     } catch (err: any) {
-      logToBackend(`❌ Upload failed: ${err.message || err}`);
+      logToBackend(`❌ Failed to update photo index: ${err.message || err}`);
     }
   };
 
@@ -182,7 +189,7 @@ const PhotosUpload: React.FC<Props> = ({
         {uploadDone && (
           <div className="photo-upload-overlay">
             ✅ Upload complete!
-            <button onClick={() => navigate("/")}>Done</button>
+            <button onClick={handleDoneClick}>Done</button>
           </div>
         )}
       </div>
