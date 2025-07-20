@@ -13,6 +13,9 @@ services:
     ports:
       - "8001:8001"
     restart: always
+    environment:
+      - AWS_ACCESS_KEY_ID=KIA57DYJE33K557EM27
+      - AWS_SECRET_ACCESS_KEY=DcqaS2Qj1JeyeKj6TD3t6P9UA1DAiSx8cQkUIVuY
 
   frontend_proxy:
     build:
@@ -22,12 +25,11 @@ services:
     ports:
       - "3001:443"
     volumes:
-      - /home/ubuntu/dmp/etc/ssl/certs:/etc/ssl/certs:ro
-      - /home/ubuntu/dmp/etc/ssl/private:/etc/ssl/private:ro
+      - /home/ubuntu/HOME/etc/ssl/certs:/etc/ssl/certs:ro
+      - /home/ubuntu/HOME/etc/ssl/private:/etc/ssl/private:ro
       - /home/ubuntu/HOME/apache/apache-frontend.conf:/usr/local/apache2/conf/extra/apache-frontend.conf:ro
     depends_on:
       - frontend
-
 
 networks:
   default:
