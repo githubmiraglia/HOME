@@ -7,14 +7,17 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./family-gallery:/app
-      - /app/node_modules    # Prevent node_modules being overwritten
+      - /app/node_modules    # Prevent node_modules from being overwritten
     working_dir: /app
     command: npm run dev
     ports:
       - "3000:3000"
     environment:
-      - HOST=0.0.0.0          # Vite needs this to listen externally
+      - HOST=0.0.0.0           # Vite needs this to listen externally
       - PORT=3000
+      #- VITE_BACKEND_URL=${DOCKER_BACKEND_URL} # override .env only inside container
+    depends_on:
+      - backend
 
   backend:
     build:
@@ -22,7 +25,7 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./server:/app
-      - ~/.aws:/root/.aws:ro  # Set read-only if you don’t plan to write credentials
+      - ~/.aws:/root/.aws:ro   # AWS credentials, read-only
     working_dir: /app
     command: flask run --host=0.0.0.0 --port=8001 --debug
     ports:

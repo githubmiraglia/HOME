@@ -1,16 +1,24 @@
+# --- Apache Frontend Reverse Proxy ---
 FROM httpd:2.4
 
-# Install SSL tools (optional but useful)
+# Add build argument to distinguish between prod/dev
+ARG APACHE_ENV=prod
+
+# Install SSL tools (optional but useful for debugging or self-signed certs)
 RUN apt-get update && \
     apt-get install -y openssl && \
     apt-get clean
 
-# Load required proxy + SSL modules into Apache
+# Load required Apache modules
 RUN echo "LoadModule ssl_module modules/mod_ssl.so" >> /usr/local/apache2/conf/httpd.conf && \
     echo "LoadModule socache_shmcb_module modules/mod_socache_shmcb.so" >> /usr/local/apache2/conf/httpd.conf && \
     echo "LoadModule proxy_module modules/mod_proxy.so" >> /usr/local/apache2/conf/httpd.conf && \
     echo "LoadModule proxy_http_module modules/mod_proxy_http.so" >> /usr/local/apache2/conf/httpd.conf && \
     echo "LoadModule headers_module modules/mod_headers.so" >> /usr/local/apache2/conf/httpd.conf
 
-# Include your custom Apache config
-RUN echo "Include conf/extra/apache-frontend.conf" >> /usr/local/apache2/conf/httpd.conf
+# Conditionally include the correct Apache config
+RUN if [ "$APACHE_ENV" = "prod" ]; then \
+        echo "Include conf/extra/apache-frontend.conf" >> /usr/local/apache2/conf/httpd.conf; \
+    else \
+        echo "Include conf/extra/apache-frontend.dev.conf" >> /usr/local/apache2/conf/httpd.conf; \
+    fi
