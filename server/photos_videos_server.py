@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 from io import BytesIO
 from datetime import datetime
 from functools import wraps
+import pillow_heif
+pillow_heif.register_heif_opener()
 
 load_dotenv()
 app = Flask(__name__)
@@ -28,11 +30,14 @@ deleted_photos = set()
 used_indices_by_range = defaultdict(set)
 
 # --- LOAD INDEX + DELETED PHOTOS ---
-try:
-    with open("cache/photo_index.json", "r") as f:
-        photo_index = json.load(f)
-except:
-    photo_index = []
+def load_filtered_index():
+    try:
+        with open("cache/photo_index.json", "r") as f:
+            index = json.load(f)
+            return [p for p in index if not os.path.basename(p["filename"]).startswith("._")]
+    except:
+        return []
+photo_index = load_filtered_index()
 
 try:
     with open("cache/deleted_photos.json", "r") as f:
@@ -75,9 +80,9 @@ def filter_photos_by_year_range(start_year, end_year):
 @app.route("/serve-image/<path:filename>")
 @log_timing("serve-image")
 def serve_image(filename):
-    #print(f"[ENTRY] /serve-image/filenam {time.strftime('%Y-%m-%d %H:%M:%S')}", flush=True)
     image_entry = next((x for x in photo_index if x['filename'] == filename), None)
     if not image_entry:
+        print(f"[404] Not in photo_index: {filename}")
         return abort(404)
 
     angle = image_entry.get("angle", 0)
@@ -85,43 +90,51 @@ def serve_image(filename):
     original_key = f"{S3_ORIGINALS_PREFIX}/{filename}"
     cache_key = f"{S3_CACHE_PREFIX_ROTATED if is_rotated else S3_CACHE_PREFIX_UNROTATED}/{filename}.webp"
 
+    # 1. Try S3 cache
     try:
-        #print(f"[CACHE] Checking cache for {cache_key}")
         cached = s3.get_object(Bucket=S3_BUCKET, Key=cache_key)
         return send_file(BytesIO(cached["Body"].read()), mimetype="image/webp")
-        #print(f"[CACHE] Cache hit for {cache_key}")
     except ClientError as e:
         if e.response["Error"]["Code"] != "NoSuchKey":
-            #print("[ERROR] S3 cache fetch failed:", e)
+            print(f"[S3 ERROR] Failed to fetch cache {cache_key}:", e)
             return abort(500)
 
+    # 2. Fetch original from S3
     try:
-        #print(f"[S3] Fetching original image from {original_key}")
-        original = s3.get_object(Bucket=S3_BUCKET, Key=original_key)
-        img = Image.open(BytesIO(original["Body"].read())).convert("RGB")
-        #print(f"[S3] Original image fetched successfully")
+        original_obj = s3.get_object(Bucket=S3_BUCKET, Key=original_key)
+        img = Image.open(BytesIO(original_obj["Body"].read()))
+        img = img.convert("RGB")  # Ensure compatibility for all formats
     except Exception as e:
-        #print("[ERROR] Original fetch failed:", e)
+        print(f"[ERROR] Could not open original image {original_key}: {e}")
         return abort(404)
 
+    # 3. Apply rotation and resize
     try:
         if angle:
-            #print(f"[IMAGE] Rotating image by {angle} degrees")
             img = img.rotate(-angle, expand=True)
-        w_percent = 600 / float(img.size[0])
-        h_size = int(float(img.size[1]) * w_percent)
-        img = img.resize((600, h_size), Image.LANCZOS)
 
-        out_buffer = BytesIO()
-        #print(f"[IMAGE] Saving image to buffer as WEBP")
-        img.save(out_buffer, "WEBP")
-        out_buffer.seek(0)
-        s3.put_object(Bucket=S3_BUCKET, Key=cache_key, Body=out_buffer.getvalue(), ContentType="image/webp")
-        out_buffer.seek(0)
-        #print(f"[CACHE] Image saved to cache {cache_key}")
-        return send_file(out_buffer, mimetype="image/webp")
+        width = 600
+        ratio = width / float(img.size[0])
+        height = int((float(img.size[1]) * float(ratio)))
+        img = img.resize((width, height), Image.LANCZOS)
+
+        # Save to memory
+        buffer = BytesIO()
+        img.save(buffer, format="WEBP")
+        buffer.seek(0)
+
+        # Save to S3 cache
+        s3.put_object(
+            Bucket=S3_BUCKET,
+            Key=cache_key,
+            Body=buffer.getvalue(),
+            ContentType="image/webp"
+        )
+        buffer.seek(0)
+        return send_file(buffer, mimetype="image/webp")
+
     except Exception as e:
-        #print("[ERROR] Image processing failed:", e)
+        print(f"[ERROR] Failed to process image {filename}: {e}")
         return abort(500)
 
 @app.route("/photo-index/full")

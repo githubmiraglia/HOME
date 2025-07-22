@@ -25,7 +25,7 @@ const Photos: React.FC = () => {
   const [selectedFrame, setSelectedFrame] = useState("/frame1_brownish.png");
   const [selectedBackground, setSelectedBackground] = useState("/background_white.png");
   const [fromYear, setFromYear] = useState(2003);
-  const [toYear, setToYear] = useState(2017);
+  const [toYear, setToYear] = useState(2025);
   const [hasFaces, setHasFaces] = useState(true);
 
   const [photoIndex, setPhotoIndex] = useState<{ filename: string }[]>([]);
