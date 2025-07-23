@@ -17,6 +17,9 @@ console.log("Loaded VITE env vars:", import.meta.env);
 
 // === 📐 Reference dimensions for scaling ===
 export const IS_RESPONSIVE_DEV = true;
+
+console.log("Loaded backend URL:", import.meta.env.VITE_BACKEND_URL);
+
 export const GLOBAL_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8001";
 export const BASE_IMAGE_WIDTH = 1536;
 export const BASE_IMAGE_HEIGHT = 1024;
