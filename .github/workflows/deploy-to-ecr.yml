@@ -28,8 +28,14 @@ jobs:
         FRONTEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:v37
         BACKEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:v37
 
-        docker build -t $FRONTEND_URI -f ./family-gallery/Dockerfile.prod ./family-gallery
+        echo "🔧 Building FRONTEND with VITE_BACKEND_URL=https://wrrm.lat"
+        docker build -t $FRONTEND_URI \
+          --build-arg VITE_BACKEND_URL=https://wrrm.lat \
+          -f ./family-gallery/Dockerfile.prod ./family-gallery
+
+        echo "📦 Building BACKEND"
         docker build -t $BACKEND_URI -f ./server/Dockerfile.prod ./server
 
+        echo "🚀 Pushing images to ECR"
         docker push $FRONTEND_URI
         docker push $BACKEND_URI
