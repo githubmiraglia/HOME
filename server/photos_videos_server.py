@@ -11,6 +11,9 @@ from io import BytesIO
 from datetime import datetime
 from functools import wraps
 import pillow_heif
+import subprocess
+import tempfile
+
 pillow_heif.register_heif_opener()
 
 load_dotenv()
@@ -386,6 +389,96 @@ def frontend_log():
     except Exception as e:
         print("[ERROR] Failed to log frontend message:", e)
         return jsonify({"error": str(e)}), 500
+
+@app.route("/download-photo/<path:filename>")
+@log_timing("download-photo")
+def download_photo(filename):
+    original_key = f"{S3_ORIGINALS_PREFIX}/{filename}"
+
+    try:
+        s3_response = s3.get_object(Bucket=S3_BUCKET, Key=original_key)
+        file_bytes = s3_response["Body"].read()
+
+        # Infer content type or default to binary stream
+        content_type = s3_response.get("ContentType", "application/octet-stream")
+        original_filename = os.path.basename(filename)
+
+        return send_file(
+            BytesIO(file_bytes),
+            mimetype=content_type,
+            as_attachment=True,
+            download_name=original_filename,
+        )
+
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "NoSuchKey":
+            print(f"[404] S3 Key Not Found: {original_key}")
+            return abort(404)
+        print(f"[ERROR] S3 download failed: {e}")
+        return abort(500)
+
+@app.route("/generate-thumbnail/<path:filename>")
+@log_timing("generate-thumbnail")
+def generate_thumbnail(filename):
+    original_key = f"videos/originals/{filename}"
+    thumbnail_key = f"cache-video/{filename}.jpg"
+
+    # Check if thumbnail already exists
+    try:
+        s3.head_object(Bucket=S3_BUCKET, Key=thumbnail_key)
+        return jsonify({"status": "exists"}), 200
+    except ClientError as e:
+        if e.response["Error"]["Code"] != "404":
+            print("[S3 ERROR] Thumbnail head_object failed:", e)
+            return abort(500)
+
+    try:
+        # 1. Download video from S3
+        video_obj = s3.get_object(Bucket=S3_BUCKET, Key=original_key)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_in:
+            tmp_in.write(video_obj["Body"].read())
+            tmp_in.flush()
+            input_path = tmp_in.name
+
+        # 2. Create output thumbnail path
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_out:
+            output_path = tmp_out.name
+
+        # 3. Use ffmpeg to extract thumbnail at 2 seconds
+        cmd = [
+            "ffmpeg",
+            "-loglevel", "error",
+            "-ss", "2",
+            "-i", input_path,
+            "-frames:v", "1",
+            "-q:v", "2",
+            output_path
+        ]
+        subprocess.run(cmd, check=True)
+
+        # 4. Upload thumbnail to S3
+        with open(output_path, "rb") as f:
+            s3.put_object(
+                Bucket=S3_BUCKET,
+                Key=thumbnail_key,
+                Body=f,
+                ContentType="image/jpeg"
+            )
+
+        return jsonify({"status": "generated"}), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to generate thumbnail for {filename}:", e)
+        return jsonify({"error": "Failed to generate thumbnail"}), 500
+
+    finally:
+        try:
+            os.remove(input_path)
+            os.remove(output_path)
+        except:
+            pass
+
+
 
 @app.route("/ping")
 def ping():

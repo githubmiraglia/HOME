@@ -1,0 +1,20 @@
+.video-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.video-list-item {
+  padding: 10px 14px;
+  border-radius: 6px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.video-list-item:hover,
+.video-list-item.hovered {
+  background-color: #dceffd;
+  font-weight: bold;
+}

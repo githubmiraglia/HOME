@@ -1,0 +1,21 @@
+.video-thumbnail-container {
+  max-width: 90%;
+  max-height: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-thumbnail-image {
+  width: 100%;
+  max-width: 800px;
+  max-height: 600px;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+}
+
+.video-thumbnail-status {
+  font-size: 18px;
+  color: #666;
+}

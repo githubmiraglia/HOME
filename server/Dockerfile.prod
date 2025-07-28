@@ -1,6 +1,6 @@
 FROM python:3.9-slim
 
-# Set environment variables to reduce image size and improve behavior
+# Environment optimizations
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1
@@ -8,26 +8,31 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies needed for OpenCV, HEIC, and DeepFace
+# Install system-level dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
     libgl1-mesa-glx \
     libglib2.0-0 \
     libheif-dev \
     libde265-0 \
     libjpeg-dev \
+    libpng-dev \
+    libopenjp2-7 \
+    libtiff5 \
+    libavcodec58 \
+    libavformat58 \
+    libswscale5 \
  && rm -rf /var/lib/apt/lists/*
 
-# Copy dependency file first to use Docker layer caching
+# Copy dependency list and install Python dependencies
 COPY requirements.txt .
-
-# Install Python dependencies
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy the rest of the application code
+# Copy application code
 COPY . .
 
-# Expose the Flask port
+# Expose port for Flask/Gunicorn
 EXPOSE 8001
 
-# Run app with Gunicorn in production
+# Run using Gunicorn in production mode
 CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8001", "--timeout", "300", "photos_videos_server:app"]

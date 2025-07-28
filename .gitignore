@@ -57,3 +57,12 @@ docker-compose.override.yml
 # GitHub Actions
 !.github/
 !.github/workflows/
+
+# Ignore sensitive Apache certs
+apache/certs/certs/*
+apache/certs/private/*
+
+# But keep the folder structure
+!apache/certs/
+!apache/certs/certs/
+!apache/certs/private/

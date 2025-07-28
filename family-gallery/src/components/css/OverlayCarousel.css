@@ -145,3 +145,11 @@
   line-height: 1.5;         /* 👈 Ensures vertical spacing */
   display: inline-block;
 }
+
+.download-icon {
+  color: #4caf50; /* greenish tone for download */
+}
+
+.download-icon:hover {
+  color: #81c784; /* lighter green on hover */
+}

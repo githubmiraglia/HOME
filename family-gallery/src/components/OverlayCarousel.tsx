@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./css/OverlayCarousel.css";
 import { frameToLargeFrameMap } from "./Selector_Photos";
-import { RotateCcw, Trash2 } from "lucide-react";
+import { RotateCw, Trash2, Download } from "lucide-react";
 import {
   GLOBAL_BACKEND_URL,
   BASE_IMAGE_WIDTH,
@@ -57,6 +57,16 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
   useEffect(() => {
     setCurrentIndex(startIndex);
   }, [startIndex]);
+
+  const handleDownload = (filename: string) => {
+    const url = `${GLOBAL_BACKEND_URL}/download-photo/${encodeURIComponent(filename)}?t=${Date.now()}`;
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename.split("/").pop() || "photo.jpg";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const handleDelete = async (filename: string) => {
     console.log(`[Overlay] Deleting: ${filename}`);
@@ -163,16 +173,21 @@ const OverlayCarousel: React.FC<OverlayCarouselProps> = ({
                 }}
                 onClick={() => setSoloPhoto(photo.filename)}
               />
-              <div className="photo-action-icons">
-                <Trash2
-                  className="action-icon trash-icon"
-                  onClick={() => handleDelete(photo.filename)}
-                />
-                <RotateCcw
-                  className="action-icon rotate-icon"
-                  onClick={() => handleRotate(photo.filename)}
-                />
+               <div className="photo-action-icons">
+                  <Trash2
+                    className="action-icon trash-icon"
+                    onClick={() => handleDelete(photo.filename)}
+                  />
+                  <RotateCw
+                    className="action-icon rotate-icon"
+                    onClick={() => handleRotate(photo.filename)}
+                  />
+                  <Download
+                    className="action-icon download-icon"
+                    onClick={() => handleDownload(photo.filename)}
+                  />
               </div>
+
               {loadingMap[photo.filename] && (
                 <div className="photo-overlay-message">
                   {loadingMap[photo.filename]}
