@@ -23,6 +23,22 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
+    - name: Rebuild SSL certificates from secrets
+      run: |
+        mkdir -p apache/certs/certs apache/certs/private
+
+        echo "$SSL_CERT" | base64 -d > apache/certs/certs/wrrm_lat.crt
+        echo "$SSL_KEY" | base64 -d > apache/certs/private/wrrm.lat.key
+
+        # Optional: chain file
+        if [ ! -z "$SSL_CHAIN" ]; then
+          echo "$SSL_CHAIN" | base64 -d > apache/certs/certs/wrrm_lat.ca-bundle
+        fi
+      env:
+        SSL_CERT: ${{ secrets.SSL_CERT }}
+        SSL_KEY: ${{ secrets.SSL_KEY }}
+        SSL_CHAIN: ${{ secrets.SSL_CHAIN }}
+
     - name: Build and push Docker images to ECR
       run: |
         FRONTEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:v38
