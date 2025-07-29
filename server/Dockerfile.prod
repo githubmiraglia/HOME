@@ -18,10 +18,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libjpeg-dev \
     libpng-dev \
     libopenjp2-7 \
-    libtiff5 \
-    libavcodec58 \
-    libavformat58 \
-    libswscale5 \
+    libtiff-dev \
+    libavcodec59 \
+    libavformat59 \
+    libswscale6 \
  && rm -rf /var/lib/apt/lists/*
 
 # Copy dependency list and install Python dependencies
