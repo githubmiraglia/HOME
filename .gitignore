@@ -66,3 +66,7 @@ apache/certs/private/*
 !apache/certs/
 !apache/certs/certs/
 !apache/certs/private/
+
+# Ignore old sensitive SSL certs
+etc/ssl/certs/
+etc/ssl/private/

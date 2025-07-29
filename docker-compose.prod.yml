@@ -3,18 +3,20 @@ version: "3.8"
 services:
   frontend:
     image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:v38
-    # Optional: disable this if frontend_proxy handles external access
-    # ports:
-    #   - "3000:80"
+    # No need to expose port directly — proxy handles public access
     restart: always
+    networks:
+      - app-network
 
   backend:
     image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:v38
     ports:
-      - "8001:8001"
+      - "8001:8001"  # Only exposed internally (by default bridge network)
     restart: always
     env_file:
       - .env
+    networks:
+      - app-network
 
   frontend_proxy:
     build:
@@ -22,15 +24,17 @@ services:
       dockerfile: apache/Dockerfile.frontend
     container_name: frontend_proxy
     ports:
-      - "443:443"
+      - "443:443"  # Public HTTPS access
     volumes:
       - ./apache/certs/certs:/etc/ssl/certs:ro
       - ./apache/certs/private:/etc/ssl/private:ro
       - ./apache/apache-frontend.conf:/usr/local/apache2/conf/extra/apache-frontend.conf:ro
     depends_on:
       - frontend
-
+      - backend
+    networks:
+      - app-network
 
 networks:
-  default:
+  app-network:
     driver: bridge

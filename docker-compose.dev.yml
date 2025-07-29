@@ -15,7 +15,7 @@ services:
     environment:
       - HOST=0.0.0.0           # Vite needs this to listen externally
       - PORT=3000
-      #- VITE_BACKEND_URL=${DOCKER_BACKEND_URL} # override .env only inside container
+      - VITE_BACKEND_URL=http://backend:8001  # This enables frontend to call backend during dev
     depends_on:
       - backend
 
@@ -25,7 +25,7 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./server:/app
-      - ~/.aws:/root/.aws:ro   # AWS credentials, read-only
+      - ~/.aws:/root/.aws:ro   # Allows local dev to use AWS credentials
     working_dir: /app
     command: flask run --host=0.0.0.0 --port=8001 --debug
     ports:
