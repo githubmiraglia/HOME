@@ -2,14 +2,14 @@ version: "3.8"
 
 services:
   frontend:
-    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:v39
+    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:v40
     # No need to expose port directly — proxy handles public access
     restart: always
     networks:
       - app-network
 
   backend:
-    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:v39
+    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:v40
     ports:
       - "8001:8001"  # Only exposed internally (by default bridge network)
     restart: always
