@@ -45,8 +45,7 @@ jobs:
         echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
         echo "AWS_DEFAULT_REGION=sa-east-1" >> .env
 
-    - name: TEMP: Print AWS credentials to GitHub Actions log
-      shell: bash
+    - name: "TEMP: Print AWS credentials to GitHub Actions log"
       run: |
         echo "ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}"
         echo "SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
