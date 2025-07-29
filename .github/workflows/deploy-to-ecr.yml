@@ -41,8 +41,8 @@ jobs:
 
     - name: Build and push Docker images to ECR
       run: |
-        FRONTEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:v38
-        BACKEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:v38
+        FRONTEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:v39
+        BACKEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:v39
 
         echo "🔧 Building FRONTEND with VITE_BACKEND_URL=https://wrrm.lat"
         docker build -t $FRONTEND_URI \
