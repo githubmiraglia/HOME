@@ -45,18 +45,10 @@ jobs:
         echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
         echo "AWS_DEFAULT_REGION=sa-east-1" >> .env
 
-    - name: "TEMP: Print AWS credentials to GitHub Actions log"
-      run: |
-        echo "RAW_AWS_ACCESS_KEY_ID=${RAW_AWS_ACCESS_KEY_ID}"
-        echo "RAW_AWS_SECRET_ACCESS_KEY=${RAW_AWS_SECRET_ACCESS_KEY}"
-      env:
-        RAW_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        RAW_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
     - name: Build and push Docker images to ECR
       run: |
-        FRONTEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:v40
-        BACKEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:v40
+        FRONTEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:v41
+        BACKEND_URI=960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:v41
 
         echo "🔧 Building FRONTEND with VITE_BACKEND_URL=https://wrrm.lat"
         docker build -t $FRONTEND_URI \
