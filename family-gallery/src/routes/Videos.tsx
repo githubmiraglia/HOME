@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import "./css/Videos.css";
 import ListOfVideos from "../components/ListOfVideos";
 import ServeVideoThumbnail from "../components/ServeVideoThumbnail";
-import PlayVideo from "../components/PlayVideo";
+import PlayVideo from "../components/Playvideo";
 
 const Videos: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
