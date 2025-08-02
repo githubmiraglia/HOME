@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./css/PlayVideo.css";
+import "./css/Playvideo.css";
 import { GLOBAL_BACKEND_URL } from "../App";
 
 interface PlayVideoProps {
