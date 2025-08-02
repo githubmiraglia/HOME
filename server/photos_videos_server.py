@@ -13,6 +13,7 @@ from functools import wraps
 import pillow_heif
 import subprocess
 import tempfile
+import uuid
 
 pillow_heif.register_heif_opener()
 
@@ -417,6 +418,25 @@ def download_photo(filename):
         print(f"[ERROR] S3 download failed: {e}")
         return abort(500)
 
+@app.route("/video-index/list")
+def list_videos():
+    try:
+        paginator = s3.get_paginator("list_objects_v2")
+        page_iterator = paginator.paginate(Bucket=S3_BUCKET, Prefix="videos/originals/")
+
+        video_list = []
+        for page in page_iterator:
+            for obj in page.get("Contents", []):
+                key = obj["Key"]
+                if key.lower().endswith((".mp4", ".mov", ".avi", ".mkv")) and not key.endswith("/"):
+                    video_list.append(key.replace("videos/originals/", ""))
+
+        return jsonify({"videos": video_list})
+
+    except Exception as e:
+        print(f"[ERROR] Failed to list videos: {e}")
+        return jsonify({"error": "Failed to list videos"}), 500
+
 @app.route("/generate-thumbnail/<path:filename>")
 @log_timing("generate-thumbnail")
 def generate_thumbnail(filename):
@@ -440,13 +460,13 @@ def generate_thumbnail(filename):
             tmp_in.flush()
             input_path = tmp_in.name
 
-        # 2. Create output thumbnail path
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_out:
-            output_path = tmp_out.name
+        # 2. Generate a unique output path
+        output_path = f"/tmp/{uuid.uuid4().hex}.jpg"
 
         # 3. Use ffmpeg to extract thumbnail at 2 seconds
         cmd = [
             "ffmpeg",
+            "-y",                     # ✅ Force overwrite
             "-loglevel", "error",
             "-ss", "2",
             "-i", input_path,
@@ -475,8 +495,22 @@ def generate_thumbnail(filename):
         try:
             os.remove(input_path)
             os.remove(output_path)
-        except:
-            pass
+        except Exception as cleanup_err:
+            print(f"[WARN] Failed to clean up temp files: {cleanup_err}")
+
+@app.route("/cache-video/<path:filename>")
+@log_timing("serve-video-thumbnail")
+def serve_video_thumbnail(filename):
+    try:
+        print(f"[DEBUG] Fetching from S3: cache-video/{filename}")  # <--- ADD THIS LINE
+        response = s3.get_object(Bucket=S3_BUCKET, Key=f"cache-video/{filename}")
+        return send_file(BytesIO(response["Body"].read()), mimetype="image/jpeg")
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "NoSuchKey":
+            print(f"[404 DEBUG] Key not found: cache-video/{filename}")  # <--- ADD THIS TOO
+            return abort(404)
+        print(f"[ERROR] Failed to fetch thumbnail from S3: {e}")
+        return abort(500)
 
 
 

@@ -12,10 +12,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libjpeg-dev \
     libpng-dev \
     libopenjp2-7 \
-    libtiff5 \
-    libavcodec58 \
-    libavformat58 \
-    libswscale5 \
+    libtiff6 \
+    libavcodec59 \
+    libavformat59 \
+    libswscale6 \
  && rm -rf /var/lib/apt/lists/*
 
 # Pre-copy and install Python dependencies for better caching
