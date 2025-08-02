@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, abort, request, send_file, send_from_directory
+import re
+from flask import Flask, jsonify, abort, request, send_file, send_from_directory, Response
 import os, io, json, random, time
 from collections import defaultdict
 from werkzeug.utils import secure_filename
@@ -14,6 +15,7 @@ import pillow_heif
 import subprocess
 import tempfile
 import uuid
+
 
 pillow_heif.register_heif_opener()
 
@@ -428,7 +430,7 @@ def list_videos():
         for page in page_iterator:
             for obj in page.get("Contents", []):
                 key = obj["Key"]
-                if key.lower().endswith((".mp4", ".mov", ".avi", ".mkv")) and not key.endswith("/"):
+                if key.lower().endswith((".mp4", ".mov", ".avi", ".mkv", ".m4v")) and not key.endswith("/"):
                     video_list.append(key.replace("videos/originals/", ""))
 
         return jsonify({"videos": video_list})
@@ -468,7 +470,7 @@ def generate_thumbnail(filename):
             "ffmpeg",
             "-y",                     # ✅ Force overwrite
             "-loglevel", "error",
-            "-ss", "2",
+            "-ss", "3",
             "-i", input_path,
             "-frames:v", "1",
             "-q:v", "2",
@@ -512,7 +514,37 @@ def serve_video_thumbnail(filename):
         print(f"[ERROR] Failed to fetch thumbnail from S3: {e}")
         return abort(500)
 
+@app.route("/serve-video/<path:filename>")
+def serve_video(filename):
+    print(f"[DEBUG] Serving video: {filename}")  # <--- ADD THIS LINE
+    key = f"videos/originals/{filename}"
+    try:
+        range_header = request.headers.get("Range", None)
+        if not range_header:
+            video = s3.get_object(Bucket=S3_BUCKET, Key=key)
+            return Response(video['Body'].read(), mimetype="video/mp4")
 
+        byte1, byte2 = 0, None
+        match = re.search(r"bytes=(\d+)-(\d*)", range_header)
+        if match:
+            g = match.groups()
+            byte1 = int(g[0])
+            if g[1]:
+                byte2 = int(g[1])
+
+        s3_obj = s3.get_object(Bucket=S3_BUCKET, Key=key)
+        data = s3_obj['Body'].read()
+        total = len(data)
+        if byte2 is None:
+            byte2 = total - 1
+        data = data[byte1:byte2 + 1]
+
+        rv = Response(data, 206, mimetype="video/mp4", direct_passthrough=True)
+        rv.headers.add('Content-Range', f'bytes {byte1}-{byte2}/{total}')
+        return rv
+    except Exception as e:
+        print(f"[ERROR] Failed to stream video {filename}: {e}")
+        return abort(404)
 
 @app.route("/ping")
 def ping():

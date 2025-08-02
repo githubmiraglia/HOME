@@ -1,0 +1,92 @@
+/* Root container */
+.play-video-overlay {
+  position: relative;
+  top: 0;
+  left: 0;
+  background-color: black;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+}
+
+/* Fullscreen compatibility */
+.play-video-overlay:fullscreen,
+.play-video-overlay:-webkit-full-screen,
+.play-video-overlay:-moz-full-screen,
+.play-video-overlay:-ms-fullscreen {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Wrapper for layout centering */
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Video element */
+.play-video-element {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Back button */
+.go-back-button {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.65);
+  padding: 30px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+/* Spinner */
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 6px solid #aaa;
+  border-top: 6px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Loading percentage */
+.load-text {
+  margin-top: 10px;
+  font-size: 20px;
+  color: white;
+  font-weight: bold;
+}
+
+/* Animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

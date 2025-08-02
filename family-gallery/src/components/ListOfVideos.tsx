@@ -1,12 +1,17 @@
+// ListOfVideos.tsx
 import React, { useEffect, useState, useCallback } from "react";
 import "./css/ListOfVideos.css";
 import { GLOBAL_BACKEND_URL } from "../App";
 
 interface ListOfVideosProps {
-  onVideoSelect: (filename: string) => void;
+  onVideoSelect: (filename: string) => void;     // for updating thumbnail
+  onPlayRequest: (filename: string) => void;     // for triggering playback
 }
 
-const ListOfVideos: React.FC<ListOfVideosProps> = ({ onVideoSelect }) => {
+const ListOfVideos: React.FC<ListOfVideosProps> = ({
+  onVideoSelect,
+  onPlayRequest,
+}) => {
   const [videos, setVideos] = useState<string[]>([]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -26,6 +31,7 @@ const ListOfVideos: React.FC<ListOfVideosProps> = ({ onVideoSelect }) => {
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (!videos.length) return;
+
       if (e.key === "ArrowDown") {
         setHoveredIndex((prev) => {
           const next = prev === null ? 0 : Math.min(prev + 1, videos.length - 1);
@@ -38,10 +44,17 @@ const ListOfVideos: React.FC<ListOfVideosProps> = ({ onVideoSelect }) => {
           onVideoSelect(videos[next]);
           return next;
         });
+      } else if (e.key === "Enter") {
+        if (hoveredIndex !== null && videos[hoveredIndex]) {
+          const filename = videos[hoveredIndex];
+          onVideoSelect(filename);
+          onPlayRequest(filename);
+        }
       }
     },
-    [videos, onVideoSelect]
+    [videos, hoveredIndex, onVideoSelect, onPlayRequest]
   );
+
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
@@ -56,7 +69,11 @@ const ListOfVideos: React.FC<ListOfVideosProps> = ({ onVideoSelect }) => {
           className={`video-list-item ${hoveredIndex === index ? "hovered" : ""}`}
           onMouseEnter={() => {
             setHoveredIndex(index);
-            onVideoSelect(filename);
+            onVideoSelect(filename); // only update thumbnail on hover
+          }}
+          onClick={() => {
+            onVideoSelect(filename);    // update thumbnail
+            onPlayRequest(filename);    // trigger fullscreen video
           }}
         >
           {filename}
