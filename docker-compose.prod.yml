@@ -2,16 +2,15 @@ version: "3.8"
 
 services:
   frontend:
-    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:v44
-    # No need to expose port directly — proxy handles public access
+    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-frontend:v46
     restart: always
     networks:
       - app-network
 
   backend:
-    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:v44
+    image: 960177448694.dkr.ecr.sa-east-1.amazonaws.com/home-app-backend:v46
     ports:
-      - "8001:8001"  # Only exposed internally (by default bridge network)
+      - "8001:8001"
     restart: always
     env_file:
       - .env
@@ -24,11 +23,12 @@ services:
       dockerfile: apache/Dockerfile.frontend
     container_name: frontend_proxy
     ports:
-      - "443:443"  # Public HTTPS access
+      - "443:443"
     volumes:
-      - ./apache/certs/certs:/etc/ssl/certs:ro
-      - ./apache/certs/private:/etc/ssl/private:ro
       - ./apache/apache-frontend.conf:/usr/local/apache2/conf/extra/apache-frontend.conf:ro
+      - /etc/ssl/certs/wrrm_lat.crt:/etc/ssl/certs/wrrm_lat.crt:ro
+      - /etc/ssl/private/wrrm_lat.key:/etc/ssl/private/wrrm_lat.key:ro
+      - /etc/ssl/certs/wrrm_lat.ca-bundle:/etc/ssl/certs/wrrm_lat.ca-bundle:ro
     depends_on:
       - frontend
       - backend
