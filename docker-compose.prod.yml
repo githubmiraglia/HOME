@@ -20,7 +20,7 @@ services:
 
   frontend_proxy:
     build:
-      context: /home/ubuntu/HOME/HOME
+      context: /home/ubuntu/HOME
       dockerfile: apache/Dockerfile.frontend
     container_name: frontend_proxy
     ports:
