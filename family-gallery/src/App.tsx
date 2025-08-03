@@ -4,7 +4,7 @@ import HomeNavigation from "./components/HomeNavigation";
 import Photos from "./routes/Photos";
 import Videos from "./routes/Videos";
 import Uploads from "./routes/Uploads";
-import PhotosUpload from "./routes/PhotosUpload";
+import PhotosUpload from "./routes/PhotosUpload_BACKUP";
 import VideosUpload from "./routes/VideosUpload";
 import Back from "./routes/Back";
 import { logToBackend } from "./utils/utils";

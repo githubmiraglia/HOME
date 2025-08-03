@@ -70,25 +70,18 @@ const PhotosUpload: React.FC<Props> = ({
       logToBackend("⚠️ Upload aborted: No folder selected or no files selected.");
       return;
     }
-
     const formData = new FormData();
     let appendedCount = 0;
-    const filesToUpload: File[] = [];
-
     for (const file of localFiles) {
       if (selectedFiles.has(file.name)) {
         formData.append("photos", file);
-        filesToUpload.push(file);
         logToBackend(`📎 Appending file: ${file.name} (${file.size} bytes)`);
         appendedCount++;
       }
     }
-
     formData.append("folder", selectedSubfolder);
     formData.append("year", selectedYear);
-
     logToBackend(`📤 Starting upload of ${appendedCount} files to year=${selectedYear}, folder=${selectedSubfolder}`);
-
     try {
       const config: any = {
         headers: { "Content-Type": "multipart/form-data" },
@@ -98,37 +91,38 @@ const PhotosUpload: React.FC<Props> = ({
           logToBackend(`⏳ Upload progress: ${percent}%`);
         },
       };
-
       const res = await axios.post(
         `${GLOBAL_BACKEND_URL}/upload/photos`,
         formData,
         config
       );
-
       logToBackend("✅ Upload POST request completed");
-
-      const filenames = filesToUpload.map((file) => file.name);
+      const data = res.data as any;
+      const filenames = Array.isArray(data.entries)
+        ? data.entries.map((e: { filename: string }) => e.filename)
+        : [];
       logToBackend(`✅ Successfully uploaded: ${filenames.join(", ")}`);
       setUploadedFilenames(filenames);
       setUploadProgress(100);
       setUploadDone(true);
-
-      // ✅ Immediately update photo_index.json
-      await axios.post(`${GLOBAL_BACKEND_URL}/photo-index/add`, {
-        year: selectedYear,
-        folder: selectedSubfolder,
-        filenames: filenames,
-      });
-
-      logToBackend("✅ Photo index updated");
     } catch (err: any) {
-      logToBackend(`❌ Upload or index update failed: ${err.message || err}`);
+      logToBackend(`❌ Upload failed: ${err.message || err}`);
     }
   };
 
   const handleDoneClick = async () => {
-    onUploadComplete();
-    window.location.href = "/";
+    try {
+      await axios.post(`${GLOBAL_BACKEND_URL}/photo-index/add`, {
+        year: selectedYear,
+        folder: selectedSubfolder,
+        filenames: uploadedFilenames,
+      });
+      logToBackend("✅ Photo index updated");
+      onUploadComplete();
+      window.location.href = "/";
+    } catch (err: any) {
+      logToBackend(`❌ Failed to update photo index: ${err.message || err}`);
+    }
   };
 
   const handleNewFolder = async () => {
