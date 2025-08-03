@@ -386,7 +386,7 @@ def add_to_photo_index():
         photo_index.append(entry)
         new_entries.append(entry)
 
-    print(f"[ADD] Appending {len(new_entries)} entries:")
+    app.logger.info(f"[ADD] Appending {len(new_entries)} entries:")
     for e in new_entries:
         print("   📸", e["filename"])
 
