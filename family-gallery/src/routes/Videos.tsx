@@ -4,6 +4,7 @@ import "./css/Videos.css";
 import ListOfVideos from "../components/ListOfVideos";
 import ServeVideoThumbnail from "../components/ServeVideoThumbnail";
 import PlayVideo from "../components/Playvideo";
+import GoBackButton from "../components/GoBackButton";
 
 const Videos: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
@@ -25,38 +26,45 @@ const Videos: React.FC = () => {
   }, [isPlaying]);
 
   return (
-    <div className="videos-container">
-      {isPlaying && selectedVideo ? (
-        <PlayVideo filename={selectedVideo} onClose={() => setIsPlaying(false)} />
-      ) : (
-        <>
-          {/* Left Panel: List of videos */}
-          <div className="video-list-panel">
-            <ListOfVideos
-              onVideoSelect={setSelectedVideo}
-              onPlayRequest={(filename) => {
-                setSelectedVideo(filename);  // ensures correct video is set
-                setIsPlaying(true);          // starts playback
+    <div className="video-overlay-wrapper">
+      <div className="hover-button-wrapper">
+        <GoBackButton />
+      </div>
+
+      <div className="videos-container">
+        {isPlaying && selectedVideo ? (
+          <PlayVideo filename={selectedVideo} onClose={() => setIsPlaying(false)} />
+        ) : (
+          <>
+            {/* Left Panel: List of videos */}
+            <div className="video-list-panel">
+              <ListOfVideos
+                onVideoSelect={setSelectedVideo}
+                onPlayRequest={(filename) => {
+                  setSelectedVideo(filename);
+                  setIsPlaying(true);
+                }}
+              />
+            </div>
+
+            {/* Right Panel: Thumbnail viewer */}
+            <div
+              className="video-thumbnail-panel"
+              onClick={() => {
+                if (selectedVideo) setIsPlaying(true);
               }}
-            />
-          </div>
-          {/* Right Panel: Thumbnail viewer (click to play) */}
-          <div
-            className="video-thumbnail-panel"
-            onClick={() => {
-              if (selectedVideo) setIsPlaying(true);
-            }}
-          >
-            {selectedVideo ? (
-              <ServeVideoThumbnail filename={selectedVideo} />
-            ) : (
-              <div className="placeholder-text">
-                Hover or select a video to see its thumbnail
-              </div>
-            )}
-          </div>
-        </>
-      )}
+            >
+              {selectedVideo ? (
+                <ServeVideoThumbnail filename={selectedVideo} />
+              ) : (
+                <div className="placeholder-text">
+                  Hover or select a video to see its thumbnail
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
