@@ -22,7 +22,7 @@ const PhotosUpload: React.FC<Props> = ({
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadDone, setUploadDone] = useState(false);
-  const [uploadedFilenames, setUploadedFilenames] = useState<string[]>([]);
+  //const [uploadedFilenames, setUploadedFilenames] = useState<string[]>([]);
   const [s3Folders, setS3Folders] = useState<string[]>([]);
   const [newFolderName, setNewFolderName] = useState("");
 
