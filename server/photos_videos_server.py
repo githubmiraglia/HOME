@@ -368,11 +368,15 @@ def add_to_photo_index():
     try:
         with open("cache/photo_index.json", "r") as f:
             photo_index = json.load(f)
+            # 🚫 Remove files like ._whatever.jpg
+            photo_index = [p for p in photo_index if not os.path.basename(p["filename"]).startswith("._")]
     except (FileNotFoundError, json.JSONDecodeError):
         photo_index = []
 
     new_entries = []
     for fname in filenames:
+        if fname.startswith("._"):  # 🚫 Skip adding new invalid files
+            continue
         entry = {
             "filename": f"{year}/{folder}/{fname}",
             "date": f"{year}-01-01",
@@ -382,7 +386,6 @@ def add_to_photo_index():
         photo_index.append(entry)
         new_entries.append(entry)
 
-    # ✅ Log what’s being added
     print(f"[ADD] Appending {len(new_entries)} entries:")
     for e in new_entries:
         print("   📸", e["filename"])
