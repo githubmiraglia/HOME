@@ -15,6 +15,16 @@ import pillow_heif
 import subprocess
 import tempfile
 import uuid
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,  # or DEBUG for more verbose logs
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler()]
+)
+
+# Optional: adjust specific loggers
+#app.logger.setLevel(logging.INFO)
 
 
 pillow_heif.register_heif_opener()

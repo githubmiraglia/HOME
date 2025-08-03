@@ -35,4 +35,5 @@ COPY . .
 EXPOSE 8001
 
 # Run using Gunicorn in production mode
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8001", "--timeout", "300", "photos_videos_server:app"]
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8001", "--timeout", "300", "--log-level", "info", "photos_videos_server:app"]
+
