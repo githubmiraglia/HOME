@@ -22,24 +22,21 @@ const PhotosUpload: React.FC<Props> = ({
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadDone, setUploadDone] = useState(false);
-  //const [uploadedFilenames, setUploadedFilenames] = useState<string[]>([]);
   const [s3Folders, setS3Folders] = useState<string[]>([]);
   const [newFolderName, setNewFolderName] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (selectedYear) {
-      fetchS3Folders();
-    }
+    if (selectedYear) fetchS3Folders();
   }, [selectedYear]);
 
   const fetchS3Folders = async () => {
     try {
       const res = await axios.get(`${GLOBAL_BACKEND_URL}/upload/list-folders?year=${selectedYear}`);
       const data = res.data as { folders: string[] };
-      logToBackend(`Fetched folders: ${JSON.stringify(data.folders)}`);
       setS3Folders(data.folders || []);
+      logToBackend(`Fetched folders: ${JSON.stringify(data.folders)}`);
     } catch (err: any) {
       logToBackend(`Error fetching folders: ${err.message || err}`);
     }
@@ -48,11 +45,8 @@ const PhotosUpload: React.FC<Props> = ({
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      logToBackend(`Selected ${files.length} files`);
       const originalFiles = Array.from(files);
-      logToBackend("Converting HEIC files if any...");
       const convertedFiles = await convertHeicToJpeg(originalFiles);
-      logToBackend(`Converted files: ${convertedFiles.map((f) => f.name).join(", ")}`);
       setLocalFiles(convertedFiles);
       const defaultSelected = new Set(convertedFiles.map((f) => f.name));
       setSelectedFiles(defaultSelected);
@@ -66,83 +60,53 @@ const PhotosUpload: React.FC<Props> = ({
   };
 
   const handleUpload = async () => {
-    if (!selectedSubfolder || selectedFiles.size === 0) {
-      logToBackend("⚠️ Upload aborted: No folder selected or no files selected.");
-      return;
-    }
+    if (!selectedSubfolder || selectedFiles.size === 0) return;
 
     const formData = new FormData();
-    let appendedCount = 0;
-    const filesToUpload: File[] = [];
+    const filenamesToUpload: string[] = [];
 
     for (const file of localFiles) {
       if (selectedFiles.has(file.name)) {
         formData.append("photos", file);
-        filesToUpload.push(file);
-        logToBackend(`📎 Appending file: ${file.name} (${file.size} bytes)`);
-        appendedCount++;
+        filenamesToUpload.push(file.name);
       }
     }
 
     formData.append("folder", selectedSubfolder);
     formData.append("year", selectedYear);
 
-    logToBackend(`📤 Starting upload of ${appendedCount} files to year=${selectedYear}, folder=${selectedSubfolder}`);
-
     try {
-      const config: any = {
+      const config = {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (event: any) => {
           const percent = Math.round((event.loaded * 100) / (event.total || 1));
           setUploadProgress(percent);
-          logToBackend(`⏳ Upload progress: ${percent}%`);
         },
       };
 
-      const res = await axios.post(
-        `${GLOBAL_BACKEND_URL}/upload/photos`,
-        formData,
-        config
-      );
+      await axios.post(`${GLOBAL_BACKEND_URL}/upload/photos`, formData, config);
 
-      logToBackend("✅ Upload POST request completed");
-
-      const filenames = filesToUpload.map((file) => file.name);
-      logToBackend(`✅ Successfully uploaded: ${filenames.join(", ")}`);
-      setUploadedFilenames(filenames);
-      setUploadProgress(100);
-      setUploadDone(true);
-
-      // ✅ Immediately update photo_index.json
       await axios.post(`${GLOBAL_BACKEND_URL}/photo-index/add`, {
         year: selectedYear,
         folder: selectedSubfolder,
-        filenames: filenames,
+        filenames: filenamesToUpload,
       });
 
-      logToBackend("✅ Photo index updated");
+      setUploadProgress(100);
+      setUploadDone(true);
     } catch (err: any) {
-      logToBackend(`❌ Upload or index update failed: ${err.message || err}`);
+      logToBackend(`Upload/index update failed: ${err.message || err}`);
     }
-  };
-
-  const handleDoneClick = async () => {
-    onUploadComplete();
-    window.location.href = "/";
   };
 
   const handleNewFolder = async () => {
     const folderName = newFolderName.trim();
     if (!folderName) return;
-
     try {
       await axios.post(`${GLOBAL_BACKEND_URL}/upload/create-folder`, {
         year: selectedYear,
         folder: folderName,
       });
-
-      logToBackend(`Created new folder: ${folderName} under ${selectedYear}`);
-
       onSubfolderChange(folderName);
       setNewFolderName("");
       await fetchS3Folders();
@@ -195,7 +159,10 @@ const PhotosUpload: React.FC<Props> = ({
         {uploadDone && (
           <div className="photo-upload-overlay">
             ✅ Upload complete!
-            <button onClick={handleDoneClick}>Done</button>
+            <button onClick={() => {
+              onUploadComplete();
+              window.location.href = "/";
+            }}>Done</button>
           </div>
         )}
       </div>
@@ -206,10 +173,7 @@ const PhotosUpload: React.FC<Props> = ({
         <label
           className="custom-file-upload"
           onClick={() => {
-            if (fileInputRef.current) {
-              fileInputRef.current.value = "";
-              logToBackend("📂 input forcibly reset before file selection");
-            }
+            if (fileInputRef.current) fileInputRef.current.value = "";
           }}
         >
           📂 Choose Images
@@ -218,32 +182,21 @@ const PhotosUpload: React.FC<Props> = ({
             type="file"
             multiple
             accept="image/*"
-            onChange={(e) => {
-              logToBackend("🔥 handleFileSelect triggered");
-              handleFileSelect(e);
-            }}
+            onChange={handleFileSelect}
             style={{ display: "none" }}
           />
         </label>
 
         <div className="photo-upload-thumbnails">
           {localFiles.map((file) => (
-            <div
-              key={file.name}
-              className="thumbnail-box"
-              onClick={() => toggleFile(file.name)}
-            >
+            <div key={file.name} className="thumbnail-box" onClick={() => toggleFile(file.name)}>
               <input
                 type="checkbox"
                 checked={selectedFiles.has(file.name)}
                 onChange={() => toggleFile(file.name)}
                 className="thumbnail-checkbox"
               />
-              <img
-                src={URL.createObjectURL(file)}
-                alt={file.name}
-                className="thumbnail-image"
-              />
+              <img src={URL.createObjectURL(file)} alt={file.name} className="thumbnail-image" />
               <p>{file.name}</p>
             </div>
           ))}
