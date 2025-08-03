@@ -66,38 +66,40 @@ const PhotosUpload: React.FC<Props> = ({
     const filenamesToUpload: string[] = [];
 
     for (const file of localFiles) {
-      if (selectedFiles.has(file.name)) {
+        if (selectedFiles.has(file.name)) {
         formData.append("photos", file);
         filenamesToUpload.push(file.name);
-      }
+        }
     }
 
     formData.append("folder", selectedSubfolder);
     formData.append("year", selectedYear);
 
     try {
-      const config = {
+        const config = {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (event: any) => {
-          const percent = Math.round((event.loaded * 100) / (event.total || 1));
-          setUploadProgress(percent);
+            const percent = Math.round((event.loaded * 100) / (event.total || 1));
+            setUploadProgress(percent);
         },
-      };
+        };
 
-      await axios.post(`${GLOBAL_BACKEND_URL}/upload/photos`, formData, config);
+        await axios.post(`${GLOBAL_BACKEND_URL}/upload/photos`, formData, config);
 
-      await axios.post(`${GLOBAL_BACKEND_URL}/photo-index/add`, {
+        const indexRes = await axios.post(`${GLOBAL_BACKEND_URL}/photo-index/add`, {
         year: selectedYear,
         folder: selectedSubfolder,
         filenames: filenamesToUpload,
-      });
+        });
+        logToBackend(`📘 /photo-index/add response: ${JSON.stringify(indexRes.data)}`);
 
-      setUploadProgress(100);
-      setUploadDone(true);
+        setUploadProgress(100);
+        setUploadDone(true);
     } catch (err: any) {
-      logToBackend(`Upload/index update failed: ${err.message || err}`);
+        logToBackend(`Upload/index update failed: ${err.message || err}`);
     }
-  };
+    };
+
 
   const handleNewFolder = async () => {
     const folderName = newFolderName.trim();
