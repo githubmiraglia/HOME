@@ -364,21 +364,34 @@ def add_to_photo_index():
     if not year or not folder or not filenames:
         return jsonify({"error": "Missing required fields"}), 400
 
+    # ✅ Reload latest photo_index from disk
+    try:
+        with open("cache/photo_index.json", "r") as f:
+            photo_index = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        photo_index = []
+
     new_entries = []
     for fname in filenames:
         entry = {
             "filename": f"{year}/{folder}/{fname}",
             "date": f"{year}-01-01",
             "angle": 0,
-            "hasFaces": False  # Update later with face detection
+            "hasFaces": False
         }
         photo_index.append(entry)
         new_entries.append(entry)
+
+    # ✅ Log what’s being added
+    print(f"[ADD] Appending {len(new_entries)} entries:")
+    for e in new_entries:
+        print("   📸", e["filename"])
 
     with open("cache/photo_index.json", "w") as f:
         json.dump(photo_index, f, indent=2)
 
     return jsonify({"status": "added", "count": len(new_entries)})
+
 
 @app.route("/frontend-log", methods=["POST"])
 def frontend_log():
