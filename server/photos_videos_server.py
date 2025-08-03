@@ -388,7 +388,7 @@ def add_to_photo_index():
 
     app.logger.info(f"[ADD] Appending {len(new_entries)} entries:")
     for e in new_entries:
-        print("   📸", e["filename"])
+        app.logger.info("   📸", e["filename"])
 
     with open("cache/photo_index.json", "w") as f:
         json.dump(photo_index, f, indent=2)
