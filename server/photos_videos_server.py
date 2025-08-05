@@ -542,35 +542,49 @@ def serve_video_thumbnail(filename):
 
 @app.route("/serve-video/<path:filename>")
 def serve_video(filename):
-    print(f"[DEBUG] Serving video: {filename}")  # <--- ADD THIS LINE
+    print(f"[DEBUG] Serving video: {filename}")
     key = f"videos/originals/{filename}"
     try:
         range_header = request.headers.get("Range", None)
         if not range_header:
-            video = s3.get_object(Bucket=S3_BUCKET, Key=key)
-            return Response(video['Body'].read(), mimetype="video/mp4")
+            # No range: stream entire video (not recommended for large files)
+            s3_obj = s3.get_object(Bucket=S3_BUCKET, Key=key)
+            return Response(s3_obj['Body'], mimetype="video/mp4")
 
-        byte1, byte2 = 0, None
+        # Extract byte range
         match = re.search(r"bytes=(\d+)-(\d*)", range_header)
-        if match:
-            g = match.groups()
-            byte1 = int(g[0])
-            if g[1]:
-                byte2 = int(g[1])
+        if not match:
+            return abort(416)  # Range Not Satisfiable
 
-        s3_obj = s3.get_object(Bucket=S3_BUCKET, Key=key)
-        data = s3_obj['Body'].read()
-        total = len(data)
-        if byte2 is None:
-            byte2 = total - 1
-        data = data[byte1:byte2 + 1]
+        byte1, byte2 = match.groups()
+        byte1 = int(byte1)
+        byte_range = f"bytes={byte1}-"
 
-        rv = Response(data, 206, mimetype="video/mp4", direct_passthrough=True)
-        rv.headers.add('Content-Range', f'bytes {byte1}-{byte2}/{total}')
-        return rv
+        if byte2:
+            byte2 = int(byte2)
+            byte_range = f"bytes={byte1}-{byte2}"
+
+        print(f"[DEBUG] Requesting range: {byte_range}")
+
+        # Request only the needed range from S3
+        s3_obj = s3.get_object(Bucket=S3_BUCKET, Key=key, Range=byte_range)
+        content_length = s3_obj['ContentLength']
+        body = s3_obj['Body']
+
+        # Get total size (for Content-Range header)
+        head_obj = s3.head_object(Bucket=S3_BUCKET, Key=key)
+        total_length = head_obj['ContentLength']
+
+        response = Response(body, 206, mimetype="video/mp4")
+        response.headers.add("Content-Range", f"bytes {byte1}-{byte1+content_length-1}/{total_length}")
+        response.headers.add("Accept-Ranges", "bytes")
+        response.headers.add("Content-Length", str(content_length))
+        return response
+
     except Exception as e:
         print(f"[ERROR] Failed to stream video {filename}: {e}")
         return abort(404)
+
 
 @app.route("/ping")
 def ping():

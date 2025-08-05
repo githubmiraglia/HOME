@@ -8,8 +8,6 @@ import { GLOBAL_BACKEND_URL } from "../App";
 
 const TOTAL_TO_DISPLAY = 15;
 const CHUNK_SIZE = 15;
-const SCROLL_INTERVAL_MS = 30;
-const SLIDE_SPEED_PX = 0.5;
 const ROTATION = true;
 const isMobileDevice = () => /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
 
@@ -131,107 +129,60 @@ const Photos: React.FC = () => {
     enterFullscreen();
   }, []);
 
-useEffect(() => {
-  if (!ROTATION || pauseRotation) {
-    //console.log("🛑 Scroll paused.");
-    return;
-  }
+  // ✅ NEW: smooth integer-pixel scroll
+  useEffect(() => {
+    if (!ROTATION || pauseRotation) return;
 
-  //console.log("🚀 Starting auto-scroll");
-  let animationFrameId: number;
-  let lastTimestamp = performance.now();
-
-  const step = (timestamp: number) => {
     const container = containerRef.current;
-    if (!container) {
-      //console.log("⚠️ containerRef is null");
-      return;
-    }
+    if (!container) return;
 
-    const elapsed = timestamp - lastTimestamp;
-
-    if (elapsed >= SCROLL_INTERVAL_MS) {
-      //console.log("➡️ Scrolling...", {
-        //scrollLeft: container.scrollLeft,
-        //windowWidth,
-      //});
-
-      container.scrollLeft += SLIDE_SPEED_PX;
-      lastTimestamp = timestamp;
+    const interval = setInterval(() => {
+      container.scrollLeft += 1;
 
       if (container.scrollLeft >= windowWidth) {
-        //console.log("🔄 Rotating chunks");
         container.scrollLeft = 0;
         setChunks((prev) => prev.slice(1));
         refillChunks();
       }
-    }
+    }, 16); // ~60fps
 
-    animationFrameId = requestAnimationFrame(step);
-};
+    return () => clearInterval(interval);
+  }, [pauseRotation, ROTATION, windowWidth]);
 
-  animationFrameId = requestAnimationFrame(step);
+  useEffect(() => {
+    const refreshChunks = async () => {
+      try {
+        setPauseRotation(true);
+        setLoading(true);
 
-  return () => {
-    cancelAnimationFrame(animationFrameId);
-    //console.log("🧹 Scroll interval cleared");
-  };
-}, [pauseRotation, ROTATION, windowWidth]);
+        const count = ROTATION ? 2 : 1;
+        const freshChunks: string[][] = [];
 
-useEffect(() => {
-  const refreshChunks = async () => {
-    try {
-      //console.log("🔁 Refreshing chunks with filters:", { fromYear, toYear, hasFaces });
-
-      setPauseRotation(true);
-      setLoading(true);
-
-      const count = ROTATION ? 2 : 1; // ensure at least 2 chunks for scrollability
-      const freshChunks: string[][] = [];
-
-      for (let i = 0; i < count; i++) {
-        const newPhotos = await fetchChunk();
-        //console.log(`📸 Chunk ${i + 1}: fetched ${newPhotos.length} photos`);
-
-        const visiblePhotos = newPhotos.filter((p) => !deletedPhotos.has(p.filename));
-        //console.log(`🧹 After filtering deleted, ${visiblePhotos.length} remain`);
-
-        const newImages = await preloadImages(visiblePhotos);
-        //console.log(`✅ Preloaded ${newImages.length} images`);
-
-        freshChunks.push(newImages);
-      }
-
-      setChunks(freshChunks);
-      //console.log("✅ Chunks updated", freshChunks);
-
-      // 💡 Manually reset scrollLeft after DOM update
-      requestAnimationFrame(() => {
-        const container = containerRef.current;
-        if (container) {
-          container.scrollLeft = 0;
-          //console.log("↩️ scrollLeft manually reset after chunk update");
-
-          //console.log("📐 Scroll debug after reset:", {
-            //scrollLeft: container.scrollLeft,
-            //scrollWidth: container.scrollWidth,
-            //clientWidth: container.clientWidth,
-          //});
+        for (let i = 0; i < count; i++) {
+          const newPhotos = await fetchChunk();
+          const visiblePhotos = newPhotos.filter((p) => !deletedPhotos.has(p.filename));
+          const newImages = await preloadImages(visiblePhotos);
+          freshChunks.push(newImages);
         }
-      });
 
-    } catch (err) {
-      console.error("❌ Error refreshing photo chunks:", err);
-    } finally {
-      setLoading(false);
-      setPauseRotation(false);
-      //console.log("🎬 Rotation resumed", loading);
-    }
-  };
+        setChunks(freshChunks);
 
-  refreshChunks();
-}, [fromYear, toYear, hasFaces]);
-  
+        requestAnimationFrame(() => {
+          const container = containerRef.current;
+          if (container) {
+            container.scrollLeft = 0;
+          }
+        });
+      } catch (err) {
+        console.error("Error refreshing photo chunks:", err);
+      } finally {
+        setLoading(false);
+        setPauseRotation(false);
+      }
+    };
+
+    refreshChunks();
+  }, [fromYear, toYear, hasFaces]);
 
   const handleImageClick = (url: string) => {
     const fullPath = url.split("/serve-image/")[1] || "";
