@@ -1,19 +1,19 @@
 export const carouselFrameCoordinates = {
-  frame_1:   { left: "6.2%",  top: "13.%",  width: "9.9%", height: "17.2%" },
-  frame_2:   { left: "23.4%", top: "13.%",  width: "12.6%", height: "17.2%" },
-  frame_3:   { left: "43.7%", top: "13.%",  width: "10.9%", height: "17.6%" },
-  frame_4:   { left: "62.5%", top: "15.7%",  width: "10.6%", height: "11.5%" },
-  frame_5:   { left: "80.6%", top: "13.%",  width: "11.6%", height: "17.6%" },
+  // Row 1
+  frame_1: { left: "9.7%",  top: "7.9.%", width: "14.2%", height: "20.5%" },
+  frame_2: { left: "31.7%", top: "8.3%", width: "14.7%", height: "20.5%" },
+  frame_3: { left: "54.5%", top: "8.4%", width: "13.2%", height: "19.%" },
+  frame_4: { left: "75.5%", top: "8.4%", width: "14.9%", height: "20.%" },
 
-  frame_6:   { left: "5.95%",  top: "41.8%", width: "12.65%", height: "15.9%" },
-  frame_7:   { left: "27.48%", top: "43.%", width: "9%", height: "14.%" },
-  frame_8:   { left: "44.1%", top: "43.%", width: "10.5%", height: "12.2%" },
-  frame_9:   { left: "62.4%", top: "40.2%", width: "11.6%", height: "17.9%" },
-  frame_10:  { left: "81.8%", top: "43.7%", width: "9.9%", height: "11.8%" },
+  // Row 2
+  frame_5: { left: "9.3%",  top: "41.4%",   width: "14.8%", height: "20.%" },
+  frame_6: { left: "31.7%", top: "41.4%",   width: "14.6%", height: "20.%" },
+  frame_7: { left: "54.3", top: "41.4%",   width: "13.7%", height: "19.5%" },
+  frame_8: { left: "75.8%", top: "41.4%",   width: "14.7%", height: "20.%" },
 
-  frame_11:  { left: "6.1%", top: "69.4%", width: "9.9%", height: "14.8%" },
-  frame_12:  { left: "23.7%", top: "68.6%", width: "12.8%", height: "15.9%" },
-  frame_13:  { left: "44.3%", top: "69.8%", width: "9%", height: "14.%" },
-  frame_14:  { left: "60.95%", top: "69.8%", width: "11%", height: "15.8%" },
-  frame_15:  { left: "79.3%", top: "69.4%", width: "12.9%", height: "14.8%" }
+  // Row 3
+  frame_9:  { left: "9.3%",  top: "72.8%", width: "14.8%", height: "20.%" },
+  frame_10: { left: "31.7%", top: "72.8%", width: "14.4%", height: "19.7%" },
+  frame_11: { left: "54.5%", top: "72.8%", width: "13.8%", height: "19.7%" },
+  frame_12: { left: "75.7%", top: "72.8%", width: "14.8%", height: "19.5%" }
 };
