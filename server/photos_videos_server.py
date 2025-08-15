@@ -37,8 +37,8 @@ CORS(app)
 s3 = boto3.client("s3")
 S3_BUCKET = "photo-video-repository"
 S3_ORIGINALS_PREFIX = "photos/originals"
-S3_CACHE_PREFIX_ROTATED = "cache-image/1200px/rotated"
-S3_CACHE_PREFIX_UNROTATED = "cache-image/1200px/unrotated"
+S3_CACHE_PREFIX_ROTATED = "cache-image/400px/rotated"
+S3_CACHE_PREFIX_UNROTATED = "cache-image/400px/unrotated"
 
 # --- IN-MEMORY INDEX ---
 photo_index = []
@@ -129,7 +129,7 @@ def serve_image(filename):
         if angle:
             img = img.rotate(-angle, expand=True)
 
-        width = 1200
+        width = 400
         ratio = width / float(img.size[0])
         height = int((float(img.size[1]) * float(ratio)))
         img = img.resize((width, height), Image.LANCZOS)
@@ -258,9 +258,9 @@ def rotate_photo():
     image_entry["angle"] = new_angle
 
     rotated_img = img.rotate(-new_angle, expand=True)
-    w_percent = 1200 / float(rotated_img.size[0])
+    w_percent = 400 / float(rotated_img.size[0])
     h_size = int(float(rotated_img.size[1]) * w_percent)
-    resized_img = rotated_img.resize((1200, h_size), Image.LANCZOS)
+    resized_img = rotated_img.resize((400, h_size), Image.LANCZOS)
 
     out_buffer = BytesIO()
     resized_img.save(out_buffer, "WEBP")
