@@ -1,0 +1,39 @@
+FROM python:3.9-slim
+
+# Environment optimizations
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+# Set working directory
+WORKDIR /app
+
+# Install system-level dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libheif-dev \
+    libde265-0 \
+    libjpeg-dev \
+    libpng-dev \
+    libopenjp2-7 \
+    libtiff-dev \
+    libavcodec59 \
+    libavformat59 \
+    libswscale6 \
+ && rm -rf /var/lib/apt/lists/*
+
+# Copy dependency list and install Python dependencies
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Expose port for Flask/Gunicorn
+EXPOSE 8001
+
+# Run using Gunicorn in production mode
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8001", "--timeout", "300", "--log-level", "info", "photos_videos_server:app"]
+
