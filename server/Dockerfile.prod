@@ -1,14 +1,11 @@
-# Use a stable base where package names are consistent
 FROM python:3.9-slim-bullseye
 
-# Environment optimizations
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     DEBIAN_FRONTEND=noninteractive
 
-# System runtime deps (OpenCV/Pillow/ffmpeg/HEIF, etc.)
-# Note: ffmpeg pulls the correct libav* versions for this distro
+# bullseye package names
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     libgl1 \
@@ -18,34 +15,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libjpeg62-turbo \
     libpng16-16 \
     libopenjp2-7 \
-    libtiff6 \
+    libtiff5 \
     ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-# (Optional but often helpful with numpy/opencv)
-# ENV OMP_NUM_THREADS=1
-
-# Set working directory
 WORKDIR /app
-
-# Install Python deps first (better layer caching)
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip setuptools wheel \
  && pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
 COPY . .
-
-# Use non-root for better security
-RUN useradd --create-home --shell /bin/bash appuser \
- && chown -R appuser:appuser /app
-USER appuser
-
-# Expose port for Flask/Gunicorn
 EXPOSE 8001
-
-# (Optional) basic healthcheck hitting your Flask app root
-# HEALTHCHECK --interval=30s --timeout=3s --retries=3 CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health').read()" || exit 1
-
-# Run using Gunicorn in production mode
 CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8001", "--timeout", "300", "--log-level", "info", "photos_videos_server:app"]
