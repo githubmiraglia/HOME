@@ -16,3 +16,9 @@ pillow_heif==1.0.0     # ✅ Latest stable, supports HEIC via libheif
 # Other required deps
 requests==2.32.4
 tqdm==4.67.1
+
+#Mysql for older DMP
+mysql-connector-python
+pandas
+openpyxl
+mysql-connector-python

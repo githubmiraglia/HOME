@@ -1,11 +1,14 @@
+# ==============================
+# Backend Dockerfile (Development)
+# ==============================
 FROM python:3.9-slim
 
 WORKDIR /app
 
-# Install system dependencies for OpenCV, Pillow, HEIF, and ffmpeg
+# --- Install system dependencies for image/video handling ---
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libheif-dev \
     libde265-0 \
@@ -13,21 +16,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpng-dev \
     libopenjp2-7 \
     libtiff6 \
-    libavcodec59 \
-    libavformat59 \
-    libswscale6 \
- && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
-# Pre-copy and install Python dependencies for better caching
+# --- Install Python dependencies ---
 COPY requirements.txt .
-
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy the rest of the project
+# --- Copy project files ---
 COPY . .
 
-# Expose Flask port
+# --- Ensure cache directory exists and is writable ---
+RUN mkdir -p /app/cache && chmod -R 777 /app/cache
+
 EXPOSE 8001
 
-# Development mode: enable Flask auto-reload
+# --- Start Flask in dev mode ---
 CMD ["flask", "run", "--host=0.0.0.0", "--port=8001", "--debug"]

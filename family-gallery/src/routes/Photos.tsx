@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import "../routes/css/Photos.css";
 import PhotoCarousel from "../components/PhotoCarousel";
 import SelectorPhotos, { frameToLargeFrameMap } from "../components/Selector_Photos";
@@ -6,17 +6,19 @@ import GoBackButton from "../components/GoBackButton";
 import OverlayCarousel from "../components/OverlayCarousel";
 import { GLOBAL_BACKEND_URL } from "../App";
 
-const TOTAL_TO_DISPLAY = 15;
 const CHUNK_SIZE = 15;
 const ROTATION = true;
-const isMobileDevice = () => /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+const WAIT_SECONDS = 15; // ⬅️ change here for rotation timing
+
+const isMobileDevice = () =>
+  /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
 
 const Photos: React.FC = () => {
-  const [chunks, setChunks] = useState<string[][]>([]);
+  const [chunkA, setChunkA] = useState<string[]>([]);
+  const [chunkB, setChunkB] = useState<string[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [pauseRotation, setPauseRotation] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const [selectedFrame, setSelectedFrame] = useState("/frame1_brownish.png");
   const [selectedBackground, setSelectedBackground] = useState("/background_white.png");
@@ -33,163 +35,170 @@ const Photos: React.FC = () => {
 
   const [preloadedUrls, setPreloadedUrls] = useState<{ [filename: string]: string }>({});
 
+  // ---------------------------------------------------------------------
+  // HELPERS
+  // ---------------------------------------------------------------------
+
+  const safeEncodePath = (path: string) =>
+    path.split("/").map(encodeURIComponent).join("/");
+
+  const fetchChunk = async (size = CHUNK_SIZE) => {
+    const res = await fetch(
+      `${GLOBAL_BACKEND_URL}/photo-index/random-chunk?from=${fromYear}&to=${toYear}&size=${size}&clear=true&hasFaces=${hasFaces}`
+    );
+    return res.json();
+  };
+
+  // ---------------------------------------------------------------------
+  // ROBUST IMAGE PRELOADER – skips errors
+  // ---------------------------------------------------------------------
+
+  const robustPreload = async (countNeeded: number): Promise<string[]> => {
+    const results: string[] = [];
+
+    while (results.length < countNeeded) {
+      const batchSize = Math.max(20, countNeeded - results.length);
+      const photos = await fetchChunk(batchSize);
+
+      const visible = photos.filter((p) => !deletedPhotos.has(p.filename));
+
+      const attempts = await Promise.all(
+        visible.map(
+          (p) =>
+            new Promise<string | null>((resolve) => {
+              const url = `${GLOBAL_BACKEND_URL}/serve-image/${safeEncodePath(
+                p.filename
+              )}`;
+
+              const img = new Image();
+              img.onload = () => resolve(url);
+              img.onerror = () => resolve(null);
+              img.src = url;
+            })
+        )
+      );
+
+      const success = attempts.filter((u): u is string => u !== null);
+      results.push(...success);
+    }
+
+    return results.slice(0, countNeeded);
+  };
+
+  // ---------------------------------------------------------------------
+  // INITIAL LOAD: chunkA + chunkB
+  // ---------------------------------------------------------------------
+
+  const loadInitialChunks = async () => {
+    setLoading(true);
+    const urlsA = await robustPreload(15);
+    const urlsB = await robustPreload(15);
+    setChunkA(urlsA);
+    setChunkB(urlsB);
+    setLoading(false);
+  };
+
+  // ---------------------------------------------------------------------
+  // ORIENTATION CHECK
+  // ---------------------------------------------------------------------
+
   useEffect(() => {
     const checkOrientation = () => {
-      const isPortraitNow = window.innerHeight > window.innerWidth;
-      setIsPortrait(isMobileDevice() && isPortraitNow);
+      const portrait = window.innerHeight > window.innerWidth;
+      setIsPortrait(isMobileDevice() && portrait);
     };
+
     checkOrientation();
     window.addEventListener("resize", checkOrientation);
     window.addEventListener("orientationchange", checkOrientation);
+
     return () => {
       window.removeEventListener("resize", checkOrientation);
       window.removeEventListener("orientationchange", checkOrientation);
     };
   }, []);
 
-  const fetchChunk = async (): Promise<any[]> => {
-    const res = await fetch(
-      `${GLOBAL_BACKEND_URL}/photo-index/random-chunk?from=${fromYear}&to=${toYear}&size=${CHUNK_SIZE}&clear=true&hasFaces=${hasFaces}`
-    );
-    return res.json();
-  };
-
-  const safeEncodePath = (path: string) => path.split("/").map(encodeURIComponent).join("/");
-
-  const preloadImages = async (photos: any[]): Promise<string[]> => {
-    const newPreloaded: { [filename: string]: string } = {};
-    const urls = await Promise.all(
-      photos.map((photo) => {
-        const url = `${GLOBAL_BACKEND_URL}/serve-image/${safeEncodePath(photo.filename)}`;
-        newPreloaded[photo.filename] = url;
-        return new Promise<string>((resolve) => {
-          const img = new Image();
-          img.src = url;
-          img.onload = img.onerror = () => resolve(url);
-        });
-      })
-    );
-    setPreloadedUrls((prev) => ({ ...prev, ...newPreloaded }));
-    return urls;
-  };
-
-  const refillChunks = async () => {
-    const newPhotos = await fetchChunk();
-    const visiblePhotos = newPhotos.filter((p) => !deletedPhotos.has(p.filename));
-    const newImages = await preloadImages(visiblePhotos);
-    setChunks((prev) => [...prev, newImages]);
-  };
+  // ---------------------------------------------------------------------
+  // INIT
+  // ---------------------------------------------------------------------
 
   useEffect(() => {
     const initialize = async () => {
-      try {
-        setLoading(true);
-        const deletedRes = await fetch(`${GLOBAL_BACKEND_URL}/cache/deleted_photos.json`);
-        const deletedJson: string[] = await deletedRes.json();
-        setDeletedPhotos(new Set(deletedJson));
+      setLoading(true);
 
-        const count = ROTATION ? TOTAL_TO_DISPLAY / CHUNK_SIZE : 1;
-        for (let i = 0; i < count; i++) {
-          await refillChunks();
-        }
-        setLoading(false);
-      } catch (err) {
-        console.error("Initialization error:", err);
-        setLoading(false);
-      }
+      const deletedRes = await fetch(`${GLOBAL_BACKEND_URL}/cache/deleted_photos.json`);
+      const deletedJson: string[] = await deletedRes.json();
+      setDeletedPhotos(new Set(deletedJson));
+
+      await loadInitialChunks();
+      setLoading(false);
     };
+
     initialize();
   }, []);
 
+  // ---------------------------------------------------------------------
+  // LOAD FULL INDEX (overlay navigation)
+  // ---------------------------------------------------------------------
+
   useEffect(() => {
-    const fetchFullIndex = async () => {
+    const loadAll = async () => {
       const res = await fetch(`${GLOBAL_BACKEND_URL}/photo-index/full`);
-      const json = await res.json();
-      setPhotoIndex(json);
+      setPhotoIndex(await res.json());
     };
-    fetchFullIndex();
+    loadAll();
   }, []);
 
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  // ---------------------------------------------------------------------
+  // 🔄 STATIC ROTATION (no scrolling)
+  // ---------------------------------------------------------------------
 
-  useEffect(() => {
-    const enterFullscreen = async () => {
-      if (!document.fullscreenElement) {
-        try {
-          await document.documentElement.requestFullscreen();
-        } catch (err) {
-          console.error("Failed to enter fullscreen:", err);
-        }
-      }
-    };
-    enterFullscreen();
-  }, []);
-
-  // ✅ NEW: smooth integer-pixel scroll
   useEffect(() => {
     if (!ROTATION || pauseRotation) return;
 
-    const container = containerRef.current;
-    if (!container) return;
+    const interval = setInterval(async () => {
+      setPauseRotation(true);
 
-    const interval = setInterval(() => {
-      container.scrollLeft += 1;
+      // Move next → current
+      setChunkA(chunkB);
 
-      if (container.scrollLeft >= windowWidth) {
-        container.scrollLeft = 0;
-        setChunks((prev) => prev.slice(1));
-        refillChunks();
-      }
-    }, 16); // ~60fps
+      // Fetch new chunk
+      const newChunk = await robustPreload(15);
+      setChunkB(newChunk);
+
+      setPauseRotation(false);
+    }, WAIT_SECONDS * 1000);
 
     return () => clearInterval(interval);
-  }, [pauseRotation, ROTATION, windowWidth]);
+  }, [chunkA, chunkB, pauseRotation]);
+
+  // ---------------------------------------------------------------------
+  // FILTER CHANGE → reload fresh 30
+  // ---------------------------------------------------------------------
 
   useEffect(() => {
-    const refreshChunks = async () => {
-      try {
-        setPauseRotation(true);
-        setLoading(true);
-
-        const count = ROTATION ? 2 : 1;
-        const freshChunks: string[][] = [];
-
-        for (let i = 0; i < count; i++) {
-          const newPhotos = await fetchChunk();
-          const visiblePhotos = newPhotos.filter((p) => !deletedPhotos.has(p.filename));
-          const newImages = await preloadImages(visiblePhotos);
-          freshChunks.push(newImages);
-        }
-
-        setChunks(freshChunks);
-
-        requestAnimationFrame(() => {
-          const container = containerRef.current;
-          if (container) {
-            container.scrollLeft = 0;
-          }
-        });
-      } catch (err) {
-        console.error("Error refreshing photo chunks:", err);
-      } finally {
-        setLoading(false);
-        setPauseRotation(false);
-      }
+    const reload = async () => {
+      setPauseRotation(true);
+      await loadInitialChunks();
+      setPauseRotation(false);
     };
 
-    refreshChunks();
+    reload();
   }, [fromYear, toYear, hasFaces]);
 
+  // ---------------------------------------------------------------------
+  // OVERLAY HANDLERS
+  // ---------------------------------------------------------------------
+
   const handleImageClick = (url: string) => {
-    const fullPath = url.split("/serve-image/")[1] || "";
-    const filename = decodeURIComponent(fullPath.trim());
+    const full = url.split("/serve-image/")[1] || "";
+    const filename = decodeURIComponent(full.trim());
+
     const index = photoIndex.findIndex(
-      (p) => decodeURIComponent((p.filename || "").trim().toLowerCase()) === filename.toLowerCase()
+      (p) =>
+        decodeURIComponent(p.filename.trim().toLowerCase()) === filename.toLowerCase()
     );
+
     if (index !== -1) {
       setStartIndex(index);
       setOverlayVisible(true);
@@ -200,24 +209,56 @@ const Photos: React.FC = () => {
   const handleDeleteInOverlay = (filename: string) => {
     setDeletedPhotos((prev) => new Set([...prev, filename]));
     setPhotoIndex((prev) => prev.filter((p) => p.filename !== filename));
-    setChunks((prevChunks) =>
-      prevChunks.map((chunk) => chunk.filter((url) => !url.includes(filename)))
-    );
+    setChunkA((prev) => prev.filter((u) => !u.includes(filename)));
+    setChunkB((prev) => prev.filter((u) => !u.includes(filename)));
   };
 
   const overlayFrame = frameToLargeFrameMap[selectedFrame] || selectedFrame;
+
+// -----------------------------------
+// FULLSCREEN ENTRY (robust)
+// -----------------------------------
+useEffect(() => {
+  const enterFullscreen = async () => {
+    const elem = document.documentElement;
+
+    const request =
+      elem.requestFullscreen ||
+      (elem as any).webkitRequestFullscreen ||
+      (elem as any).msRequestFullscreen ||
+      (elem as any).mozRequestFullScreen;
+
+    if (request && !document.fullscreenElement) {
+      try {
+        await request.call(elem);
+      } catch (err) {
+        console.warn("Fullscreen failed:", err);
+      }
+    }
+  };
+
+  // Small delay to avoid layout issues during mount
+  const timer = setTimeout(enterFullscreen, 400);
+
+  return () => clearTimeout(timer);
+}, []);
+
+
+
+  // ---------------------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------------------
 
   if (isPortrait) {
     return <div className="portrait-warning">Vire dispositivo paisagem (landscape).</div>;
   }
 
   return (
-    <div className="photos-container" ref={containerRef}>
-      {loading && <div className="global-loading-overlay">Loading photos...</div>}
-
+    <div className="photos-container">
       <div className="controls-wrapper">
         <div className="control-bar">
           <GoBackButton />
+
           <SelectorPhotos
             selectedFrame={selectedFrame}
             selectedBackground={selectedBackground}
@@ -233,16 +274,14 @@ const Photos: React.FC = () => {
         </div>
       </div>
 
-      {chunks.map((chunk, idx) => (
-        <PhotoCarousel
-          key={idx}
-          images={chunk}
-          frameImage={selectedFrame}
-          backgroundImage={selectedBackground}
-          showLoading={loading && idx === 0}
-          onImageClick={handleImageClick}
-        />
-      ))}
+      {/* Only one wall visible */}
+      <PhotoCarousel
+        images={chunkA}
+        frameImage={selectedFrame}
+        backgroundImage={selectedBackground}
+        showLoading={loading}
+        onImageClick={handleImageClick}
+      />
 
       {overlayVisible && startIndex !== null && (
         <OverlayCarousel
@@ -252,12 +291,10 @@ const Photos: React.FC = () => {
             setOverlayVisible(false);
             setPauseRotation(false);
           }}
-          onPrev={() =>
-            setStartIndex((prev) => (prev !== null ? Math.max(prev - 3, 0) : 0))
-          }
+          onPrev={() => setStartIndex((p) => (p !== null ? Math.max(p - 3, 0) : 0))}
           onNext={() =>
-            setStartIndex((prev) =>
-              prev !== null ? Math.min(prev + 3, photoIndex.length - 3) : 0
+            setStartIndex((p) =>
+              p !== null ? Math.min(p + 3, photoIndex.length - 3) : 0
             )
           }
           selectedFrame={overlayFrame}

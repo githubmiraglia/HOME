@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   frontend:
     build:
@@ -7,17 +5,42 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./family-gallery:/app
-      - /app/node_modules    # Prevent node_modules from being overwritten
+      - /app/node_modules
     working_dir: /app
-    command: npm run dev
+    user: "1000:1000"
     ports:
       - "3000:3000"
     environment:
-      - HOST=0.0.0.0           # Vite needs this to listen externally
+      - HOST=0.0.0.0
       - PORT=3000
-      - VITE_BACKEND_URL=http://localhost:8001  # This enables frontend to call backend during dev
+      - VITE_BACKEND_URL=https://wrrm.lat:8081
+    stdin_open: true
+    tty: true
     depends_on:
       - backend
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: dmp_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: dmp
+      MYSQL_USER: ADMIN
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
 
   backend:
     build:
@@ -25,11 +48,56 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./server:/app
-      - ~/.aws:/root/.aws:ro   # Allows local dev to use AWS credentials
+      - ~/.aws:/root/.aws:ro
+      - "E:\\PHOTO_VIDEO_REPOSITORY:/mnt/localrepo:rw"
     working_dir: /app
-    command: flask run --host=0.0.0.0 --port=8001 --debug
-    ports:
-      - "8001:8001"
+    command: >
+      sh -c "./db/wait-for-it.sh dmp_mysql:3306 -- 
+             flask run --host=0.0.0.0 --port=8001 --debug"
+    expose:
+      - "8001"
     environment:
       - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - PYTHONDONTWRITEBYTECODE=1
       - FLASK_APP=photos_videos_server.py
+      - USE_LOCAL_STORAGE=true
+      - LOCAL_PHOTO_REPO=/mnt/localrepo
+      - MYSQL_HOST=dmp_mysql
+      - MYSQL_USER=ADMIN
+      - MYSQL_PASSWORD=admin
+      - MYSQL_DB=dmp
+      - MYSQL_PORT=3306
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  caddy:
+    image: caddy:2.7
+    container_name: home-caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8081:443"
+    volumes:
+      - ./server/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./dmp/web:/srv/dmp:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
+  mysql_data:

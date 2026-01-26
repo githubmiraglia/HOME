@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,    // Expose to Docker host
-    port: 3000     // Match docker-compose.dev.yml
+    port: 3000,     // Match docker-compose.dev.yml
+    allowedHosts: ['wrrm.lat', 'www.wrrm.lat']
   }
 })

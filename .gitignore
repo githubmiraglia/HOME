@@ -1,72 +1,92 @@
-# macOS / system files
+############################
+# OS / editor noise
+############################
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+.vscode/
 
+############################
 # Logs
+############################
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+############################
 # Node / frontend
+############################
 node_modules/
 dist/
 .vite/
-.vscode/
 
+############################
 # Python
+############################
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
-*.pyc
-*.pdb
 server/venv/
 server/__pycache__/
 
-# Environment and config
-#.env
-#.env.*.local
-#.env.*
-#.env.backend
+############################
+# Environment variables (NEVER COMMIT)
+############################
+.env
+.env.*
+family-gallery/.env*
+server/.env*
+!.env.example
 
-# OS-specific / misc
-*.swp
-*.swo
-
-# Image files – ignore globally, allow in asset/public folders
-*.jpg
-*.jpeg
-*.png
-*.gif
-*.webp
-
-# Exceptions – allow committed images in assets or public
-# Only ignore images outside allowed folders
-!assets/**
-!public/**
-
-# AWS credentials (never commit!)
-*.pem
-.aws/
-
+############################
 # Docker
-*.container
-*.log
+############################
 docker-compose.override.yml
 
-# GitHub Actions
-!.github/
-!.github/workflows/
+############################
+# AWS credentials (NEVER COMMIT)
+############################
+.aws/
+*.pem
 
-# Ignore sensitive Apache certs
+############################
+# Apache / SSL sensitive files
+############################
 apache/certs/certs/*
 apache/certs/private/*
 
-# But keep the folder structure
+# Keep directory structure
 !apache/certs/
 !apache/certs/certs/
 !apache/certs/private/
 
-# Ignore old sensitive SSL certs
+############################
+# System SSL leftovers
+############################
 etc/ssl/certs/
 etc/ssl/private/
+
+############################
+# Runtime cache / generated backend data
+############################
+server/cache/*
+!server/cache/.gitkeep
+
+############################
+# Media repositories (large / generated)
+############################
+PHOTO_VIDEO_REPOSITORY/
+**/photos/originals/**
+**/videos/originals/**
+**/cache-image/**
+
+############################
+# GitHub Actions
+############################
+!.github/
+!.github/workflows/
+############################
+# DMP noise (safe)
+############################
+dmp/**/.DS_Store
+dmp/**/*.log

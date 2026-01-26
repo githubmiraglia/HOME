@@ -14916,7 +14916,7 @@
     "filename": "2005/Gates NY/Negative0-03-1A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -14925,7 +14925,7 @@
     "filename": "2005/Gates NY/Negative0-04-1A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -14934,7 +14934,7 @@
     "filename": "2005/Gates NY/Negative0-05-2A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -19254,7 +19254,7 @@
     "filename": "2005/december 2005 photos/December 05 282.jpg",
     "date": "2005-10-02",
     "camera": "Canon PowerShot S330",
-    "angle": 0,
+    "angle": 270,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -115842,7 +115842,7 @@
     "filename": "2012/Jul 3, 2012/IMG_2772.JPG",
     "date": "2012-06-25",
     "camera": "Canon PowerShot SD960 IS",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -125535,7 +125535,7 @@
     "filename": "2013/03/23/20130323-173926/IMG_3424.JPG",
     "date": "2013-11-02",
     "camera": "Canon PowerShot SD960 IS",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -234745,5 +234745,17 @@
     "hasFaces": true,
     "gps": null,
     "location": null
+  },
+  {
+    "filename": "photos/originals/2025/Turquia_e_Outros/1327.jpg",
+    "date": "2025-01-01",
+    "hasFaces": false,
+    "angle": 0
+  },
+  {
+    "filename": "photos/originals/2025/Turquia_e_Outros/1335.jpg",
+    "date": "2025-01-01",
+    "hasFaces": false,
+    "angle": 0
   }
 ]
