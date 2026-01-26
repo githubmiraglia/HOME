@@ -1,0 +1,127 @@
+// JavaScript Document
+function fruit(sprite,costume,x,y,vx,vy,rotation,flip,show,am,frtX,frtY,isClone){
+	actor.call(this,sprite,costume,x,y,vx,vy,rotation,flip,show);  
+	this.show=false;
+	this.active=false;
+	this.frtX=frtX;
+	this.frtY=frtY;
+	this.x=this.frtX*1.25;
+	this.y=this.frtY*1.25;
+	this.am=am;
+	this.isClone=isClone;
+	this.once=[false,false,false,false,false,false];
+	this.setback=0;
+	this.bfruitEaten=false;
+	this.var1=0;
+	this.var2=0;
+	this.var3=0;
+	this.frtTimer=0;
+	this.fruitAlreadyEaten=false;
+}
+
+fruit.prototype = Object.create(actor.prototype);
+
+fruit.prototype.act=function(clock,gameFlags,gameData){
+	this.gameFlags=gameFlags;
+	this.gameData=gameData;
+	let g=this.gameData.game;
+	this.fruitsBottom();
+	if((g=="Play"||g=="Pause"||g=="Death")&&!this.gameFlags.die){
+		if(!this.isClone){
+			if((clock/(1000/_TICK)-this.setback)>=this.var1){
+				this.var1=0;
+				this.bfruitEaten=false;
+				this.fruitAlreadyEaten=false;
+				this.show=false;
+				this.active=false;
+			}
+			if(this.gameData.pellets<=171&&!this.fruitAlreadyEaten){
+				if(!this.once[3]){
+					this.once[3]=true;
+					this.show=true;
+					this.active=true;
+					this.var1=clock/(1000/_TICK)+Math.round(Math.random())+9;
+				}
+				if(this.gameData.pellets<=71&&!this.fruitAlreadyEaten){
+					if(!this.once[4]){
+						this.once[4]=true;
+						this.show=true;
+						this.active=true;
+						this.var1=clock/(1000/_TICK)+Math.round(Math.random())+9;
+					}
+				}
+				if(this.bfruitEaten){
+					this.fruitEaten(clock);
+				}else{
+					if(this.gameData.level>12){
+						this.costume=12;
+					}else{
+						this.costume=this.gameData.level-1;
+					}
+					if(Math.abs(this.gameData.pmX)<6&&this.gameData.pmY==-20&&this.active){
+						if(this.gameData.level<13){
+							this.gameData.score+=this.gameData.fruitValues[this.gameData.level-1];
+						}else{
+							this.gameData.score+=5000;
+						}
+						this.costume+=13;
+						this.gameData.soundStack.push({command:"PLAY",music:"fruit",volume:0.3})
+						this.bfruitEaten=true;
+					}
+					if(g=="Pause"){
+						if(!this.once[1]){
+							this.once[1]=true;
+							this.var2=clock;
+							this.var3=this.setback;
+						}
+						this.setback=clock+this.var3-this.var2;
+					}else
+						this.once[1]=false;
+				}
+			}
+		}	
+	}else{
+		this.show=false;
+		this.active=false;
+	}
+	return[this.gameFlags,this.gameData];
+}
+
+fruit.prototype.fruitEaten=function(clock){
+	if(this.am.checkEnded("fruit")){
+		if(!this.once[2]){
+			this.once[2]=true;
+			this.frtTimer=clock;
+		}
+		if((clock-this.frtTimer)/(1000/_TICK)>=2){
+			this.bfruitEaten=false;
+			this.once[2]=false;
+			this.show=false;
+			this.active=false;
+			this.fruitAlreadyEaten=true;
+		}   
+	}
+}
+
+
+fruit.prototype.fruitsBottom=function(){
+	if(this.isClone){
+		this.x=this.frtX*1.25;
+		this.y=this.frtY*1.25;	
+		let g=this.gameData.game;
+		if(this.gameData.level<8){
+			this.costume=Math.floor(8-(this.frtX+17)/15)-1;
+		}else{
+			if((this.gameData.level-Math.floor((this.frtX+17)/15))<13){
+				this.costume=this.gameData.level-Math.floor((this.frtX+17)/15);
+			}else{
+				this.costume=12;
+			}
+		}
+		if(Math.floor((this.frtX+17)/15)>(7-this.gameData.level)&&(g=="Idle"||g=="Play"||g=="Pause"||g=="Death"||g=="Over"))
+	   		this.show=true;
+		else
+	   		this.show=false;
+	}
+}
+		

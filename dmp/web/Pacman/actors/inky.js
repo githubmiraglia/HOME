@@ -1,0 +1,205 @@
+// JavaScript Document
+function inky(sprite,costume,x,y,vx,vy,rotation,flip,show,am){
+	ghost.call(this,sprite,costume,x,y,vx,vy,rotation,flip,show,am,-16,8); 
+	this.speed=0;
+	this.status="Home";
+	this.direction=4;
+	this.newdirection=4;
+	this.id=2;
+	this.countEscape=0;
+	this.escaped=false;
+}
+
+inky.prototype = Object.create(ghost.prototype);
+
+inky.prototype.escape=function(clock){
+	if(!(this.gameData.level>1||this.gameData.pellets<215)){
+		if(this.countEscape<8){
+			this.direction=4;
+			this.gy--;
+			this.countEscape++;
+		}else if(this.countEscape<16){
+			this.direction=2;
+			this.gy++;
+			this.countEscape++
+		}else{
+			this.countEscape=0;
+		}
+	}else{
+		if(!this.once[3]){
+			this.once[3]=true;
+			this.countEscape=0;
+		}else{
+			if(this.countEscape<16){
+				this.direction=3;
+				this.gx++;
+				this.countEscape++;
+			}else if(this.gy<28){
+				this.gy++;
+				this.direction=2;
+			}else{
+				this.direction=1;
+				this.countEscape=0;
+				this.once[3]=false;
+				this.escaped=true;
+			}
+		}
+	}
+}
+
+
+
+inky.prototype.act=function(clock,gameData,gameFlags){
+this.ghostAct(clock,gameData,gameFlags);
+let g=this.gameData.game;
+if(!this.escaped){
+	this.escape(clock);
+}else{
+	
+if(this.status!="Dying"&&!this.gameFlags.intermission&&g!="Pause"){
+	if(this.gx==0&&this.gy==4){
+		this.status="Home";
+		this.direction=2;
+		this.gameData.alreadyDied[this.id]=true;
+	}else{
+		if(this.gx==0&&(this.gy<29)&&(26<this.gy)){
+			if(this.status=="Dead")
+				this.direction=4;
+			if(this.status=="Home"){
+				this.gy=28;
+				this.direction=Math.round(Math.random())*2+1;
+				this.status="Alive";
+			}
+		}
+		if(mod(this.gx+4,8)==0&&mod(this.gy-4,8)==0&&(!(Math.abs(this.gx)>100))){
+			this.listvar=this.gameData.grid[Math.ceil((this.gx+112)/8)+Math.floor((112-this.gy)/8)*28+111];
+			if(this.status=="Dead"){
+				this.turn(0,28)
+			}else{
+				if(g=="Play"){
+					if(this.turnaround){
+						this.direction+=2;
+						if(this.direction>4)
+							this.direction-=4;
+						this.turnaround=false;
+					}else{
+						if(this.status=="Scared"){
+							this.setRandDir(this.direction);
+						}else{
+							if(!(Math.abs(this.gx)==12&&(this.gy==28||this.gy==-68)&&(mod(this.direction,2)==1))){
+								if(this.gameData.mode=="Scatter"){
+							   		this.turn(108,-140); 
+								}
+								else{
+									if(this.gameData.pmDirection==1)
+										this.turn(2*this.gameData.pmX-this.gameData.blX-32,2*this.gameData.pmY-this.gameData.blY);
+									if(this.gameData.pmDirection==2)
+										this.turn(2*this.gameData.pmX-this.gameData.blX,2*this.gameData.pmY-this.gameData.blY+32);
+									if(this.gameData.pmDirection==3)
+										this.turn(2*this.gameData.pmX-this.gameData.blX+32,2*this.gameData.pmY-this.gameData.blY);
+									if(this.gameData.pmDirection==4)
+										this.turn(2*this.gameData.pmX-this.gameData.blX,2*this.gameData.pmY-this.gameData.blY-32);
+								}
+							}
+						}
+					}
+				}
+			}	
+		}
+	}
+	if((g=="Play"||(this.status=="Dead"&&g!="Death"))){
+		if(this.status=="Dead"){
+			if(this.gameData.level==1){
+				this.speed=3
+			}else{
+				if(this.gameData.level<5){
+					this.speed=3.4;
+				}else{
+					this.speed=3.8;
+				}
+			}
+		}else{
+			if(this.gy==4&&Math.abs(this.gx>60)){
+			   if(this.gameData.level==1){
+				   this.speed=0.8;
+			   }else{
+				   if(this.gameData.level<5){
+					   this.speed=0.9;
+				   }else{
+					   this.speed=1;
+				   }
+			   }
+			}else{
+				if(this.status=="Scared"){
+					if(this.gameData.level==1){
+						this.speed=1;
+					}else{
+						if(this.gameData.level<5){
+							this.speed=1.1;
+						}else{
+							this.speed=1.2;
+						}
+					}
+				}else{
+					if(this.gameData.level==1){
+						this.speed=1.5;
+					}else{
+						if(this.level<5){
+							this.speed=1.7
+						}else{
+							this.speed=1.9;
+						}
+					}
+				}
+			}
+		}  
+	}
+	this.speed=this.speed*this.gameData.multiplier;
+	if(this.status=="Dead"&&this.gy==28&&Math.abs(this.gx)<this.speed&&this.gx!=0){
+		this.gx=0;
+	}else{
+		if(this.status=="Dead"&&this.gx==0&&Math.abs(this.gy-4)<this.speed){
+			this.gy=4;
+		}else{
+			if(this.status=="Home"&&Math.abs(this.gy-28)<this.speed){
+				this.gy=28;
+			}else{
+				this.listvar=this.gameData.grid[Math.ceil((Math.round((this.gx+4)/8)*8+108)/8)+Math.floor((112-this.gy)/8)*28+111];
+				if(mod((this.gy-4),8)==0&&!mod(this.gx+4,8)==0&&((this.direction==1&&mod(this.gx+4,8)<this.speed)||(this.direction==3&&mod(this.gx+4,8)>(8-this.speed)))&&(this.turnaround||!(this.listvar==13||this.listvar==24))){
+					this.gx=Math.round((this.gx+4)/8)*8-4;
+				}else{
+					this.listvar=this.gameData.grid[Math.ceil((this.gx+112)/8)+Math.floor((108-Math.round((this.gy-4)/8)*8)/8)*28+111];
+					if(mod((this.gx+4),8)==0&&!mod(this.gy-4,8)==0&&((this.direction==4&&mod(this.gy-4,8)<this.speed)||(this.direction==2&&mod(this.gy-4,8)>(8-this.speed)))&&(this.turnaround||!(this.listvar==13||this.listvar==24))){	
+						this.gy=Math.round((this.gy-4)/8)*8+4;
+					}else{
+						if(this.direction==1){
+							this.gx+=this.speed*-1;
+							if(this.gx<-119)
+								this.gx=110;
+						}
+						if(this.direction==2){
+							this.gy+=this.speed;
+						}
+						if(this.direction==3){
+							this.gx+=this.speed;
+							if(this.gx>119)
+								this.gx=-110;
+						}
+						if(this.direction==4){	
+							this.gy+=this.speed*-1;
+						}				
+					}
+				}
+			}
+		}
+	}
+}else{
+	//
+}
+}
+
+this.gameData.ghostStatus[1]=this.status;
+return([this.gameFlags,this.gameData]);
+}
+
+

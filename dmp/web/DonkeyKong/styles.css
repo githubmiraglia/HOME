@@ -1,0 +1,64 @@
+@charset "UTF-8";
+/* CSS Document */
+/*<style type="text/css">
+	@font-face {
+    	font-family: "ArcadeClassic";
+    	src: url(/DonkeyKong/fonts/ARCADECLASSIC.TTF) format("truetype");
+	}*/
+
+html,body{
+	overflow:hidden;
+}
+
+html,body{
+	margin:0;
+}
+
+#container {
+	width		: 100%;
+	height		: 100%;
+	overflow	: hidden;
+	/*padding		: 0;
+	margin		: 0;*/
+	-webkit-user-select	: none;
+	-moz-user-select	: none;
+}
+
+#maincanvas{
+	/*clear:both;*/
+}
+#vJoystick{
+	float:left;
+	margin:0px;
+	padding:0px;
+	width:225px;
+	height:150px;
+}
+#vButton{
+	float:left;
+	margin:0px;
+	padding:0px;
+	width:224px;
+	height:150px;
+}
+
+
+h1.arcadeClassic { 
+    font-family: "ArcadeClassic", Verdana, Tahoma;
+	color: red;
+	background:lightblue;
+ 	width:450px;
+	text-align:center;
+	font-size: 40px;
+}
+
+#stringWidth{
+	visibility:"hidden";
+	position:"absolute";
+	height:"auto";
+	width:"auto";
+	white-space: "nowrap";
+}
+
+/*</style>*/
+

@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Donkey Kong</title>
+<meta name="viewport" content="initial-scale=1, minimum-scale = 1, maximum-scale=1, user-scalable=no">
+<style type="text/css">
+	@font-face {
+    	font-family: "ArcadeClassic";
+    	src: url(/DMP/DonkeyKong/fonts/ARCADECLASSIC.TTF) format("truetype");
+	}
+	div,p,canvas,img{
+		margin:0;
+		padding:0;
+	}
+	#wait{
+		margin-top:20%;
+		text-align:center;
+		font-family:"ArcadeClassic";
+		font-size:30px;
+		color:red;
+		display:none;
+	}
+</style>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+	<p id="MOBTXT"></p>
+	<p id="wait">...LOADING IMAGES...</p>
+	<div id="container">
+		<div id="wrapperCanvas">
+			<canvas id="maincanvas"></canvas>
+			<canvas id="player1canvas" style="float:left;display:none;"></canvas>
+			<canvas id="player2canvas" style="float:left;display:none;"></canvas>
+		</div>
+	</div>
+	<script src="session.js"></script>
+	<script src="server.js"></script>
+	<script src="appleDeviceDetection.js"></script>
+	<script src="audiomachine.js"></script>
+	<script src="joystick/virtualJoystick.js"></script>
+	<script src="joystick/joystick.js"></script>
+	<script src="joystick/keyboard.js"></script>
+	<script src="joystick/gamepads.js"></script>
+    <script src ="functions.js"></script>
+	<script src="globalVariables.js"></script>
+    <script src="actor.js"></script>
+    <script src="bonusPoints.js"></script>
+    <script src="heart.js"></script>
+	<script src="help.js"></script>
+	<script src="vectors.js"></script>
+	<script src="canvas.js"></script>
+    <script src="fire.js"></script>
+    <script src="oil.js"></script>
+    <script src="barrelstack.js"></script>
+	<script src="kong.js"></script>
+    <script src="barrel.js"></script>
+    <script src="hammer.js"></script>
+    <script src="rivet.js"></script>
+    <script src="elevator_1.js"></script>
+    <script src="girder.js"></script>
+    <script src="belongings.js"></script>
+    <script src="conveyor.js"></script>
+    <script src="concrete.js"></script>
+    <script src="ladder.js"></script>
+	<script src="princess.js"></script>
+    <script src="mario.js"></script>
+    <script src="game.js"></script>
+    <script src="gamefunctions.js"></script>
+	<script src="player.js"></script>
+	<script src="chaselight.js"></script>
+	<script src="dom.js"></script>
+</body>
+</html>

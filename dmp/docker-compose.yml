@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: dmp_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: dmp
+      MYSQL_USER: ADMIN
+      MYSQL_PASSWORD: admin
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - dmp_network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=admin || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  python:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    container_name: dmp_python
+    working_dir: /usr/src/app
+    stdin_open: true
+    tty: true
+    depends_on:
+      mysql:
+        condition: service_healthy
+    entrypoint: ["/usr/src/app/wait-for-it.sh", "dmp_mysql:3306", "--"]
+    command: /bin/bash -c "python /usr/src/app/updatetables.py && /bin/bash"
+    networks:
+      - dmp_network
+
+  apache:
+    build:
+      context: .
+      dockerfile: apache/Dockerfile
+    container_name: dmp_apache
+    ports:
+      - "8080:80"
+      - "443:443"
+    volumes:
+      - ./web:/var/www/html/DMP
+      - ./custom-apache.conf:/etc/apache2/sites-available/000-default.conf
+      - ./etc/ssl/certs:/etc/ssl/certs:ro
+      - ./etc/ssl/private:/etc/ssl/private:ro
+    command: >
+      /bin/bash -c "
+        a2enmod ssl rewrite &&
+        a2ensite 000-default &&
+        apachectl -D FOREGROUND
+      "
+    depends_on:
+      - python
+    networks:
+      - dmp_network
+
+networks:
+  dmp_network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+

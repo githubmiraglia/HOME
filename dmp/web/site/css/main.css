@@ -1,0 +1,244 @@
+@charset "UTF-8";
+/* CSS Document */
+
+.disable-dlb-tap-zoom{
+	touch-action: manipulation;
+}
+
+body{
+	background-color:#EEEEEE; 
+	margin: 0px;
+	padding: 0px;
+	overflow: hidden;
+}
+
+a{
+	text-decoration: none;
+	cursor:pointer;
+}
+
+p{
+	text-decoration: none;
+	cursor:pointer;
+}
+
+.flexnowrap{
+	display:flex;
+	flex-flow:nowrap;
+}
+
+.flexcolumn{
+	display:flex;
+	flex-flow:column;
+}
+
+#header1{
+	max-width:40%;
+	height:auto;
+	position:absolute;
+	left:20%;
+	bottom:0%;
+	visibility:hidden;
+}
+
+#header2{
+  max-width:40%;
+  height:auto;
+}
+
+#header3{
+	max-width:20%;
+	height:auto;
+	padding:0% 2% 0% 2%;
+	position:absolute;
+	right:0%;
+	bottom:0%;
+}
+
+#user{
+	position:absolute;
+	right:4%;
+	top:10%;
+}
+
+#menu{
+	margin:0px;
+	padding:0.2% 0.5% 0.2% 0.5%;
+	background-color:#3C3B3B;
+	vertical-align: middle;
+}
+
+.menu{
+	font-family:"Gill Sans", "Gill Sans MT", "Myriad Pro", "DejaVu Sans Condensed", Helvetica, Arial, "sans-serif";
+	color:white;
+	text-decoration:none;	
+}
+
+.menu:hover{
+	color:grey;
+}
+
+.carouselWrapper{
+	overflow:hidden;
+	background:#eeeeee;
+}
+
+#clearCarousel{
+	height:0px;
+	transition:height 0.3s;
+	overflow:hidden;
+}
+
+.exit{
+	float:right;
+	margin-right:10px;
+	height:24px;
+	width:auto;
+}
+
+.carousel{
+	position:relative;
+	height:0px;
+	transition:height 0.3s;
+	opacity:100%
+}
+
+.flexwrap{
+	display:flex;
+	flex-flow:wrap;	
+}
+
+.main{
+	background-color: #1a1a1a;
+}
+
+#mainleft{
+	max-width:100%;
+	min-width:280px;
+	height:auto;
+}
+
+#mainright{
+	max-width:100%;
+	min-width:140px;
+	height:auto;
+}
+
+#waitForRoms{
+	display: block;
+	background-color : black;
+	color:red;
+	font: "ArcadeClassic", Verdana, Tahoma;
+	font-size: 18px;
+	text-align: center;
+}
+
+@media(max-width:430px){
+	#mainright{
+		max-width:0%;	
+		height:auto;
+	}
+	.flexwrap{
+		text-align:right;
+	}
+	.exit{
+		margin-right:0px;
+	}
+}
+/*
+#cookiewrapper{
+	position:fixed;
+	top:0%;
+	left:0%;
+	width:100%;
+	height: 100vh;
+	background-color:white;
+	opacity:40%;
+	text-align:center;
+}
+*/
+#cookiewrapper{
+	margin-top:10px;
+	padding:0px;
+	display:flex;
+	flex-flow:row nowrap;
+	
+}
+
+
+#cookiedisclaimer{
+	flex:100;
+	margin:0px;
+	padding:12px 12px 12px 12px;
+	background-color:#1e1e2f;
+	color:white;
+}
+
+#hrefCookie{
+	color:#C2E4FA;	
+	cursor:pointer;
+}
+
+#cookieOk{
+	flex:1;
+	margin:0px;
+	padding:12px 12px 12px 12px;
+	background-color:#C0BEBE;
+	color:#1e1e2f;
+	text-align: center;
+}
+
+#cookieOk:hover{
+	background-color:white;
+	cursor:pointer;
+}
+
+footer{
+	padding:20px 0px 20px 0px;
+	background-color:black;
+	display:flex;
+	flex-flow: row nowrap;
+	border:none;
+}
+
+#leftfooter{
+	flex:1;
+}
+
+#legalWrapper{
+	flex:100;
+	display:flex;
+	flex-flow: column nowrap;
+}
+
+.legal{
+	font-family:"Gill Sans", "Gill Sans MT", "Myriad Pro", "DejaVu Sans Condensed", Helvetica, Arial, "sans-serif";
+	padding-left:10px;
+	color:grey;
+	margin-top:2px;
+}
+
+.legal:hover{
+	color:white;
+	text-decoration: underline;
+}
+
+.logo-container {
+	position: absolute;
+	top: 6vh; /* 10% of viewport height */
+	left: 0.5vw; 
+	width: 13vw; 
+	padding-left: 0.5vw; /* 1% border left */
+	padding-right: 1vw; /* 1% border right */
+	background-color: #dde9fc;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
+}
+
+.logo-container img {
+	max-width: 100%;
+	height: auto;
+}
+

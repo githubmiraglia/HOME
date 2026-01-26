@@ -1,0 +1,17 @@
+board,0448,0576
+Kbs,0448,0576
+pacmanfront,0448,0576
+pacmanTopScores,0448,0576
+stage,0448,0576
+devices,0090,0090
+VJ,0126,0126
+two,0014,0014
+blinky,0034,0032
+inky,0034,0032
+pinky,0034,0032
+clyde,0034,0032
+death,0064,0064
+fruits,0042,0032
+Life,0020,0022
+pacman,0066,0064
+pellets,0020,0020

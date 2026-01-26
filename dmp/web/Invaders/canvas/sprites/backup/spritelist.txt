@@ -1,0 +1,11 @@
+aliens,0052,0032
+base,0066,0032
+bomb,0048,0038
+bullet,0032,0036
+saucer,0066,0028
+shield,0092,0092
+splat,0048,0048
+stage,0480,0360
+invadersFront,0448,0576
+invadersTopScores,0448,0576
+board,0448,0576

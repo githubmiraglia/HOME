@@ -1,0 +1,13 @@
+landerHigh,0034,0050
+landerLow,0076,0120
+lunarHigh,0944,0290
+lunarLow,1888,0290
+stage,0448,0576
+landerFront,0448,0576
+landerTopScores,0448,0576
+board,0448,0576
+Kbs,0448,0576
+devices,0090,0090
+VJ,0126,0126
+two,0014,0014
+fuel,0017,0037

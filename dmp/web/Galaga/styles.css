@@ -1,0 +1,17 @@
+@charset "UTF-8";
+/* CSS Document */
+/*<style type="text/css">
+	@font-face {
+    	font-family: "ArcadeClassic";
+    	src: url(/DonkeyKong/fonts/ARCADECLASSIC.TTF) format("truetype");
+	}*/
+
+html,body{
+	overflow:hidden;
+}
+
+html,body{
+	margin:0;
+	padding:0;
+}
+

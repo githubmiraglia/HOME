@@ -1,0 +1,22 @@
+1-up
+ambience
+bossgalagadefeat
+bossgalagahit
+bossgalagatractorbeam
+captured fighter destroyed
+challenging stage over
+challenging stage perfect
+challenging stage
+die
+fighter captured
+fighter rescued
+fightershoot
+galagaattack
+galagadefeat1
+galagadefeat2
+name entry 1
+name entry 2+
+nextlevel
+stage intro
+tractoorbeamcaught
+coincredit2

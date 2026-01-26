@@ -1,0 +1,16 @@
+aliens,0026,0016
+base,0033,0016
+bomb,0024,0019
+bullet,0024,0018
+life,0024,0012
+saucer,0034,0022
+shield,0046,0046
+splat,0024,0024
+stage,0448,0576
+invadersFront,0448,0576
+invadersTopScores,0448,0576
+board,0448,0576
+Kbs,0448,0576
+devices,0090,0090
+VJ,0126,0126
+two,0014,0014

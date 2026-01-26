@@ -1,0 +1,17 @@
+bacmusic
+coin_credit
+death
+hammer hit
+hammer
+howhigh
+intro1
+intro1_long
+itemget
+jump
+jumpbar
+out of time
+reached princess
+rivet
+walking
+win1
+win2

@@ -1,0 +1,15 @@
+alarm
+background1
+background2
+bleep
+chomphigh
+chomplow
+coin
+death
+extralife
+fruit
+intermission
+intro
+omnom
+omnomsilent
+power

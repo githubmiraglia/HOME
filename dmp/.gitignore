@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Environment & secrets
+.env
+venv/
+
+# SSL keys — never commit real certs to public repos
+ssl/*.key
+ssl/*.crt
+ssl/*.ca-bundle
+
+# AWS keys
+aws_keys/*.pem
+
+# System
+.DS_Store
+Thumbs.db
+
+# Optional: Excel data
+#python/data/*.xlsx

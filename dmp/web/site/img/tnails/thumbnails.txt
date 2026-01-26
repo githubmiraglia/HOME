@@ -1,0 +1,8 @@
+tnailDonkeyKong,0448,0576,/DMP/DonkeyKong/donkeykong.html
+tnailGalaga,0448,0576,/DMP/Galaga/galaga.html
+tnailPacman,0448,0576,/DMP/Pacman/Pacman.html
+tnailInvaders,0448,0576,/DMP/Invaders/invaders.html
+tnailLander,0448,0576,/DMP/Lander/lander.html
+tnailInConstruction,0448,0576,dmp.html
+tnailInConstruction,0448,0576,dmp.html
+tnailInConstruction,0448,0576,dmp.html

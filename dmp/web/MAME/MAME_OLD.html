@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+  <head>
+  </head>
+  <body>
+    <script src = '/DMP/MAME/mamejs/mamejs.js'></script>
+    
+    <h1>MAMEJS - sample page</h1>
+    <!--<button id="startButton">DOUBLE Click to Start</button>!-->
+    <!--<button id="stopGame">STOP THE GAME</button>!-->
+    <select id="romSelector"></select>
+    <button id="runGame" onclick="runSelectedROM()">DBL CLICK TO Play Game</button>
+    <!--<div id="container" style="height: 1980px; width: 1080px">!-->
+      <div id="mame-container" style="height: 1980px; width: 1080px"></div>
+    <!--</div>!-->
+    <script>
+      // Global MAME instance
+      var loadedMame = null;
+      var config = null;
+
+      function mainFunction(container) {
+        console.log("Main function running...");
+        var games = {
+          files : {
+            'mk.zip' : '../MAME/roms/mk.zip',
+            'dkong.zip' : '../MAME/roms/dkong.zip',
+            'elevator.zip' : '../MAME/roms/elevator.zip'
+          }, 
+          driver: {
+            'mk.zip' : 'mk',
+            'dkong.zip' : 'dkong',
+            'elevator.zip' : 'elevator'
+          }
+        }
+        config = {
+          emulator: '/DMP/MAME/mamejs/mame.js',
+          games: games,
+          resolution: {
+            width: 1980,
+            height: 1080
+          }
+        }
+        
+        preloadMAME(config, container);
+
+        // Preload MAME and multiple ROMs
+        function preloadMAME(config, container) {
+            return mamejs.load(config.emulator, container).then((mame) => {
+                document.getElementById("mame-container").click()
+                loadedMame = mame; // Store instance
+                console.log("MAME LOAD GONE")
+            return mame.loadRoms(config.games.files) // Load multiple ROMs
+            .then(() => {
+              populateROMSelector(config.games); // Populate selection menu
+              //return loadedMame.runGame('mk', config.resolution).then(function() {
+              //return mame
+            })
+                 // console.log("All ROMs preloaded!");
+            
+          });
+        //};
+        }
+
+        // Populate the ROM selection dropdown
+        function populateROMSelector(games) {
+
+            console.log("GAMES ",games);
+
+            var selector = document.getElementById("romSelector");
+            selector.innerHTML = "";
+            for (let game in games.files) {
+                var option = document.createElement("option");
+                option.value = game;
+                option.textContent = game;
+                console.log(game)
+                selector.appendChild(option);
+            };
+        }
+      }
+        
+    // Run the selected ROM
+    function runSelectedROM() {
+      var selectedROM = document.getElementById("romSelector").value;
+      if (!loadedMame) {
+          console.error("MAMEJS is not loaded yet!");
+          return;
+      }
+
+      document.getElementById("runGame").remove();
+
+      //try {
+        //loadedMame.loader.module.ccall('exit', 'void', ['number'], [0]);
+        //document.getElementById("container").remove();
+        console.log("QUIT MAME");
+      //} catch (err) {
+          //console.log("MAME exited, ignoring error:", err.message);
+          //console.log(loadedMame)
+          document.getElementById("mame-container").click()
+          loadedMame.runGame(selectedROM.replace(".zip",""), config.resolution)
+          .then(function() {
+              document.getElementById("mame-container").click()
+              console.log("AQYU AQYU");
+              return loadedMame
+            })
+          //.catch((err) => console.error("Error starting game:", err));
+      }
+          // Run the selected game
+      //}
+
+      
+      // Stop any running instance
+      /*console.log("Attempting to stop MAME...");
+      try {
+        loadedMame.loader.module.ccall('exit', 'void', ['number'], [0]);
+        //document.getElementById("container").remove();
+        console.log("QUIT MAME");
+      } catch (err) {
+          console.log("MAME exited, ignoring error:", err.message);
+          document.getElementById("container").remove();
+          // Run the selected game
+      }
+    }*/
+
+    // Run MAME preloading on page load
+    window.onload = function() {
+        var container = document.getElementById("mame-container");
+        mainFunction(container);
+    };
+
+
+
+
+
+
+
+      /*  var container = document.getElementById('mame-container')
+        console.log('launch mame ', config, container)
+        mamejs.load(config.emulator, container).then(function(mame) {
+          console.log('mame loaded', mame)
+          return mame.loadRoms(config.game.files).then(function() {
+            console.log('rom loaded', config.game.files)
+            return mame.runGame(config.game.driver, config.resolution).then(function() {
+              _MODULE = mame
+              return mame
+            })
+          })
+        }).then(function(mame) {
+          console.log('Game launched')
+        }).catch(function(error) {
+          console.error('error running mame', error)
+        })
+      }
+      document.getElementById("startButton").addEventListener("click", () => {
+        document.getElementById("startButton").remove();
+        mainFunction();});
+      document.getElementById("stopGame").addEventListener("click", () => {
+        if (_MODULE && _MODULE.loader && _MODULE.loader.module) {
+        console.log("Attempting to stop MAME...");
+        try {
+            _MODULE.loader.module.ccall('exit', 'void', ['number'], [0]);
+            document.getElementById("container").remove();
+            console.log("QUIT MAME");
+        } catch (err) {
+            console.log("MAME exited, ignoring error:", err.message);
+            document.getElementById("container").remove();
+        }
+        } else {
+          console.warn("MAMEJS module is not initialized.");
+        }
+        }); */
+    </script>
+  </body>
+</html>

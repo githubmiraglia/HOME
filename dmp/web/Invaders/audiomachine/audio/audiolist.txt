@@ -1,0 +1,10 @@
+explosion
+fastinvader1
+fastinvader2
+fastinvader3
+fastinvader4
+invaderkilled
+pop
+shoot
+ufo_highpitch_looped
+ufo_lowpitch

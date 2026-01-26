@@ -1,0 +1,16 @@
+aliens,0032,0032
+beam,0092,0018
+bomb,0017,0038
+bullet,0006,0016
+flags,0024,0024
+lives,0026,0028
+player,0032,0032
+stage,0448,0576
+stars,0448,0576
+two,0014,0014
+VJ,0126,0126
+galagaFront,0448,0576
+galagaTopScores,0448,0576
+stage,0448,0576
+Kbs,0448,0576
+devices,0090,0090

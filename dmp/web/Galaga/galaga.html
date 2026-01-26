@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Galaga</title>
+<!--	<link rel="icon" type="image/ico" href="images/logo/logo.png" /> !-->
+<meta name="viewport" content="initial-scale=1, minimum-scale = 1, maximum-scale=1, user-scalable=no">
+<style type="text/css">
+	@font-face {
+    	font-family: "ArcadeClassic";
+    	src: url(/DMP/Galaga/fonts/ARCADECLASSIC.TTF) format("truetype");
+	}
+	#wait{
+		margin-top:20%;
+		text-align:center;
+		font-family:"ArcadeClassic";
+		font-size:30px;
+		color:red;
+		display:none;
+	}
+</style>
+	
+</head>
+
+<body>
+	<p id="mobtext"></p>
+	<p id="wait">...LOADING IMAGES...</p>
+	<div id="container">
+		<canvas id="maincanvas" style="display:none"></canvas>
+		<canvas id="player1canvas" style="float:left;display:none;"></canvas>
+		<canvas id="player2canvas" style="float:left;display:none;"></canvas>
+	</div>
+	<script src="/DMP/Galaga/globalvariables/globalVariables.js"></script>
+</body>
+</html>

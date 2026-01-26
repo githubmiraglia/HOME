@@ -1,0 +1,202 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/DMP/site/css/main.css">
+  </head>
+  <body>
+    
+    <h1>MAMEJS - sample page</h1>
+    <select id="romSelector"></select>
+    <button id="runGame" onclick="runSelectedROM()">CLICK TO Play Game</button>
+    <button id="stopGame" onclick="stopSelectedROM()">CLICK TO STOP Game</button>
+    <div id="mame-container" class="disable-dbl-tap-zoom" style="height: 1920px; width: 1920px"></div>
+    <div id="container" class="disable-dbl-tap-zoom"></div>
+    <script> 
+      // Global Variables set before other scripts
+      var _SCALE = {};
+      var loadedMame = null;
+      var joystickPollingInterval = null;
+      //var _GAMEWIDTH = 449;
+      //var _GAMEHEIGHT = 514;
+      var _WAIT = false;
+      var myJoystick = null;
+      var once = false;
+    </script> 
+    <script src = '/DMP/MAME/mamejs/mamejs.js'></script>
+    <script src = '/DMP/MAME/joystick/keyboard.js'></script>
+    <script src = '/DMP/MAME/joystick/gamepads.js'></script>
+    <script src = '/DMP/MAME/joystick/virtualJoystick.js'></script>
+    <script src = '/DMP/MAME/joystick/joystick.js'></script>
+    <script src = '/DMP/MAME/joystick/joystickintegrationMAME.js'></script>
+    <script src = '/DMP/MAME/globalvariables/helperfunctions.js'></script>
+    <script src = '/DMP/MAME/globalvariables/dom.js'></script>
+
+    <script>
+      // Global variables set after other scripts
+      //var _GAMEWIDTH=375;
+      //var _GAMEHEIGHT=667;
+      //var _WIDTH = 375;
+      //var _HEIGHT = 667;
+      //var _PLATFORM = setPlatform(); // At helper functions
+      //var _LEFTPADDNGS=setWindow(_PLATFORM,1,1);
+      //var mameContainer = document.getElementById('mame-container')
+      //mameContainer.setAttribute("style","width:"+_WIDTH.toString()+"px");
+      //mameContainer.setAttribute("style","height:"+_HEIGHT.toString()+"px");
+      var dh=null;
+
+      // Preload MAME and multiple ROMs
+      function preloadMAME(config, container) {
+          return mamejs.load(config.emulator, container).then((mame) => {
+              loadedMame = mame; // Store instance
+              console.log("LOADED MAME");
+              return mame.loadRoms(config.games.files) // Load multiple ROMs
+                  .then(() => {
+                      console.log("All ROMs preloaded!");
+                      populateROMSelector(config.games); // Populate selection menu
+                      //initializeJoystick(mamejs); // Initialize joystick support
+                  });
+          });
+      }
+
+      // Populate the ROM selection dropdown
+      function populateROMSelector(games) {
+          var selector = document.getElementById("romSelector");
+          selector.innerHTML = "";
+          for (let game in games.files) {
+                var option = document.createElement("option");
+                option.value = game;
+                option.textContent = game;
+                selector.appendChild(option);
+          }
+      }
+
+      // Run the selected ROM
+      function runSelectedROM() {
+          var selectedROM = document.getElementById("romSelector").value;
+          if (!loadedMame) {
+              console.error("MAMEJS is not loaded yet!");
+              return;
+          }
+          // Stop any running instance before switching games
+          if (loadedMame && typeof loadedMame.stop === "function") {
+              console.log("Stopping current game...");
+              loadedMame.stop();
+          } else {
+              console.warn("MAMEJS stop function is not available.");
+          }
+          // Run the selected game
+          loadedMame.runGame(selectedROM)
+              .then(() => {
+                  console.log("Now playing:", selectedROM);
+                  //initializeJoystick(mamejs); // Ensure joystick integration after game loads
+              })
+              .catch((err) => console.error("Error starting game:", err));
+      }
+
+      //Stop playing game
+      function stopSelectedROM(){
+        try {
+          loadedMame.loader.module.ccall('exit', 'void', ['number'], [0]);
+          console.log("QUIT MAME");
+        } catch (err) {
+            console.log("MAME exited, ignoring error:", err.message);
+            console.log(loadedMame)
+        }
+      }
+
+      // Initialize joystick integration
+      function initializeJoystick(mamejs) {
+          if (joystickPollingInterval) clearInterval(joystickPollingInterval);
+         //myJoystick = new joystickIntegrationMAME(mamejs, _PLATFORM);
+          dh = new domHelpers(myJoystick.js)
+          joystickPollingInterval = setInterval(() => {
+              var dummy1 = myJoystick.js.readJoystick();
+              // a joystick exit will cause the game to pause via joystickintegratiomMAME
+              if(myJoystick.js.exit){
+                console.log("ONCE = ",once)
+                if(!once){
+                  console.log("CAME TO CONFIRM RESUME MY ASS")
+                  var dummy1 = confirmExit("RESUME");
+                }
+              }
+              var dummy2 = myJoystick.checkPress();
+          }, 16); // Poll joystick state every 16ms (~60 FPS)
+      }
+
+      // Stop joystick polling
+      function stopJoystick() {
+          if (joystickPollingInterval) {
+              clearInterval(joystickPollingInterval);
+              joystickPollingInterval = null;
+              myJoystick.js = null;
+              myJoystick = null;
+          }
+      }
+
+      var callBackChoice = function(){
+        if(!dh.chosing){
+          if(dh.choice==0){
+            dh.removeChose("container");
+            myJoystick.js.gamepads=null;
+            myJoystick.js.keyboard=null;
+            loadedMame=null;
+            stopJoystick();
+            once = false;
+            window.location.pathname="/DMP/site/dmp.html";
+          }
+          else{
+            dh.removeChose("container");
+            myJoystick.js.vjExit=true;
+            setTimeout(()=>{once=false; console.log("ONCE SAFELY AT",once)},750);
+            console.log("ONCE =", once);
+          }
+        }
+      }
+      // ask if finish game
+      function confirmExit(str2){
+        console.log("CAME TO CONFIRM EXIT")
+        _CHOSE = false;
+        dh.chose({wrapper:document.getElementById("container"),scale:_SCALE,choices:[" E X I T",str2],boxshadow:"0px 0px 1px 4px black",halfscreen:"none",callback:callBackChoice});
+        dh.jsHandler();
+        once = true;
+      }
+
+
+    </script>
+
+    <script>
+      window.onload = function() {
+          // Example configuration with multiple ROMs
+          var games = {
+            files : {
+              'mk.zip' : '../MAME/roms/mk.zip',
+              'dkong.zip' : '../MAME/roms/dkong.zip',
+              'elevator.zip' : '../MAME/roms/elevator.zip'
+            }, 
+            driver: {
+              'mk.zip' : 'mk',
+              'dkong.zip' : 'dkong',
+              'elevator.zip' : 'elevator'
+            }
+          }
+          var config = {
+              emulator: '/DMP/MAME/mamejs/mame.js', // Path to MAMEJS compiled file
+              games: games,
+              resolution: {
+                width: 1920,
+                height: 1920
+              }
+          };
+          console.log(config);
+          if (typeof mamejs === "undefined") {
+              console.error("mamejs is not loaded. Make sure the script path is correct.");
+              return;
+          }
+          var container = document.getElementById("mame-container");
+          preloadMAME(config, container);
+      };
+    </script>
+
+
+  </body>
+</html>

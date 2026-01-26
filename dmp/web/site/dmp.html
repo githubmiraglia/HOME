@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DANS MON PALAIS</title>
+
+    <meta
+        name="viewport"
+        content="initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"
+    >
+
+    <link rel="icon" href="img/favicon.png" type="image/png">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/forms.css">
+
+    <style>
+        @font-face {
+            font-family: "ArcadeClassic";
+            src: url("fonts/ARCADECLASSIC.TTF") format("truetype");
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="flexnowrap">
+        <div style="flex:1; position:relative">
+            <img
+                class="resize"
+                data-minw="35"
+                data-maxw="70"
+                id="header1"
+                src="img/header_devices.png"
+                alt="DEVICES"
+            >
+        </div>
+
+        <div style="flex:4; text-align:center">
+            <img
+                class="resize"
+                data-minw="35"
+                data-maxw="70"
+                id="header2"
+                src="img/header_logo.png"
+                alt="DMPLOGO"
+            >
+        </div>
+
+        <div class="flexcolumn" style="flex:1">
+            <div style="flex:1.5; position:relative; overflow:hidden">
+                <p
+                    class="resize"
+                    id="user"
+                    data-minw="10"
+                    data-maxw="18"
+                ></p>
+            </div>
+
+            <div style="flex:1; position:relative">
+                <img
+                    class="resize imover clickable"
+                    data-minw="20"
+                    data-maxw="35"
+                    id="header3"
+                    src="img/account.svg"
+                    alt="ACCOUNT"
+                    data-moverin="img/account2.svg"
+                    data-moverout="img/account.svg"
+                    data-func="0"
+                >
+            </div>
+        </div>
+    </header>
+
+    <!-- COOKIE DISCLAIMER -->
+    <div id="cookiewrapper">
+        <p
+            id="cookiedisclaimer"
+            class="resize"
+            data-minw="11"
+            data-maxw="18"
+        >
+            Dans Mon Palais uses cookies to improve your experience.
+            By using Dans Mon Palais you agree with our
+            <a id="hrefCookie" href="legal/cookies.html" target="_blank">
+                use of cookies
+            </a>
+        </p>
+
+        <p
+            id="cookieOk"
+            class="resize"
+            data-minw="11"
+            data-maxw="18"
+        >
+            OK
+        </p>
+    </div>
+
+    <!-- MENU -->
+    <menu id="menu">
+        <a
+            href="#"
+            class="menu resize clickable"
+            id="arcade"
+            data-minw="12"
+            data-maxw="20"
+            data-func="1"
+        >
+            &nbsp;DMP ARCADE&nbsp;&nbsp;&nbsp;
+        </a>
+
+        <a
+            href="#"
+            class="menu resize clickable"
+            id="mame"
+            data-minw="12"
+            data-maxw="20"
+            data-func="2"
+        >
+            &nbsp;MAME ARCADE&nbsp;&nbsp;&nbsp;
+        </a>
+    </menu>
+
+    <p id="waitForRoms">...LOADING ROMS...</p>
+
+    <!-- CAROUSEL -->
+    <div class="carouselWrapper">
+        <div id="clearCarousel">
+            <img
+                class="exit exitjs imover"
+                src="img/clear.svg"
+                alt="CLEAR"
+                data-moverin="img/clear2.svg"
+                data-moverout="img/clear.svg"
+                data-exit="arcade"
+            >
+        </div>
+
+        <div id="carouselArcade" class="carousel"></div>
+    </div>
+
+    <!-- MAIN IMAGES -->
+    <div class="flexwrap main">
+        <div style="flex:2">
+            <img src="img/mainleft_1.jpg" id="mainleft" alt="MAINLEFT">
+        </div>
+        <div style="flex:1">
+            <img src="img/skate_1.png" id="mainright" alt="MAINRIGHT">
+        </div>
+    </div>
+
+    <!-- ACCOUNT FORMS -->
+    <fixed
+        class="wrapperForms resize"
+        id="wrapform"
+        data-maxw="100"
+        data-minw="40"
+        data-maxtop="11"
+        data-mintop="0"
+    >
+        <p id="myAccount">
+            My Account
+            <img
+                class="exit exitjs imover"
+                src="img/clear.svg"
+                alt="CLEAR"
+                data-moverin="img/clear2.svg"
+                data-moverout="img/clear.svg"
+                data-exit="header3"
+            >
+        </p>
+
+        <p id="caps">CAPS LOCK ON</p>
+
+        <!-- forms unchanged -->
+    </fixed>
+
+    <!-- FOOTER -->
+    <footer>
+        <div id="leftfooter"></div>
+
+        <div id="legalWrapper">
+            <a class="legal resize" href="legal/arcade.html" target="_blank">
+                About Arcade
+            </a>
+            <a class="legal resize" href="legal/terms.html" target="_blank">
+                Terms and Conditions
+            </a>
+            <a class="legal resize" href="legal/privacy.html" target="_blank">
+                Privacy Policy
+            </a>
+            <a class="legal resize" href="legal/cookies.html" target="_blank">
+                Cookie Policy
+            </a>
+        </div>
+    </footer>
+
+    <!-- MAME WRAPPER -->
+    <div id="mameWrapper">
+        <div id="logo-container" class="logo-container">
+            <img src="img/header_logo.png" alt="Header Logo">
+        </div>
+        <div id="mame-container"></div>
+    </div>
+
+    <div id="exit-container"></div>
+    <div id="gamepad-container"></div>
+
+    <!-- SCRIPTS -->
+    <div id="script-container">
+        <script src="../MAME/mamejs/integrationMAMEjs.js"></script>
+        <script src="js/server.js"></script>
+        <script src="js/session.js"></script>
+        <script src="js/domhelpers.js"></script>
+        <script src="js/carousel.js"></script>
+        <script src="js/sitecontrol.js"></script>
+
+        <script
+            src="https://www.google.com/recaptcha/api.js"
+            async
+            defer
+        ></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/flatted@3.2.7/min.js"></script>
+    </div>
+
+</body>
+</html>
