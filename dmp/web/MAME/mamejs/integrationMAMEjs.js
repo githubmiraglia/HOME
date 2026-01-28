@@ -139,7 +139,7 @@ IntegrationMAMEjs.prototype.preloadMAME=function(){
 	});
 }
 
-IntegrationMAMEjs.prototype.setCSSmame = function () {
+/*IntegrationMAMEjs.prototype.setCSSmame = function () {
     var iframe = document.getElementById("emloader-iframe");
     if (!iframe) return;
 
@@ -173,7 +173,38 @@ IntegrationMAMEjs.prototype.setCSSmame = function () {
         this.mameWrapper.style.width = this.GAMEWIDTHMAME + "px";
         this.mameWrapper.style.height = this.GAMEHEIGHTMAME + "px";
     }
+};*/
+
+IntegrationMAMEjs.prototype.setCSSmame = function () {
+ 	var iframe = document.getElementById("emloader-iframe");
+    if (!iframe) return;
+
+	if(!_PLATFORM.touchScreen){
+		// ✅ DESKTOP: force classic arcade resolution
+		console.log("MAME DIMENSIONS");
+		console.log(this.GAMEWIDTHMAME, this.GAMEHEIGHTMAME);
+		iframe.style.paddingTop = "6vh";
+        iframe.style.width = this.GAMEWIDTHMAME*0.5+"px";
+        iframe.style.height = this.GAMEHEIGHTMAME*0.5+"px";
+		console.log("SETTING HEIGHT FOR DESKTOP", iframe.style.width, iframe.style.height);
+        iframe.style.display = "block";
+        iframe.style.margin = "0 auto";   // center horizontally
+        iframe.style.paddingLeft = "0";
+		
+	}else{
+		iframe.style.width = '100%';
+		iframe.style.paddingLeft = '-20%';
+	}
+    if(_PLATFORM.touchScreen){
+        this.mameContainer.style.position = "absolute";
+        this.mameContainer.style.left = "-10%";
+        this.mameContainer.style.width = this.GAMEWIDTHMAME + "px";
+        this.mameContainer.style.height = this.GAMEHEIGHTMAME + "px";
+        this.mameWrapper.style.width = this.GAMEWIDTHMAME + "px";
+        this.mameWrapper.style.height = this.GAMEHEIGHTMAME + "px";
+    }
 };
+
 
 IntegrationMAMEjs.prototype.setConfigMame=function(){
 	var path = '/DMP/MAME/roms/'
@@ -296,7 +327,7 @@ IntegrationMAMEjs.prototype.addBackAllELements=function(){
 	}
 	// hides the logo
 	this.logoContainer = document.getElementById("logo-container");
-	this.logoContainer.visibility = "hidden";
+	this.logoContainer.style.visibility = "hidden";
 	docBody.style.backgroundColor = "#EEEEEE"
 	this.createConfigMame("/DMP/site/img/tnailsmame/thumbnailsmame.txt");
 	return;
