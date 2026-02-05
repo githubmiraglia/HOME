@@ -1,22 +1,15 @@
-wrrm.lat, www.wrrm.lat {
 
+localhost:80, 127.0.0.1:80 {
     encode gzip
-    tls luis.miraglia@icloud.com
 
-    # ============================
     # DMP (static arcade site)
-    # MUST come first and MUST terminate
-    # ============================
-    handle_path  /dmp* {
+    handle_path /dmp* {
         root * /srv/dmp
         file_server
     }
 
-    # ============================
     # BACKEND ROUTES (Flask)
-    # ============================
     @backend path /api/* /serve* /photo* /cache* /upload* /frontend-log* /tabelas* /ppt* /analyze* /process* /video* /serve-image* /serve-video* /photo-index* /generate-thumbnail* /download-photo* /ping*
-
     handle @backend {
         reverse_proxy http://backend:8001 {
             header_up Host {host}
@@ -26,10 +19,7 @@ wrrm.lat, www.wrrm.lat {
         }
     }
 
-    # ============================
     # FRONTEND (Vite dev server)
-    # Catch-all — MUST be last
-    # ============================
     handle {
         reverse_proxy http://frontend:3000 {
             header_up Host {host}
@@ -41,11 +31,7 @@ wrrm.lat, www.wrrm.lat {
     }
 
     log {
-        output file /var/log/caddy/access.log
+        output stdout
         format console
     }
-}
-
-:80 {
-    redir https://wrrm.lat{uri}
 }

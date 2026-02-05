@@ -147,6 +147,8 @@ def serve_image(filename):
     is_rotated = angle != 0
 
     # --- LOCAL STORAGE MODE ---
+    if USE_LOCAL and not os.path.exists(LOCAL_REPO):
+        return jsonify({"status": "error", "message": "Local photo repository not available on this system.", "data": []}), 200
     if USE_LOCAL:
         cache_path = os.path.join(LOCAL_REPO, "photos", "cache-image", NUMBER_PIXELS_STR, filename)
         original_path = os.path.join(LOCAL_REPO, "photos", "originals", filename)
@@ -231,6 +233,8 @@ def download_photo(filename):
     Supports both LOCAL and AWS S3 storage.
     """
     # --- LOCAL MODE ---
+    if USE_LOCAL and not os.path.exists(LOCAL_REPO):
+        return jsonify({"status": "error", "message": "Local photo repository not available on this system.", "data": []}), 200
     if USE_LOCAL:
         original_path = os.path.join(LOCAL_REPO, "photos", "originals", filename)
         if not os.path.exists(original_path):
@@ -333,6 +337,8 @@ def rotate_photo():
         return jsonify({"error": "Photo not found"}), 404
 
     # --- LOCAL MODE ---
+    if USE_LOCAL and not os.path.exists(LOCAL_REPO):
+        return jsonify({"status": "error", "message": "Local photo repository not available on this system.", "data": []}), 200
     if USE_LOCAL:
         local_path = os.path.join(LOCAL_REPO, "photos", "originals", filename)
         cache_path = os.path.join(LOCAL_REPO, "photos", "cache-image", NUMBER_PIXELS_STR, filename)
@@ -403,6 +409,8 @@ def list_videos():
     Returns a list of available videos, excluding hidden macOS '._' files and dotfiles.
     Works in both LOCAL and AWS S3 modes.
     """
+    if USE_LOCAL and not os.path.exists(LOCAL_REPO):
+        return jsonify({"status": "error", "message": "Local video repository not available on this system.", "videos": []}), 200
     if USE_LOCAL:
         # Base local path
         video_dir = os.path.join(LOCAL_REPO, "videos", "originals","VIDEOSH265")
@@ -453,6 +461,8 @@ def cache_video(filename):
     """
     Serve a cached video thumbnail (JPG) if it exists.
     """
+    if USE_LOCAL and not os.path.exists(LOCAL_REPO):
+        return jsonify({"status": "error", "message": "Local video repository not available on this system.", "data": []}), 200
     cache_path = os.path.join(LOCAL_REPO, "videos", "cache-video", f"{filename}")
     if not os.path.exists(cache_path):
         print(f"[404] Thumbnail not found: {cache_path}")
@@ -471,6 +481,8 @@ def generate_thumbnail(filename):
         print(f"[SKIP] Ignoring hidden video: {filename}")
         return abort(404)
 
+    if USE_LOCAL and not os.path.exists(LOCAL_REPO):
+        return jsonify({"status": "error", "message": "Local video repository not available on this system.", "data": []}), 200
     # Determine paths
     original_path = os.path.join(LOCAL_REPO, "videos", "originals", "VIDEOSH265", filename)
     cache_dir = os.path.join(LOCAL_REPO, "videos", "cache-video")
@@ -509,6 +521,8 @@ def generate_thumbnail(filename):
 
 @app.route("/serve-video/<path:filename>")
 def serve_video(filename):
+    if USE_LOCAL and not os.path.exists(LOCAL_REPO):
+        return jsonify({"status": "error", "message": "Local video repository not available on this system.", "data": []}), 200
     if USE_LOCAL:
         path = os.path.join(LOCAL_REPO, "videos", "originals", "VIDEOSH265", filename)
         if not os.path.exists(path):
