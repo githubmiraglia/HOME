@@ -2,8 +2,14 @@
 localhost:80, 127.0.0.1:80 {
     encode gzip
 
-    # DMP (static arcade site)
+    # lowercase (canonical)
     handle_path /dmp* {
+        root * /srv/dmp
+        file_server
+    }
+
+    # uppercase (compat / test)
+    handle_path /DMP* {
         root * /srv/dmp
         file_server
     }

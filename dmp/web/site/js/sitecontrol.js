@@ -385,13 +385,20 @@ sitecontrol.prototype.capsWarning=function(dh){
 	}
 }
 
-sitecontrol.prototype.toggleInnerHTML=function(node,dh){
-	let temp=node.innerHTML;
-	let alt=node.getAttribute("data-alt");
-	dh.attributes(node,{"data-alt":temp});
-	node.innerHTML=alt;
-}
-
+sitecontrol.prototype.toggleInnerHTML = function (node, dh) {
+	if (!node) {
+		console.warn("toggleInnerHTML skipped: node is null");
+		return;
+	}
+	let temp = node.innerHTML;
+	let alt = node.getAttribute("data-alt");
+	if (alt === null) {
+		console.warn("toggleInnerHTML skipped: data-alt missing");
+		return;
+	}
+	dh.attributes(node, { "data-alt": temp });
+	node.innerHTML = alt;
+};
 
 sitecontrol.prototype.updateCookie=function(userName,years){
 	var expiration_date = new Date();

@@ -26,20 +26,29 @@ domHelpers.prototype.styles=function(nodes,styles){
 	}
 }
 
-domHelpers.prototype.attributes=function(nodes,attr){
-	attr=attr||"";
-	nodes=(nodes instanceof HTMLCollection)?nodes:[nodes];
-	if(attr!=""){
-		for(let node of nodes){
-			for(let key in attr){
-				if(attr.hasOwnProperty(key))
-					node.setAttribute(key,attr[key]);
+domHelpers.prototype.attributes = function (nodes, attr) {
+	let els = [];
+
+	if (!nodes) return els;
+
+	if (nodes instanceof Array) {
+		els = nodes;
+	} else {
+		els.push(nodes);
+	}
+
+	els.forEach(function (node) {
+		if (!node) return; // 🔥 critical guard
+		for (let key in attr) {
+			if (attr.hasOwnProperty(key)) {
+				node[key] = attr[key];
 			}
 		}
-		nodes=(nodes instanceof HTMLCollection)?nodes:nodes[0];
-		return(nodes);
-	}
-}
+	});
+
+	return els;
+};
+
 
 domHelpers.removeStyles=function(nodes,styles){
 	styles=styles||"";

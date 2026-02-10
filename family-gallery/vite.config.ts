@@ -7,6 +7,6 @@ export default defineConfig({
   server: {
     host: true,    // Expose to Docker host
     port: 3000,     // Match docker-compose.dev.yml
-    allowedHosts: ['wrrm.lat', 'www.wrrm.lat']
+    allowedHosts: ['wrrm.lat', 'www.wrrm.lat','localhost'] // Allow these hosts
   }
 })

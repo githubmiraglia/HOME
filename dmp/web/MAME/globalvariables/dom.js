@@ -33,20 +33,29 @@ domHelpers.prototype.styles=function(nodes,styles){
 	return(els);
 }
 
-domHelpers.prototype.attributes=function(nodes,attr){
-	let els=[];
-	if(nodes instanceof Array)
-		els=nodes;
-	else
+domHelpers.prototype.attributes = function (nodes, attr) {
+	let els = [];
+
+	if (!nodes) return els;
+
+	if (nodes instanceof Array) {
+		els = nodes;
+	} else {
 		els.push(nodes);
-	els.forEach(function(node){
-		for(let key in attr){
-			if(attr.hasOwnProperty(key))
-				node[key]=attr[key];
+	}
+
+	els.forEach(function (node) {
+		if (!node) return; // 🔥 critical guard
+		for (let key in attr) {
+			if (attr.hasOwnProperty(key)) {
+				node[key] = attr[key];
+			}
 		}
 	});
-	return(els);
-}
+
+	return els;
+};
+
 
 domHelpers.removeStyles=function(nodes,styles){
 	let els=[];

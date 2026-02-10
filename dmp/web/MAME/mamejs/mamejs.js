@@ -1167,7 +1167,12 @@ var mamejs;
             return Promise.resolve(this.loader.module.callMain(args));
         }
         runGame(driver, resolution) {
+            Mame.DEFAULT_RESOLUTION = {
+                width: 320,
+                height: 224
+            };
             resolution = resolution || Mame.DEFAULT_RESOLUTION;
+            console.log('RUNNING GAME', driver, 'WITH RESOLUTION', resolution);
             return this.run([
                 driver,
                 '-verbose',
@@ -1217,6 +1222,7 @@ var mamejs;
     }
     mamejs.load = load;
     function run(config, container) {
+        console.log('RUNNING MAME WITH CONFIG', config);
         return load(config.emulator, container).then(function (mame) {
             return mame.loadRoms(config.game.files).then(function () {
                 return mame.runGame(config.game.driver, config.resolution).then(function () {
