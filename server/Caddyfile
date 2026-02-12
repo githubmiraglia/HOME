@@ -1,21 +1,57 @@
-
 localhost:80, 127.0.0.1:80 {
+
     encode gzip
 
-    # lowercase (canonical)
+    ##################################################
+    # DMP (Static App)
+    ##################################################
     handle_path /dmp* {
         root * /srv/dmp
         file_server
     }
 
-    # uppercase (compat / test)
-    handle_path /DMP* {
-        root * /srv/dmp
-        file_server
+    ##################################################
+    # Redirect /family-gallery → /family-gallery/
+    ##################################################
+    redir /family-gallery /family-gallery/
+
+    ##################################################
+    # FAMILY GALLERY (Vite Dev Server)
+    ##################################################
+    handle /family-gallery* {
+        reverse_proxy http://frontend:3000 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up Upgrade {>Upgrade}
+            header_up Connection {>Connection}
+        }
     }
 
-    # BACKEND ROUTES (Flask)
-    @backend path /api/* /serve* /photo* /cache* /upload* /frontend-log* /tabelas* /ppt* /analyze* /process* /video* /serve-image* /serve-video* /photo-index* /generate-thumbnail* /download-photo* /ping*
+    ##################################################
+    # BACKEND (Flask API)
+    ##################################################
+    @backend path \
+        /api/* \
+        /serve* \
+        /login* \
+        /photo* \
+        /cache* \
+        /upload* \
+        /frontend-log* \
+        /tabelas* \
+        /ppt* \
+        /analyze* \
+        /process* \
+        /video* \
+        /serve-image* \
+        /serve-video* \
+        /photo-index* \
+        /generate-thumbnail* \
+        /download-photo* \
+        /ping*
+
     handle @backend {
         reverse_proxy http://backend:8001 {
             header_up Host {host}
@@ -25,17 +61,17 @@ localhost:80, 127.0.0.1:80 {
         }
     }
 
-    # FRONTEND (Vite dev server)
+    ##################################################
+    # LANDING HUB (Root)
+    ##################################################
     handle {
-        reverse_proxy http://frontend:3000 {
-            header_up Host {host}
-            header_up X-Forwarded-For {remote_host}
-            header_up X-Forwarded-Proto {scheme}
-            header_up Upgrade {>Upgrade}
-            header_up Connection {>Connection}
-        }
+        root * /srv/hub
+        file_server
     }
 
+    ##################################################
+    # LOGGING
+    ##################################################
     log {
         output stdout
         format console

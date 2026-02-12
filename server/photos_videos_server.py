@@ -832,6 +832,46 @@ def get_topscores():
 
     return jsonify(rows)
 
+# -------------------------------------------------------------
+# LOGIN (Family Gallery)
+# -------------------------------------------------------------
+# -------------------------------------------------------------
+# FAMILY GALLERY LOGIN
+# -------------------------------------------------------------
+@app.route("/login", methods=["POST"])
+def login_fguser():
+    data = request.get_json(force=True)
+    username = data.get("user")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"success": False}), 400
+
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute(
+        "SELECT user, password, access, faces FROM fgusers WHERE user = %s",
+        (username,)
+    )
+
+    user_row = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if not user_row:
+        return jsonify({"success": False}), 401
+
+    # ⚠️ Plain text comparison (as you requested for now)
+    if user_row["password"] != password:
+        return jsonify({"success": False}), 401
+
+    return jsonify({
+        "success": True,
+        "access": user_row["access"],
+        "faces": user_row["faces"]
+    })
 
 
 # -------------------------------------------------------------
