@@ -3000,7 +3000,7 @@
     "filename": "2003/Tomas ! ano/DSC00029.JPG",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 270,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -3531,7 +3531,7 @@
     "filename": "2003/Tomas e ano b/DSC00007.JPG",
     "date": "2003-10-03",
     "camera": "CYBERSHOT",
-    "angle": 90,
+    "angle": 270,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -3540,7 +3540,7 @@
     "filename": "2003/Tomas e ano b/DSC00008.JPG",
     "date": "2003-10-03",
     "camera": "CYBERSHOT",
-    "angle": 90,
+    "angle": 270,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -15051,7 +15051,7 @@
     "filename": "2005/Gates NY/Negative0-18-15A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -15060,7 +15060,7 @@
     "filename": "2005/Gates NY/Negative0-19-16A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -15069,7 +15069,7 @@
     "filename": "2005/Gates NY/Negative0-20-17A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -15078,7 +15078,7 @@
     "filename": "2005/Gates NY/Negative0-21-18A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 270,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -15087,7 +15087,7 @@
     "filename": "2005/Gates NY/Negative0-22-19A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -15096,7 +15096,7 @@
     "filename": "2005/Gates NY/Negative0-23-20A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -15105,7 +15105,7 @@
     "filename": "2005/Gates NY/Negative0-24-21A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -15114,7 +15114,7 @@
     "filename": "2005/Gates NY/Negative0-25-22A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -15123,7 +15123,7 @@
     "filename": "2005/Gates NY/Negative0-26-23A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -15132,7 +15132,7 @@
     "filename": "2005/Gates NY/Negative0-27-24A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -15141,7 +15141,7 @@
     "filename": "2005/Gates NY/Negative0-28-25A(2).jpg",
     "date": null,
     "camera": null,
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -17247,7 +17247,7 @@
     "filename": "2005/december 2005 photos/December 05 059.jpg",
     "date": "2005-07-09",
     "camera": "Canon PowerShot S330",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -17274,7 +17274,7 @@
     "filename": "2005/december 2005 photos/December 05 062.jpg",
     "date": "2005-07-09",
     "camera": "Canon PowerShot S330",
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -17283,7 +17283,7 @@
     "filename": "2005/december 2005 photos/December 05 063.jpg",
     "date": "2005-07-09",
     "camera": "Canon PowerShot S330",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -29451,7 +29451,7 @@
     "filename": "2007/Bautizo Chile/F1000005.JPG",
     "date": null,
     "camera": "SP-3000",
-    "angle": 0,
+    "angle": 270,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -29460,7 +29460,7 @@
     "filename": "2007/Bautizo Chile/F1010002.JPG",
     "date": null,
     "camera": "SP-3000",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -29469,7 +29469,7 @@
     "filename": "2007/Bautizo Chile/F1010003.JPG",
     "date": null,
     "camera": "SP-3000",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -33402,7 +33402,7 @@
     "filename": "2007/Cumple Cata/IMG_4357.jpg",
     "date": "2007-10-17",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -36183,7 +36183,7 @@
     "filename": "2007/Cumple Cata/IMG_4678.jpg",
     "date": "2007-12-02",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -36534,7 +36534,7 @@
     "filename": "2007/Cumple5yrs/IMG_4202.jpg",
     "date": "2007-09-13",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -36543,7 +36543,7 @@
     "filename": "2007/Cumple5yrs/IMG_4203.jpg",
     "date": "2007-09-13",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -36552,7 +36552,7 @@
     "filename": "2007/Cumple5yrs/IMG_4204.jpg",
     "date": "2007-09-13",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -43032,7 +43032,7 @@
     "filename": "2008/Aug 10, 2008/IMG_6213.JPG",
     "date": "2008-08-10",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 270,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -44121,7 +44121,7 @@
     "filename": "2008/CumpleCaca2008/IMG_5132.jpg",
     "date": "2008-01-20",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 270,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -44130,7 +44130,7 @@
     "filename": "2008/CumpleCaca2008/IMG_5133.jpg",
     "date": "2008-01-20",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -49674,7 +49674,7 @@
     "filename": "2008/Mar 25, 2008/IMG_5403.JPG",
     "date": "2008-03-25",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 270,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -49683,7 +49683,7 @@
     "filename": "2008/Mar 25, 2008/IMG_5404.JPG",
     "date": "2008-03-25",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 270,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -54651,7 +54651,7 @@
     "filename": "2008/Oct 9, 2008/IMG_6386.JPG",
     "date": "2008-10-09",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -54660,7 +54660,7 @@
     "filename": "2008/Oct 9, 2008/IMG_6387.JPG",
     "date": "2008-10-09",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -54669,7 +54669,7 @@
     "filename": "2008/Oct 9, 2008/IMG_6388.JPG",
     "date": "2008-10-09",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -54759,7 +54759,7 @@
     "filename": "2008/Sep 11, 2008/IMG_6296.JPG",
     "date": "2008-09-11",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -54768,7 +54768,7 @@
     "filename": "2008/Sep 11, 2008/IMG_6297.JPG",
     "date": "2008-09-11",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -54777,7 +54777,7 @@
     "filename": "2008/Sep 11, 2008/IMG_6298.JPG",
     "date": "2008-09-11",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -62274,7 +62274,7 @@
     "filename": "2009/Apr 25, 2009/IMG_7210.JPG",
     "date": "2009-04-25",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -62283,7 +62283,7 @@
     "filename": "2009/Apr 25, 2009/IMG_7211.JPG",
     "date": "2009-04-25",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -74613,7 +74613,7 @@
     "filename": "2009/celebracion40anos/IMG_7915.JPG",
     "date": "2009-08-08",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -74622,7 +74622,7 @@
     "filename": "2009/celebracion40anos/IMG_7916.JPG",
     "date": "2009-08-08",
     "camera": "Canon EOS DIGITAL REBEL XT",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -81354,7 +81354,7 @@
     "filename": "2011/Dec 2, 2011/IMG_1851.JPG",
     "date": "2011-11-25",
     "camera": "Canon PowerShot SD960 IS",
-    "angle": 0,
+    "angle": 270,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -81372,7 +81372,7 @@
     "filename": "2011/Dec 2, 2011/IMG_1853.JPG",
     "date": "2011-11-25",
     "camera": "Canon PowerShot SD960 IS",
-    "angle": 0,
+    "angle": 270,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -81381,7 +81381,7 @@
     "filename": "2011/Dec 2, 2011/IMG_1854.JPG",
     "date": "2011-11-25",
     "camera": "Canon PowerShot SD960 IS",
-    "angle": 0,
+    "angle": 270,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -101811,7 +101811,7 @@
     "filename": "2012/04/28/20120428-082109/IMG_0526.JPG",
     "date": "2012-04-11",
     "camera": "iPhone 4",
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -111693,7 +111693,7 @@
     "filename": "2012/12/15/20121215-130124/DSC_1412.JPG",
     "date": "2012-11-28",
     "camera": "NIKON 1 J1",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -157242,7 +157242,7 @@
     "filename": "2014/08/08/20140808-073154/IMG_0479.JPG",
     "date": "2014-07-26",
     "camera": "iPad mini",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -180894,7 +180894,7 @@
     "filename": "2016/02/25/20160225-080131/IMG_0951.JPG",
     "date": "2016-01-08",
     "camera": "iPhone 6",
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -180948,7 +180948,7 @@
     "filename": "2016/02/25/20160225-080131/IMG_0994.JPG",
     "date": "2016-01-09",
     "camera": "iPhone 6",
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -180984,7 +180984,7 @@
     "filename": "2016/02/25/20160225-080131/IMG_1047.JPG",
     "date": "2016-01-11",
     "camera": "iPhone 6",
-    "angle": 0,
+    "angle": 180,
     "hasFaces": true,
     "gps": null,
     "location": null
@@ -180993,7 +180993,7 @@
     "filename": "2016/02/25/20160225-080131/IMG_1049.JPG",
     "date": "2016-01-11",
     "camera": "iPhone 6",
-    "angle": 0,
+    "angle": 90,
     "hasFaces": true,
     "gps": null,
     "location": null

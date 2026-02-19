@@ -1,5 +1,6 @@
 services:
   frontend:
+    restart: always
     build:
       context: ./family-gallery
       dockerfile: Dockerfile.dev
@@ -43,6 +44,7 @@ services:
       - app-network
 
   backend:
+    restart: always
     build:
       context: ./server
       dockerfile: Dockerfile.dev
@@ -52,8 +54,11 @@ services:
       - "E:\\PHOTO_VIDEO_REPOSITORY:/mnt/localrepo:rw"
     working_dir: /app
     command: >
-      sh -c "./db/wait-for-it.sh dmp_mysql:3306 -- 
-             flask run --host=0.0.0.0 --port=8001 --debug"
+      sh -c "
+        ./db/wait-for-it.sh dmp_mysql:3306 --timeout=60 --strict -- &&
+        python db/updatetables.py &&
+        flask run --host=0.0.0.0 --port=8001 --debug
+      "
     expose:
       - "8001"
     environment:
@@ -75,9 +80,9 @@ services:
       - app-network
 
   caddy:
+    restart: always
     image: caddy:2.7
     container_name: home-caddy
-    restart: always
     ports:
       - "80:80"
       - "443:443"

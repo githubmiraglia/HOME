@@ -18,25 +18,41 @@ function joystick(PLATFORM,mamejs,mameIntegration){
 	this.fireRB=false;
 	this.fireCoin=false;
 	this.fireStart=false;
+    this.fireStart2=false;
 	this.vjExit = false;
 	this.exit=false;
 	this.touchedOnce=false;
-	this.kbPressed = [{"exit":false,"left":false,"right":false,"up":false,"down":false,"fire":false,"fireB":false,"fireX":false,"fireY":false,"fireRB":false,"fireCoin":false,"fireStart":false},{"exit":false,"left":false,"right":false,"up":false,"down":false,"fire":false,"fireB":false,"fireX":false,"fireY":false,"fireRB":false,"fireCoin":false,"fireStart":false}];
-	this.gpPressed = {"exit":false,"left":false,"right":false,"up":false,"down":false,"fire":false,"fireB":false,"fireX":false,"fireY":false,"fireRB":false,"fireCoin":false,"fireStart":false};
+
+	// NEW clean per-slot support (2 players max)
+	this.players = [
+		this.createEmptyPlayerState(),
+		this.createEmptyPlayerState()
+	];
+
+	this.kbPressed = [
+		{"exit":false,"left":false,"right":false,"up":false,"down":false,"fire":false,"fireB":false,"fireX":false,"fireY":false,"fireRB":false,"fireCoin":false,"fireStart":false,"fireStart2":false},
+		{"exit":false,"left":false,"right":false,"up":false,"down":false,"fire":false,"fireB":false,"fireX":false,"fireY":false,"fireRB":false,"fireCoin":false,"fireStart":false,"fireStart2":false}
+	];
+
+	this.gpPressed = {"exit":false,"left":false,"right":false,"up":false,"down":false,"fire":false,"fireB":false,"fireX":false,"fireY":false,"fireRB":false,"fireCoin":false,"fireStart":false,"fireStart2":false};
+
 	this.vjPressed = {"left":false,"right":false,"up":false,"down":false,"fire":false,"fireB":false,"fireX":false,"fireY":false,"fireCoin":false,"fireStart":false,"fireRB":false};
+
 	this.vJoystick = null
 	this.vFire = null;
 	this.scale = _SCALE;
 	this.buttonRadius = 50;
 	this.deltaSpaceV = 0.20;
 	this.deltaSpaceH = 0.20;
+
 	this.joystickIntegrationMAME = new joystickIntegrationMAME(this.mamejs,this.platform, this, this.mameIntegration)
+
 	if(!this.platform.touchScreen){
 	   	this.gamepads = new gamePads(this.joystickIntegrationMAME);
 	   	this.keyboard = new keyboard(this.kbPressed,this.joystickIntegrationMAME, this);	
+        console.log("KEYBOARD ",this.keyboard)
 		this.loaded=true;
 	}else{
-	   //document.addEventListener("touchstart",(e)=>{e.preventDefault()});
 	   this.createVJoystick(this.joystickIntegrationMAME);
 	   var interval_2=setInterval(function(){
 	   		if(vJoystick){
@@ -46,167 +62,294 @@ function joystick(PLATFORM,mamejs,mameIntegration){
 			}				
 		}.bind(this),67);
 	}
+
 	this.vjExit = null;
 	this.el = document.getElementById("vFireWrapper");
 	this.exitTouch(this.platform.touchScreen,this.el)
-}
-	
-
-joystick.prototype.readJoystick=function(jSelect){
-		
-	if(jSelect!=0&&(!jSelect||jSelect==""))
-		jSelect=4;
-
-	this.gpPressed = {"exit":false,"left":false,"right":false,"up":false,"down":false,"fire":false,"fireB":false,"fireX":false,"fireY":false,"fireRB":false,"fireStart":false,"fireBack":false};
-	this.vjPressed = {"left":false,"right":false,"up":false,"down":false,"fire":false,"fireB":false,"fireX":false,"fireY":false,"fireRB":false,"fireStart":false,"fireCoin":false};
-	this.jUsed=null;
-	
-	if(!this.platform.touchScreen){
-		if(this.gamepads.numberGPs>0){
-			this.gamepads.read();
-			for(var i=0;i<this.gamepads.numberGPs;i++){
-				if(i==jSelect||jSelect==4){
-					gpi = this.gamepads.gps[i];
-					if(gpi.axes.ulHori<0||gpi.axes.drHori<0||gpi.buttons.dLeft){
-						this.gpPressed["left"]=true; 
-						this.jUsed=i;
-					}
-					if(gpi.axes.ulHori>0||gpi.axes.drHori>0||gpi.buttons.dRight){
-						this.gpPressed["right"]=true;
-						this.jUsed=i;
-					}
-					if(gpi.axes.ulVert<0||gpi.axes.drVert<0||gpi.buttons.dUp){
-						this.gpPressed["up"]=true;
-						this.jUsed=i;
-					}
-					if(gpi.axes.ulVert>0||gpi.axes.drVert>0||gpi.buttons.dDown){
-						this.gpPressed["down"]=true;
-						this.jUsed=i;
-					}
-					if(gpi.buttons.a){
-						this.gpPressed["fire"]=true;
-						this.jUsed=i;
-					}
-					if(gpi.buttons.b){
-						this.gpPressed["fireB"]=true;
-						this.jUsed=i;
-					}
-					if(gpi.buttons.x){
-						this.gpPressed["fireX"]=true;
-						this.jUsed=i;
-					}
-					if(gpi.buttons.y){
-						this.gpPressed["fireY"]=true;
-						this.jUsed=i;
-					}
-					if(gpi.buttons.start){
-						this.gpPressed["fireStart"]=true;
-						this.jUsed=i;
-					}
-					if(gpi.buttons.back){
-						this.gpPressed["fireBack"]=true;
-						this.jUsed=i;
-					}
-					if(gpi.buttons.rb){
-						this.gpPressed["fireRB"]=true;
-						this.jUsed=i;
-					}
-				}
-			}
-		}
-	}
-
-	if(this.platform.touchScreen){
-		/*if(this.vJoystick.left())
-			this.vjPressed["left"]=true;
-		if(this.vJoystick.right())
-			this.vjPressed["right"]=true;
-		if(this.vJoystick.up())
-			this.vjPressed["up"]=true;
-		if(this.vJoystick.down())
-			this.vjPressed["down"]=true;*/
-		if(_VBUTTONPRESSED["vFireA"])
-			this.vjPressed["fire"]=true;
-		if(_VBUTTONPRESSED["vFireB"])
-			this.vjPressed["fireB"]=true;
-		if(_VBUTTONPRESSED["vFireX"])
-			this.vjPressed["fireX"]=true;
-		if(_VBUTTONPRESSED["vFireY"])
-			this.vjPressed["fireY"]=true;
-		if(_VBUTTONPRESSED["vFireCoin"])
-			this.vjPressed["fireCoin"]=true;
-		if(_VBUTTONPRESSED["vFireStart"])
-			this.vjPressed["fireStart"]=true;
-		if(_VBUTTONPRESSED["vFireRB"])
-			this.vjPressed["fireRB"]=true;
-		if(_VBUTTONPRESSED["vFireExit"]){
-			//console.log("PASSEI POR AQUI");
-			this.vjPressed["exit"]=true;
-			this.vjExit=true;
-		}
-	}
-
-	//console.log("KEYBOARD", this.kbPressed[0].fire,this.kbPressed[0].fireX,this.kbPressed[0].fireY,this.kbPressed[0].fireB)
-
-	if(this.kbPressed[0].left||this.kbPressed[0].up||this.kbPressed[0].down||this.kbPressed[0].right||this.kbPressed[0].fire||this.kbPressed[0].fireX||this.kbPressed[0].fireY||this.kbPressed[0].fireB)
-		this.jUsed=2;
-	else if(this.kbPressed[1].left||this.kbPressed[1].up||this.kbPressed[1].down||this.kbPressed[1].right||this.kbPressed[1].fire||this.kbPressed[1].fireX||this.kbPressed[1].fireY||this.kbPressed[1].fireB)
-		this.jUsed=3;
-	
-	i=(jSelect>1&&jSelect<4)?jSelect-2:((jSelect==4)?((this.jUsed>1)?this.jUsed-2:0):NaN);
-	if((!isNaN(i)&&this.kbPressed[i].left)||this.gpPressed.left||this.vjPressed.left)
-		this.left=true;
-	else
-		this.left=false;
-	if((!isNaN(i)&&this.kbPressed[i].right)||this.gpPressed.right||this.vjPressed.right)
-		this.right=true;
-	else
-		this.right=false;
-	if((!isNaN(i)&&this.kbPressed[i].up)||this.gpPressed.up||this.vjPressed.up)
-		this.up=true;
-	else
-		this.up=false;
-	if((!isNaN(i)&&this.kbPressed[i].down)||this.gpPressed.down||this.vjPressed.down)
-		this.down=true;
-	else
-		this.down=false;
-	if((!isNaN(i)&&this.kbPressed[i].fire)||this.gpPressed.fire||this.vjPressed.fire)
-		this.fire=true;
-	else
-		this.fire=false;
-	if((!isNaN(i)&&this.kbPressed[i].fireX)||this.gpPressed.fireX||this.vjPressed.fireX)
-		this.fireX=true;
-	else
-		this.fireX=false;
-	if((!isNaN(i)&&this.kbPressed[i].fireY)||this.gpPressed.fireY||this.vjPressed.fireY)
-		this.fireY=true;
-	else
-		this.fireY=false;
-	if((!isNaN(i)&&this.kbPressed[i].fireB)||this.gpPressed.fireB||this.vjPressed.fireB)
-		this.fireB=true;
-	else
-		this.fireB=false;
-	if((!isNaN(i)&&this.kbPressed[i].fireCoin)||this.vjPressed.fireCoin||this.gpPressed.back)
-		this.fireCoin=true;
-	else
-		this.fireCoin=false;
-	if((!isNaN(i)&&this.kbPressed[i].fireStart)||this.vjPressed.fireStart||this.gpPressed.start)
-		this.fireStart=true;
-	else
-		this.fireStart=false;
-	if((!isNaN(i)&&this.kbPressed[i].fireRB)||this.vjPressed.fireRB||this.gpPressed.fireRB)
-		this.fireRB=true;
-	else
-		this.fireRB=false;
-	if((!isNaN(i)&&this.kbPressed[i].exit)||this.gpPressed.exit||this.vjExit){
-		_EXIT=true;
-		this.exit=true;
-	}else
-		this.exit=false;
-	if(this.up||this.down||this.left||this.right||this.fire||this.fireX||this.fireY||this.fireB||this.fireCoin||this.fireStart)
-		this.touchedOnce=true;
+	this.startGamepadLoop();
 }
 
+// =========================================
+// PLAYER HELPER
+// =========================================
+
+joystick.prototype.createEmptyPlayerState = function(){
+	return {
+		left:false,
+		right:false,
+		up:false,
+		down:false,
+		fire:false,
+		fireB:false,
+		fireX:false,
+		fireY:false,
+		fireRB:false,
+		fireCoin:false,
+		fireStart:false,
+		exit:false
+	};
+}
+
+// =========================================
+// UPDATED GAMEPAD READER (FULLY INTEGRATED)
+// =========================================
+
+joystick.prototype.readJoystick = function (jSelect) {
+
+    if (jSelect != 0 && (!jSelect || jSelect == ""))
+        jSelect = 4;
+
+    this.gpPressed = {
+        "exit": false,
+        "left": false,
+        "right": false,
+        "up": false,
+        "down": false,
+        "fire": false,
+        "fireB": false,
+        "fireX": false,
+        "fireY": false,
+        "fireRB": false,
+        "fireStart": false,
+        "fireStart2":false,
+        "fireBack": false
+    };
+
+    this.vjPressed = {
+        "left": false,
+        "right": false,
+        "up": false,
+        "down": false,
+        "fire": false,
+        "fireB": false,
+        "fireX": false,
+        "fireY": false,
+        "fireRB": false,
+        "fireStart": false,
+        "fireCoin": false
+    };
+
+    this.jUsed = null;
+
+    if (!this.platform.touchScreen) {
+        // RESET PLAYER STATES
+        this.players[0] = this.createEmptyPlayerState();
+        this.players[1] = this.createEmptyPlayerState(); 
+    
+        if (this.gamepads.numberGPs > 0) {
+
+            this.gamepads.read();
+
+            for (var slot = 0; slot < 4; slot++) {
+
+                var gpi = this.gamepads.gps[slot];
+                if (!gpi) continue;
+
+                var dz = gpi.deadZone;
+                var player = this.players[slot];
+
+                // ================= DIRECTIONS =================
+
+                if (gpi.axes.ulHori < -dz || gpi.axes.drHori < -dz || gpi.buttons.dLeft) {
+                    player.left = true;
+                    console.log("LEFT - Gamepad Slot:", slot);
+                }
+
+                if (gpi.axes.ulHori > dz || gpi.axes.drHori > dz || gpi.buttons.dRight) {
+                    player.right = true;
+                    console.log("RIGHT - Gamepad Slot:", slot);
+                }
+
+                if (gpi.axes.ulVert < -dz || gpi.buttons.dUp) {
+                    player.up = true;
+                    console.log("UP - Gamepad Slot:", slot, "Vert =", gpi.axes.ulVert);
+                }
+
+                if (gpi.axes.ulVert > dz || gpi.buttons.dDown) {
+                    player.down = true;
+                    console.log("DOWN - Gamepad Slot:", slot, "Vert =", gpi.axes.ulVert);
+                }
+
+                // ================= BUTTONS =================
+
+                if (gpi.buttons.a) {
+                    player.fire = true;
+                    console.log("FIRE (A) - Gamepad Slot:", slot);
+                }
+
+                if (gpi.buttons.b) {
+                    player.fireB = true;
+                    console.log("FIREB (B) - Gamepad Slot:", slot);
+                }
+
+                if (gpi.buttons.x) {
+                    player.fireX = true;
+                    console.log("FIREX (X) - Gamepad Slot:", slot);
+                }
+
+                if (gpi.buttons.y) {
+                    player.fireY = true;
+                    console.log("FIREY (Y) - Gamepad Slot:", slot);
+                }
+
+                if (gpi.buttons.rb) {
+                    player.fireRB = true;
+                    console.log("FIRERB - Gamepad Slot:", slot);
+                }
+
+                if (gpi.buttons.start) {
+                    player.fireStart = true;
+                    console.log("START - Gamepad Slot:", slot);
+                }
+
+                if (gpi.buttons.back) {
+                    player.fireCoin = true;
+                    console.log("COIN (BACK) - Gamepad Slot:", slot);
+                }
+
+                if (gpi.buttons.rt) {
+                    player.exit = true;
+                    console.log("EXIT (RT) - Gamepad Slot:", slot);
+                }
+            }
+        }
+    }
+
+    /* ================= TOUCH CONTROLS ================= */
+
+    if (this.platform.touchScreen) {
+
+        if (_VBUTTONPRESSED["vFireA"])
+            this.vjPressed["fire"] = true;
+
+        if (_VBUTTONPRESSED["vFireB"])
+            this.vjPressed["fireB"] = true;
+
+        if (_VBUTTONPRESSED["vFireX"])
+            this.vjPressed["fireX"] = true;
+
+        if (_VBUTTONPRESSED["vFireY"])
+            this.vjPressed["fireY"] = true;
+
+        if (_VBUTTONPRESSED["vFireCoin"])
+            this.vjPressed["fireCoin"] = true;
+
+        if (_VBUTTONPRESSED["vFireStart"])
+            this.vjPressed["fireStart"] = true;
+
+        if (_VBUTTONPRESSED["vFireRB"])
+            this.vjPressed["fireRB"] = true;
+
+        if (_VBUTTONPRESSED["vFireExit"]) {
+            this.vjPressed["exit"] = true;
+            this.vjExit = true;
+        }
+    }
+
+
+    // ================= MERGE INPUT SOURCES (UPDATED FOR 2 PLAYERS) =================
+
+    // Determine active keyboard player
+    var kbIndex = null;
+
+    if (this.kbPressed[0].left || this.kbPressed[0].up || this.kbPressed[0].down ||
+        this.kbPressed[0].right || this.kbPressed[0].fire || this.kbPressed[0].fireX ||
+        this.kbPressed[0].fireY || this.kbPressed[0].fireB || this.kbPressed[0].fireCoin
+        || this.kbPressed[0].fireStart) {
+
+        kbIndex = 0;
+    }
+    else if (this.kbPressed[1].left || this.kbPressed[1].up || this.kbPressed[1].down ||
+            this.kbPressed[1].right || this.kbPressed[1].fire || this.kbPressed[1].fireX ||
+            this.kbPressed[1].fireY || this.kbPressed[1].fireB || this.kbPressed[1].fireCoin
+            || this.kbPressed[1].fireStart) {
+
+        kbIndex = 1;
+    }
+
+    // Merge into players structure cleanly
+
+    for (var p = 0; p < 2; p++) {
+
+        var player = this.players[p];
+
+        // Keyboard
+        if (kbIndex === p) {
+            player.left  = player.left  || this.kbPressed[p].left;
+            player.right = player.right || this.kbPressed[p].right;
+            player.up    = player.up    || this.kbPressed[p].up;
+            player.down  = player.down  || this.kbPressed[p].down;
+
+            player.fire  = player.fire  || this.kbPressed[p].fire;
+            player.fireB = player.fireB || this.kbPressed[p].fireB;
+            player.fireX = player.fireX || this.kbPressed[p].fireX;
+            player.fireY = player.fireY || this.kbPressed[p].fireY;
+            player.fireRB= player.fireRB|| this.kbPressed[p].fireRB;
+
+            player.fireCoin  = player.fireCoin  || this.kbPressed[p].fireCoin;
+            player.fireStart = player.fireStart || this.kbPressed[p].fireStart;
+        }
+
+        // Touch (always P1)
+        if (p === 0) {
+            player.left  = player.left  || this.vjPressed.left;
+            player.right = player.right || this.vjPressed.right;
+            player.up    = player.up    || this.vjPressed.up;
+            player.down  = player.down  || this.vjPressed.down;
+
+            player.fire  = player.fire  || this.vjPressed.fire;
+            player.fireB = player.fireB || this.vjPressed.fireB;
+            player.fireX = player.fireX || this.vjPressed.fireX;
+            player.fireY = player.fireY || this.vjPressed.fireY;
+            player.fireRB= player.fireRB|| this.vjPressed.fireRB;
+
+            player.fireCoin  = player.fireCoin  || this.vjPressed.fireCoin;
+            player.fireStart = player.fireStart || this.vjPressed.fireStart;
+        }
+    }
+
+    // Exit handling (either player)
+    if ((kbIndex !== null && this.kbPressed[kbIndex].exit) ||
+        this.players[0].exit || this.players[1].exit ||
+        this.vjExit) {
+
+        _EXIT = true;
+        this.exit = true;
+
+    } else {
+        this.exit = false;
+    }
+
+    // touchedOnce logic
+    if (this.players[0].left || this.players[0].right ||
+        this.players[0].up || this.players[0].down ||
+        this.players[0].fire || this.players[0].fireB ||
+        this.players[0].fireX || this.players[0].fireY ||
+        this.players[1].left || this.players[1].right ||
+        this.players[1].up || this.players[1].down ||
+        this.players[1].fire || this.players[1].fireB ||
+        this.players[1].fireX || this.players[1].fireY) {
+
+        this.touchedOnce = true;
+    }
+
+    // ================= UI AGGREGATED FLAGS =================
+
+    this.left  = this.players[0].left  || this.players[1].left;
+    this.right = this.players[0].right || this.players[1].right;
+    this.up    = this.players[0].up    || this.players[1].up;
+    this.down  = this.players[0].down  || this.players[1].down;
+
+    this.fire  = this.players[0].fire  || this.players[1].fire;
+    this.fireB = this.players[0].fireB || this.players[1].fireB;
+    this.fireX = this.players[0].fireX || this.players[1].fireX;
+    this.fireY = this.players[0].fireY || this.players[1].fireY;
+    this.fireRB = this.players[0].fireRB || this.players[1].fireRB;
+
+    this.fireCoin  = this.players[0].fireCoin  || this.players[1].fireCoin;
+    this.fireStart = this.players[0].fireStart || this.players[1].fireStart;
+
+}
 joystick.prototype.createVJoystick = function () {
 	// fix _width and _height
 	if(this.mameIntegration.mame){
@@ -495,3 +638,14 @@ joystick.prototype.exitTouch=function(touchScreen,el){
 		}.bind(this),false);
 	}
 }
+
+joystick.prototype.startGamepadLoop = function () {
+    const loop = () => {
+        if (!this.platform.touchScreen) {
+            this.readJoystick();
+            this.joystickIntegrationMAME.checkPress();
+        }
+        requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+};

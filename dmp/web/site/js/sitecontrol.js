@@ -26,7 +26,8 @@ function sitecontrol(){
 	this.captcha=document.getElementById("captcha");
 	this.arcadeActive=false;
 	this.fnOfClickables=[];
-	this.gameTopscores=[]
+	this.gameTopscores=[];
+
 }
 
 sitecontrol.prototype.setEventListeners=function(){
@@ -451,7 +452,7 @@ sitecontrol.prototype.userOkedCookie=function(dh){
 	});
 }
 
-let sc=new sitecontrol();
+window.sc = new sitecontrol();
 sc.setEventListeners();
 
 
@@ -487,6 +488,5 @@ function captchaButtons(){
 				}
 			});
 			break;
-
 	}
 }

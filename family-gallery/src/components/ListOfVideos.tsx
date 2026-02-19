@@ -1,11 +1,14 @@
-// ListOfVideos.tsx
-import React, { useEffect, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import "./css/ListOfVideos.css";
 import { GLOBAL_BACKEND_URL } from "../App";
 
 interface ListOfVideosProps {
-  onVideoSelect: (filename: string) => void;     // for updating thumbnail
-  onPlayRequest: (filename: string) => void;     // for triggering playback
+  onVideoSelect: (filename: string) => void;
+  onPlayRequest: (filename: string) => void;
 }
 
 const ListOfVideos: React.FC<ListOfVideosProps> = ({
@@ -15,10 +18,83 @@ const ListOfVideos: React.FC<ListOfVideosProps> = ({
   const [videos, setVideos] = useState<string[]>([]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
+  const listRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  // 🔹 Get scroll container (.video-list-panel)
+  useEffect(() => {
+    if (listRef.current) {
+      panelRef.current = listRef.current.closest(
+        ".video-list-panel"
+      ) as HTMLDivElement;
+    }
+  }, []);
+
+  // 🔥 Hover-driven edge auto-scroll
+  useEffect(() => {
+    if (!panelRef.current) return;
+
+    const container = panelRef.current;
+
+    let animationFrame: number | null = null;
+
+    const threshold = 60;     // px from edge to trigger scroll
+    const scrollSpeed = 6;    // px per frame (tune this)
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      const mouseY = e.clientY;
+
+      const nearBottom = mouseY > rect.bottom - threshold;
+      const nearTop = mouseY < rect.top + threshold;
+
+      if (nearBottom) {
+        if (!animationFrame) {
+          const scrollDown = () => {
+            container.scrollTop += scrollSpeed;
+            animationFrame = requestAnimationFrame(scrollDown);
+          };
+          animationFrame = requestAnimationFrame(scrollDown);
+        }
+      } else if (nearTop) {
+        if (!animationFrame) {
+          const scrollUp = () => {
+            container.scrollTop -= scrollSpeed;
+            animationFrame = requestAnimationFrame(scrollUp);
+          };
+          animationFrame = requestAnimationFrame(scrollUp);
+        }
+      } else {
+        if (animationFrame) {
+          cancelAnimationFrame(animationFrame);
+          animationFrame = null;
+        }
+      }
+    };
+
+    const stopScroll = () => {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+      }
+    };
+
+    container.addEventListener("mousemove", handleMouseMove);
+    container.addEventListener("mouseleave", stopScroll);
+
+    return () => {
+      container.removeEventListener("mousemove", handleMouseMove);
+      container.removeEventListener("mouseleave", stopScroll);
+    };
+  }, []);
+
+  // 🔹 Fetch videos
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const res = await fetch(`${GLOBAL_BACKEND_URL}/video-index/list`);
+        const res = await fetch(
+          `${GLOBAL_BACKEND_URL}/video-index/list`
+        );
         const data = await res.json();
         setVideos(data.videos || []);
       } catch (err) {
@@ -28,52 +104,21 @@ const ListOfVideos: React.FC<ListOfVideosProps> = ({
     fetchVideos();
   }, []);
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (!videos.length) return;
-
-      if (e.key === "ArrowDown") {
-        setHoveredIndex((prev) => {
-          const next = prev === null ? 0 : Math.min(prev + 1, videos.length - 1);
-          onVideoSelect(videos[next]);
-          return next;
-        });
-      } else if (e.key === "ArrowUp") {
-        setHoveredIndex((prev) => {
-          const next = prev === null ? 0 : Math.max(prev - 1, 0);
-          onVideoSelect(videos[next]);
-          return next;
-        });
-      } else if (e.key === "Enter") {
-        if (hoveredIndex !== null && videos[hoveredIndex]) {
-          const filename = videos[hoveredIndex];
-          onVideoSelect(filename);
-          onPlayRequest(filename);
-        }
-      }
-    },
-    [videos, hoveredIndex, onVideoSelect, onPlayRequest]
-  );
-
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
-
   return (
-    <div className="video-list">
+    <div className="video-list" ref={listRef}>
       {videos.map((filename, index) => (
         <div
           key={filename}
-          className={`video-list-item ${hoveredIndex === index ? "hovered" : ""}`}
+          className={`video-list-item ${
+            hoveredIndex === index ? "hovered" : ""
+          }`}
           onMouseEnter={() => {
             setHoveredIndex(index);
-            onVideoSelect(filename); // only update thumbnail on hover
+            onVideoSelect(filename);
           }}
           onClick={() => {
-            onVideoSelect(filename);    // update thumbnail
-            onPlayRequest(filename);    // trigger fullscreen video
+            onVideoSelect(filename);
+            onPlayRequest(filename);
           }}
         >
           {filename}

@@ -177,28 +177,45 @@ if(!_CHOSE){
 					let dummy1 = callbackChoice(this.choice);
 				}.bind(this)}
 	);	
-	setTimeout(this.jsHandler(this.opsChoices),500);
+	this.choiceInterval = setInterval(() => {
+		if (this.chosing) {
+			this.js.readJoystick();
+			this.jsHandler();
+		} else {
+			clearInterval(this.choiceInterval);
+		}
+	}, 60); // ~16fps is enough for menu
 }else{
 	_CHOSE=false;
 }
 }
 
 
-domHelpers.prototype.jsHandler=function(){
-	//this.js.readJoystick();
-	if(this.js.down&&this.opsChoices.length>1){
-		this.choice=1;
+domHelpers.prototype.jsHandler = function(){
+
+	// Combine both players for menu navigation
+	const p1 = this.js.players[0];
+	const p2 = this.js.players[1];
+
+	const down = p1.down || p2.down;
+	const up   = p1.up   || p2.up;
+	const fire = p1.fire || p2.fire;
+
+	if(down && this.opsChoices.length > 1){
+		this.choice = 1;
 		this.opsChoices[1].dispatchEvent(new MouseEvent('mouseover'));
-	}else if(this.js.up){
-		this.choice=0;
+	}
+	else if(up){
+		this.choice = 0;
 		this.opsChoices[0].dispatchEvent(new MouseEvent('mouseover'));
-	}else if(this.js.fire){
-		if(this.opsChoices.length>1)
+	}
+	else if(fire){
+		if(this.opsChoices.length > 1)
 			this.opsChoices[this.choice].dispatchEvent(new MouseEvent('mousedown'));
 		else
 			this.opsChoices[0].dispatchEvent(new MouseEvent('mousedown'));
 	}
-}
+};
 
 domHelpers.prototype.removeChose=function(el){
 	var containerChildren = document.getElementById(el).children;

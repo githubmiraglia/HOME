@@ -53,6 +53,7 @@ function gamePads(){
 	this.once=[false,false,false,false];
 	this.numberGPs=0;
 	this.gps = [];
+	this.pressed = false;
 	this.change=false;
 };
 

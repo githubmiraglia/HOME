@@ -1,11 +1,13 @@
 import pandas as pd
 import mysql.connector
 from mysql.connector import errorcode
+from pathlib import Path
 
-# Load the Excel file
-file_path = 'DMP_v2.xlsx'
-users_df = pd.read_excel(file_path, sheet_name='users')
-topscores_df = pd.read_excel(file_path, sheet_name='topscores')
+BASE_DIR = Path(__file__).resolve().parent
+file_path = BASE_DIR / "DMP_v2.xlsx"
+# Load sheets
+users_df = pd.read_excel(file_path, sheet_name="users")
+topscores_df = pd.read_excel(file_path, sheet_name="topscores")
 print(users_df)
 print(topscores_df)
 

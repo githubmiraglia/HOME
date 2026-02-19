@@ -1,6 +1,6 @@
 function xBoxGamepad(index){
 	this.index=index;
-	this.deadZone = 0.1;
+	this.deadZone = 0.3;
 	this.buttonsMapping={
 		0:"a",
 		1:"b",
@@ -70,10 +70,13 @@ gamePads.prototype.activateGamePads = function(){
 						this.gps.push(new xBoxGamepad(gp[i].index));
 						this.numberGPs++;
 						foundIt=true
+						console.log("FOUND GAME PAD");
 					}
 				}
-				if(foundIt)
+				if(foundIt){
+					//console.log("FOUND GAME PAD BUT FOR SOME REASON DID NOT CONSOLE LOG");
 					clearInterval(interval);
+				}
 			}
 			tentatives++;
 			if(tentatives>500){
@@ -85,42 +88,79 @@ gamePads.prototype.activateGamePads = function(){
 };
 	
 gamePads.prototype.read = function(){
-	this.change=false;
-	for(var i=0;i<this.numberGPs;i++){
-		var gpi = this.gps[i];
-		var gpCheck =  navigator.getGamepads()[gpi.index];
-		for(var j=0;j<16;j++){
-			if(!gpCheck.buttons[0].pressed&&!this.once[4])
-				this.once[4]=true;
-			else if(this.once[4]){
-			if(gpCheck.buttons[j].pressed){
-				if(gpi.buttonsMapping[j]=="lt"||gpi.buttonsMapping[j]=="rt"){
-					if(Math.abs(gpCheck.buttons[j].value)>gpi.deadZone){
-						gpi.buttons[gpi.buttonsMapping[j]]=gpCheck.buttons[j].value;
-					}
-				}
-				else{
-					gpi.buttons[gpi.buttonsMapping[j]]=true;
-				}
-				this.change=true;
-			}else{
-				if(gpi.buttonsMapping[j]=="lt"||gpi.buttonsMapping[j]=="rt")
-					gpi.buttons[gpi.buttonsMapping[j]]=0;
-				else
-					gpi.buttons[gpi.buttonsMapping[j]]=false;
+    this.change = false;
+
+    const pads = navigator.getGamepads();
+    if (!pads) return;
+
+    for (var i = 0; i < this.numberGPs; i++) {
+
+        var gpi = this.gps[i];
+        var gpCheck = pads[gpi.index];
+
+        if (!gpCheck) continue;
+
+        /* ================= BUTTONS ================= */
+
+        for (var j = 0; j < gpCheck.buttons.length; j++) {
+
+            var mapping = gpi.buttonsMapping[j];
+			if (!mapping || !(mapping in gpi.buttons)) continue;
+
+            
+
+            var btn = gpCheck.buttons[j];
+
+            var pressed = (typeof btn === "object") ? btn.pressed : btn === 1;
+            var value   = (typeof btn === "object") ? btn.value   : btn;
+
+
+            if (pressed) {
+
+                if (mapping === "lt" || mapping === "rt") {
+                    if (Math.abs(value) > gpi.deadZone) {
+                        gpi.buttons[mapping] = value;
+                        this.change = true;
+                    }
+                } else {
+                    gpi.buttons[mapping] = true;
+                    this.change = true;
+                }
+
+            } else {
+
+                if (mapping === "lt" || mapping === "rt") {
+                    gpi.buttons[mapping] = 0;
+                } else {
+                    gpi.buttons[mapping] = false;
+                }
+
+            }
+        }
+
+		for (var j = 0; j < gpCheck.buttons.length; j++) {
+			var btn = gpCheck.buttons[j];
+		    var pressed = (typeof btn === "object") ? btn.pressed : btn === 1;
+			if (pressed) {
+    			console.log("Button index pressed:", j);
 			}	
 		}
-		}
-		for(var j=0;j<4;j++){
-			if(Math.abs(gpCheck.axes[j])>gpi.deadZone){
-				gpi.axes[gpi.axesMapping[j]]=gpCheck.axes[j];
-				this.change=true;
-			}
-			else
-				gpi.axes[gpi.axesMapping[j]]=0;
-		}
-	}
+
+        /* ================= AXES ================= */
+
+        for (var k = 0; k < gpCheck.axes.length; k++) {
+
+            var axisMapping = gpi.axesMapping[k];
+            if (!axisMapping) continue;
+
+            var axisValue = gpCheck.axes[k];
+
+            if (Math.abs(axisValue) > gpi.deadZone) {
+                gpi.axes[axisMapping] = axisValue;
+                this.change = true;
+            } else {
+                gpi.axes[axisMapping] = 0;
+            }
+        }
+    }
 };
-
-
-					   

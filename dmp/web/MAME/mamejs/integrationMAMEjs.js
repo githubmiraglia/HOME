@@ -3,15 +3,33 @@ var _LOADEDELEMENTS = [];
 var _thisIntegrationMAMEjs = null;
 
 function createScripts(id,src){
-
 	this.id = id;
 	this.script = document.createElement("script");
 	this.script.src = src;
+	// Try to find container
 	this.elementToBeAppended = document.getElementById("script-container");
+	// 🔒 SAFEGUARD: create if missing
+	if (!this.elementToBeAppended) {
+
+		console.warn("script-container not found — creating one at end of body");
+
+		this.elementToBeAppended = document.createElement("div");
+		this.elementToBeAppended.id = "script-container";
+
+		// Append safely after DOM is ready
+		if (document.body) {
+			document.body.appendChild(this.elementToBeAppended);
+		} else {
+			document.addEventListener("DOMContentLoaded", () => {
+				document.body.appendChild(this.elementToBeAppended);
+			});
+		}
+	}
+	// Now safe
 	this.elementToBeAppended.appendChild(this.script);
-	this.script.addEventListener("load",function(){
+	this.script.addEventListener("load", function(){
 		_LOADEDELEMENTS.push(this.id);
-	}.bind(this));
+	}.bind(this));	
 }
 
 function checkLoaded(arrIDs){
@@ -419,21 +437,29 @@ IntegrationMAMEjs.prototype.callBackChoice = (choice) => {
 		_thisIntegrationMAMEjs.waitRoms.style.display="block";
 		_thisIntegrationMAMEjs.reloadMameScript();
 	}else{
+
 		var exitContainer = document.getElementById("exit-container");
 		let child = exitContainer.lastElementChild;
-		count = 0;
+		let count = 0;
+
 		while (child && count < 2) {
-			if(child.tagName=='P'){
-				count ++;
+			if(child.tagName == 'P'){
+				count++;
 				exitContainer.removeChild(child);
 				child = exitContainer.lastElementChild;
 			}
 		}
-		_thisIntegrationMAMEjs.js.exit = true;
+
+		// Trigger pause toggle from either controller
+		_thisIntegrationMAMEjs.js.players[0].exit = true;
+		_thisIntegrationMAMEjs.js.players[1].exit = true;
+
 		_thisIntegrationMAMEjs.once = true;
 		_thisIntegrationMAMEjs.js.joystickIntegrationMAME.checkPress();
+
 		setTimeout(()=>{
-			_thisIntegrationMAMEjs.js.exit = false;
+			_thisIntegrationMAMEjs.js.players[0].exit = false;
+			_thisIntegrationMAMEjs.js.players[1].exit = false;
 			_thisIntegrationMAMEjs.once = false;
 		},750);
 	}

@@ -156,6 +156,10 @@ carousel.prototype.destroy=function(el){
 	el.removeEventListener("loaded",this.carouselHandler,true);
 	this.dh.styles(el,{top:"0px",height:"0px",marginBottom:"0px"});
 	this.dh.styles(document.getElementById("clearCarousel"),{height:"0px"});
+	// 👇 ADD THIS
+	if(window.sc){
+		window.sc.uiMode = "navbar";
+	}
 	setTimeout(function(){
 		while (el.firstChild)
     		el.removeChild(el.firstChild);

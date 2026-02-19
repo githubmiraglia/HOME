@@ -394,26 +394,33 @@ VirtualJoystick.prototype._onTouchMove	= function(event)
 VirtualJoystick.prototype.checkVirtualJoystick = function() {
     if (!this.runLoopCheckJoystick) return; // Stop execution if the flag is false
 	
+	this.joystick.players[0].up=false;
+	this.joystick.players[0].down=false;
+	this.joystick.players[0].left=false;
+	this.joystick.players[0].right=false;
+
 	if(this.up()){
-		this.joystick.up=true;
+		this.joystick.players[0].up=true;
 	}else{
-		this.joystick.up=false;
+		this.joystick.players[0].up=false;
 	}
 	if(this.down()){
-		this.joystick.down=true;
+		this.joystick.players[0].down=true;
 	}else{
-		this.joystick.down=false;
+		this.joystick.players[0].down=false;
 	}
 	if(this.left()){
-		this.joystick.left=true;
+		this.joystick.players[0].left=true;
 	}else{
-		this.joystick.left=false;
+		this.joystick.players[0].left=false;
 	}
 	if(this.right()){
-		this.joystick.right=true;
+		this.joystick.players[0].right=true;
 	}else{
-		this.joystick.right=false;
+		this.joystick.players[0].right=false;
 	}
+	
+
 	this.joystickIntegrationMAME.checkPress();
     setTimeout(() => { // Arrow function keeps `this`
         this.checkVirtualJoystick();
