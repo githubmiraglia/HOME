@@ -131,11 +131,13 @@ joystick.prototype.readJoystick = function (jSelect) {
 
     this.jUsed = null;
 
+    this.players[0] = this.createEmptyPlayerState();
+    this.players[1] = this.createEmptyPlayerState(); 
+
+
     if (!this.platform.touchScreen) {
         // RESET PLAYER STATES
-        this.players[0] = this.createEmptyPlayerState();
-        this.players[1] = this.createEmptyPlayerState(); 
-    
+            
         if (this.gamepads.numberGPs > 0) {
 
             this.gamepads.read();
@@ -241,6 +243,7 @@ joystick.prototype.readJoystick = function (jSelect) {
             this.vjPressed["fireRB"] = true;
 
         if (_VBUTTONPRESSED["vFireExit"]) {
+            console.log("PRESSED EXIT");
             this.vjPressed["exit"] = true;
             this.vjExit = true;
         }
@@ -290,6 +293,7 @@ joystick.prototype.readJoystick = function (jSelect) {
             player.fireStart = player.fireStart || this.kbPressed[p].fireStart;
         }
 
+
         // Touch (always P1)
         if (p === 0) {
             player.left  = player.left  || this.vjPressed.left;
@@ -314,9 +318,12 @@ joystick.prototype.readJoystick = function (jSelect) {
         this.vjExit) {
 
         _EXIT = true;
+        this.players[0].exit = true;
+        console.log("EXIT = ",_EXIT);
         this.exit = true;
 
     } else {
+        this.players[0].exit = false;
         this.exit = false;
     }
 
@@ -341,6 +348,7 @@ joystick.prototype.readJoystick = function (jSelect) {
     this.down  = this.players[0].down  || this.players[1].down;
 
     this.fire  = this.players[0].fire  || this.players[1].fire;
+
     this.fireB = this.players[0].fireB || this.players[1].fireB;
     this.fireX = this.players[0].fireX || this.players[1].fireX;
     this.fireY = this.players[0].fireY || this.players[1].fireY;
@@ -350,6 +358,7 @@ joystick.prototype.readJoystick = function (jSelect) {
     this.fireStart = this.players[0].fireStart || this.players[1].fireStart;
 
 }
+
 joystick.prototype.createVJoystick = function () {
 	// fix _width and _height
 	if(this.mameIntegration.mame){
@@ -522,6 +531,7 @@ joystick.prototype.createVJoystick = function () {
 			innerCircle.style.backgroundColor = "white";
 			_VBUTTONPRESSED[btn.id] = true;
 			this.readJoystick();
+            console.log("CALLING CHECK PRESS", this.players[0].fire); 
 			this.joystickIntegrationMAME.checkPress();
 		});
 	

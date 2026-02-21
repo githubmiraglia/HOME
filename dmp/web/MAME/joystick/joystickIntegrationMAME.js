@@ -96,7 +96,7 @@ joystickIntegrationMAME.prototype.checkPress = function () {
     // EXIT / PAUSE LOGIC (UNCHANGED)
     // ====================================
 
-    if (p1.exit || p2.exit) {
+    if (p1.exit || p2.exit || this.js.exit) {
 
         this.js.players[0].exit = false;
         this.js.players[1].exit = false;

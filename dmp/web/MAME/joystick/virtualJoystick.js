@@ -351,7 +351,16 @@ VirtualJoystick.prototype._onTouchEnd	= function(event)
 	this.dispatchEvent('touchEnd', event);
 
 	//end looping every 16ms to check joystick
+	this.joystick.players[0].up=false;
+	this.joystick.players[0].down=false;
+	this.joystick.players[0].left=false;
+	this.joystick.players[0].right=false;
+	this.joystickIntegrationMAME.checkPress();
+	
 	this.runLoopCheckJoystick = false;
+
+
+	console.log("FINISHED LOOP");
 
 	// try to find our touch event
 	var touchList	= event.changedTouches;
@@ -394,11 +403,6 @@ VirtualJoystick.prototype._onTouchMove	= function(event)
 VirtualJoystick.prototype.checkVirtualJoystick = function() {
     if (!this.runLoopCheckJoystick) return; // Stop execution if the flag is false
 	
-	this.joystick.players[0].up=false;
-	this.joystick.players[0].down=false;
-	this.joystick.players[0].left=false;
-	this.joystick.players[0].right=false;
-
 	if(this.up()){
 		this.joystick.players[0].up=true;
 	}else{
