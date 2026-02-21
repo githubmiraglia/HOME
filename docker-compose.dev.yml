@@ -90,6 +90,7 @@ services:
     volumes:
       - ./server/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./dmp/web:/srv/dmp:ro
+      - ./hub:/srv/hub:ro
       - caddy_data:/data
       - caddy_config:/config
     depends_on:

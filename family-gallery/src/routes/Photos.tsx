@@ -20,8 +20,10 @@ const Photos: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [pauseRotation, setPauseRotation] = useState(false);
 
-  const [selectedFrame, setSelectedFrame] = useState("/frame1_brownish.png");
-  const [selectedBackground, setSelectedBackground] = useState("/background_white.png");
+  const base = import.meta.env.BASE_URL;
+
+  const [selectedFrame, setSelectedFrame] = useState(base + "/frame1_brownish.png");
+  const [selectedBackground, setSelectedBackground] = useState(base + "/background_white.png");
   const [fromYear, setFromYear] = useState(2003);
   const [toYear, setToYear] = useState(2025);
   const [hasFaces, setHasFaces] = useState(true);

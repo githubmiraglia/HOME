@@ -2,20 +2,23 @@
 import React from "react";
 import "./css/Selector_Photos.css";
 
+
+const base = import.meta.env.BASE_URL;
+
 // Frame options
 export const frameOptions = [
-  { path: "/frame1_brownish.png", label: "Brown" },
-  { path: "/frame1_white.png", label: "White" },
-  { path: "/frame1_silver_tinted.png", label: "Silver Tint" },
+  { path: base + "/frame1_brownish.png", label: "Brown" },
+  { path: base + "/frame1_white.png", label: "White" },
+  { path: base + "/frame1_silver_tinted.png", label: "Silver Tint" },
 ];
 
 // Background options
 export const backgroundOptions = [
-  { path: "/background_white.png", label: "White" },
-  { path: "/background_rose.png", label: "Rose" },
-  { path: "/background_grey.png", label: "Grey" },
-  { path: "/background_wood.png", label: "Wood" },
-  { path: "/background_brick.png", label: "Brick" },
+  { path: base + "/background_white.png", label: "White" },
+  { path: base + "/background_rose.png", label: "Rose" },
+  { path: base + "/background_grey.png", label: "Grey" },
+  { path: base + "/background_wood.png", label: "Wood" },
+  { path: base + "/background_brick.png", label: "Brick" },
 ];
 
 // Mapping small frame to large frame for overlay use

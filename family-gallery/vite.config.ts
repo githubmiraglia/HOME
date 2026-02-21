@@ -3,10 +3,16 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "/family-gallery/",
   plugins: [react()],
   server: {
-    host: true,    // Expose to Docker host
-    port: 3000,     // Match docker-compose.dev.yml
-    allowedHosts: ['wrrm.lat', 'www.wrrm.lat']
+    host: true,
+    port: 3000,
+    allowedHosts: ["wrrm.lat", "www.wrrm.lat"],
+    strictPort: true,
+  },
+  preview: {
+    host: true,
+    port: 3000,
   }
 })

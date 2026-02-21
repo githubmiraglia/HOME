@@ -64,7 +64,10 @@ const router = createBrowserRouter([
     ],
   },
   { path: "/back", element: <Back /> },
-]);
+],  {
+    basename: "/family-gallery",
+  }
+);
 
 console.log("App.tsx rendering");
 

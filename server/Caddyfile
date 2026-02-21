@@ -7,7 +7,7 @@ wrrm.lat, www.wrrm.lat {
     # DMP (static arcade site)
     # MUST come first and MUST terminate
     # ============================
-    handle_path  /dmp* {
+    handle_path /dmp* {
         root * /srv/dmp
         file_server
     }
@@ -27,10 +27,14 @@ wrrm.lat, www.wrrm.lat {
     }
 
     # ============================
-    # FRONTEND (Vite dev server)
-    # Catch-all — MUST be last
+    # Redirect /family-gallery → /family-gallery/
     # ============================
-    handle {
+    redir /family-gallery /family-gallery/
+
+    # ============================
+    # FAMILY GALLERY (Vite)
+    # ============================
+    handle /family-gallery* {
         reverse_proxy http://frontend:3000 {
             header_up Host {host}
             header_up X-Forwarded-For {remote_host}
@@ -38,6 +42,14 @@ wrrm.lat, www.wrrm.lat {
             header_up Upgrade {>Upgrade}
             header_up Connection {>Connection}
         }
+    }
+
+    # ============================
+    # HUB (Root)
+    # ============================
+    handle {
+        root * /srv/hub
+        file_server
     }
 
     log {
